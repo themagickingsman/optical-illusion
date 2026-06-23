@@ -15,13 +15,13 @@
     "framework": "nextjs"
   },
   "buildPipeline": {
-    "outputMode": "export",
+    "outputMode": "server",
     "unoptimizedImages": true,
     "typescriptIgnoreErrors": true,
     "entryPoint": "WebsiteBuildCMS",
     "commands": {
       "install": "npm install",
-      "build": "NEXT_PUBLIC_BUILD=true next build",
+      "build": "NEXT_TELEMETRY_DISABLED=1 NEXT_PUBLIC_BUILD=true next build",
       "deploy": "vercel --prod"
     }
   }

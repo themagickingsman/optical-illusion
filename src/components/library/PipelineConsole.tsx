@@ -6,10 +6,10 @@ export default function PipelineConsole() {
   const [config, setConfig] = useState<any>(null);
   const [isDeploying, setIsDeploying] = useState(false);
   const [deployResult, setDeployResult] = useState<{ success?: boolean, message?: string } | null>(null);
+  const [liveUrl, setLiveUrl] = useState<string | null>(null);
 
+  // We read the local config file on mount
   useEffect(() => {
-    // In a real Next.js app, we can just import the JSON directly, 
-    // or fetch it if it's in public/. Since it's in the root, we'll import it.
     import('../../../deploy_controller.json')
       .then((module) => setConfig(module.default))
       .catch(console.error);
@@ -18,11 +18,27 @@ export default function PipelineConsole() {
   const handleDeploy = async () => {
     setIsDeploying(true);
     setDeployResult(null);
+    setLiveUrl(null);
+    
     try {
-      const response = await fetch('/api/deploy', { method: 'POST' });
+      const response = await fetch('/api/deploy', {
+        method: 'POST',
+      });
+      
       const data = await response.json();
+      
       if (data.success) {
         setDeployResult({ success: true, message: 'Deployment successful! Site is live.' });
+        // Fetch the dynamically extracted URL from vercel
+        try {
+          const urlRes = await fetch('/vercel_url.json?t=' + Date.now());
+          const urlData = await urlRes.json();
+          if (urlData && urlData.url) {
+            setLiveUrl(urlData.url);
+          }
+        } catch (e) {
+          console.warn('Could not load vercel_url.json, falling back to default URL structure');
+        }
       } else {
         setDeployResult({ success: false, message: data.error || 'Deployment failed.' });
       }
@@ -159,7 +175,7 @@ export default function PipelineConsole() {
                 </div>
                 <p style={{ margin: 0, color: 'white', fontSize: '16px' }}>Your site is now live on the internet.</p>
                 <a 
-                  href={`https://${config.hosting.projectName}.vercel.app`}
+                  href={liveUrl || `https://${config.hosting.projectName}.vercel.app`}
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{

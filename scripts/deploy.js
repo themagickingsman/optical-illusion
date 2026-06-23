@@ -47,15 +47,35 @@ try {
   console.log('✅ Pushed to GitHub successfully.');
 
   // Execute the Vercel CLI production deployment
-  console.log('\nDeploying to Vercel...');
-  const deployCmd = `npx ${config.buildPipeline.commands.deploy}`;
-  console.log(`> ${deployCmd}`);
-  
-  // stdio: 'inherit' streams the output directly to the user's console
-  execSync(deployCmd, { stdio: 'inherit', cwd: path.join(__dirname, '..') });
-  
-  console.log('\n🟢 DEPLOYMENT SUCCESSFUL');
-  console.log(`The product is now live on Vercel.`);
+  console.log('\n🚀 Step 4: Deploying to Vercel...');
+  try {
+    const deployCmd = `npx vercel --prod --yes`;
+    console.log(`Executing: ${deployCmd}`);
+    
+    // Capture stdout/stderr so we can extract the dynamically assigned Vercel URL
+    const output = execSync(deployCmd, { cwd: path.join(__dirname, '..'), encoding: 'utf-8' });
+    console.log(output);
+
+    // Parse the Production URL from the Vercel CLI output
+    // Usually looks like: Production: https://optical-illusion-xyz.vercel.app
+    const match = output.match(/Production:\s+(https:\/\/[^\s]+)/);
+    if (match && match[1]) {
+      const liveUrl = match[1];
+      fs.writeFileSync(
+        path.join(__dirname, '../public/vercel_url.json'), 
+        JSON.stringify({ url: liveUrl, timestamp: Date.now() })
+      );
+      console.log(`\n✅ Successfully captured Live URL: ${liveUrl}`);
+    } else {
+      console.log(`\n⚠️ Could not parse Live URL from Vercel output. Fallback to dashboard.`);
+    }
+
+    console.log(`\n🎉 Pipeline completed successfully!`);
+  } catch (error) {
+    console.error(`❌ Vercel deployment failed.`);
+    console.error(error.stdout || error.message);
+    process.exit(1);
+  }
 } catch (error) {
   console.error('\n❌ DEPLOYMENT FAILED');
   console.error(error.message);

@@ -11,6 +11,7 @@ import MasterControllerView from "@/components/cms/views/MasterControllerView";
 import HomeCMS from "@/components/cms/views/HomeCMS";
 import GamesCMS from "@/components/cms/views/GamesCMS";
 import ProcessCMS from "@/components/cms/views/ProcessCMS";
+import VariablesCMS from "@/components/cms/views/VariablesCMS";
 
 import { useQueryState } from "@/hooks/useQueryState";
 
@@ -37,6 +38,7 @@ function DashboardContent() {
     { id: "library", label: "Agentic Game Assets" },
     { id: "hire", label: "Hire Me" },
     { id: "chat", label: "Chat" },
+    { id: "variables", label: "Variables" },
     { id: "master", label: "Master Control" }
   ];
 
@@ -78,11 +80,20 @@ function DashboardContent() {
         {activeCmsTab === "process" && <div style={{ position: 'absolute', inset: 0, overflowY: 'auto' }}><ProcessCMS /></div>}
         {activeCmsTab === "library" && <div style={{ position: 'absolute', inset: 0, overflowY: 'auto' }}><LibraryCMS /></div>}
         {activeCmsTab === "hire" && <div style={{ position: 'absolute', inset: 0, overflowY: 'auto', display: 'flex', justifyContent: 'center', alignItems: 'center' }}><HireMeView /></div>}
-        {activeCmsTab === "chat" && <div style={{ position: 'absolute', inset: 0, overflowY: 'auto' }}><ChatCMS /></div>}
+        {activeCmsTab === "chat" && (
+          <div style={{ position: "absolute", inset: 0, zIndex: 20 }}>
+            <ChatCMS />
+          </div>
+        )}
 
-        {/* Master Controller is a completely separate isolated view */}
+        {activeCmsTab === "variables" && (
+          <div style={{ position: "absolute", inset: 0, zIndex: 20 }}>
+            <VariablesCMS />
+          </div>
+        )}
+
         {activeCmsTab === "master" && (
-          <div style={{ position: 'absolute', inset: 0, overflowY: 'auto' }}>
+          <div style={{ position: "absolute", inset: 0, zIndex: 20 }}>
             <MasterControllerView />
           </div>
         )}

@@ -3,7 +3,7 @@
 import { useCallback, useState, useEffect } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 
-export function useQueryState<T extends string>(key: string, defaultValue: T): [T, (val: T) => void] {
+export function useQueryState<T extends string | null>(key: string, defaultValue: T): [T, (val: T) => void] {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -24,7 +24,7 @@ export function useQueryState<T extends string>(key: string, defaultValue: T): [
       setLocalValue(newValue); // Optimistic update
 
       const params = new URLSearchParams(searchParams.toString());
-      if (newValue === defaultValue) {
+      if (newValue === defaultValue || newValue === null) {
         params.delete(key);
       } else {
         params.set(key, newValue);

@@ -71,7 +71,7 @@ export default function WebsiteBuildCMS() {
   
   // Isolated internal state for the Public Website
   const [previewMode, setPreviewMode] = useQueryState<'home' | 'games' | 'library' | 'process' | 'hire'>('preview', 'home');
-  const [selectedEngineId] = useQueryState<string | null>('engine', null);
+  const [selectedEngineId, setSelectedEngineId] = useQueryState<string | null>('engine', null);
 
   const handleNavClick = (tab: 'home' | 'games' | 'library' | 'process' | 'hire') => {
     // We update the local query state explicitly, and clear the engine to drop out of project view

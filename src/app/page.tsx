@@ -18,7 +18,7 @@ import { useQueryState } from "@/hooks/useQueryState";
 import GlobalBackground from "@/components/GlobalBackground";
 
 function DashboardContent() {
-  const [activeCmsTab, setActiveCmsTab] = useQueryState("tab", "build");
+  const [activeCmsTab, setActiveCmsTab] = useQueryState<string>("tab", "build");
 
   // If this is a production deployment run by the Autonomous Pipeline,
   // we completely bypass the developer CMS and ONLY render the WebsiteBuildCMS tab.

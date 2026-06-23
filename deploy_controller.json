@@ -1,0 +1,28 @@
+{
+  "product": {
+    "name": "Optical Illusions Platform",
+    "urlPrefix": "optical-illusions",
+    "description": "A showcase of high-performance WebGL optical illusions."
+  },
+  "repository": {
+    "provider": "github",
+    "owner": "uxmagicman",
+    "repoName": "optical-illusions"
+  },
+  "hosting": {
+    "provider": "vercel",
+    "projectName": "optical-illusions-website",
+    "framework": "nextjs"
+  },
+  "buildPipeline": {
+    "outputMode": "export",
+    "unoptimizedImages": true,
+    "typescriptIgnoreErrors": true,
+    "entryPoint": "WebsiteBuildCMS",
+    "commands": {
+      "install": "npm install",
+      "build": "NEXT_PUBLIC_BUILD=true next build",
+      "deploy": "vercel --prod"
+    }
+  }
+}

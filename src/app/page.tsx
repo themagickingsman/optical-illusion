@@ -1,65 +1,100 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
-  return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+import React, { Suspense } from "react";
+import DashboardNav, { DashboardTab } from "@/components/cms/DashboardNav";
+import LibraryCMS from "@/components/cms/views/LibraryCMS";
+
+import WebsiteBuildCMS from "@/components/cms/views/WebsiteBuildCMS";
+import HireMeView from "@/components/views/HireMeView";
+import ChatCMS from "@/components/cms/views/ChatCMS";
+import MasterControllerView from "@/components/cms/views/MasterControllerView";
+import HomeCMS from "@/components/cms/views/HomeCMS";
+import GamesCMS from "@/components/cms/views/GamesCMS";
+import ProcessCMS from "@/components/cms/views/ProcessCMS";
+
+import { useQueryState } from "@/hooks/useQueryState";
+
+import GlobalBackground from "@/components/GlobalBackground";
+
+function DashboardContent() {
+  const [activeCmsTab, setActiveCmsTab] = useQueryState("tab", "build");
+
+  // If this is a production deployment run by the Autonomous Pipeline,
+  // we completely bypass the developer CMS and ONLY render the WebsiteBuildCMS tab.
+  if (process.env.NEXT_PUBLIC_BUILD === 'true') {
+    return (
+      <main style={{ width: "100%", height: "100%", overflow: "hidden", position: "relative" }}>
+        <WebsiteBuildCMS />
       </main>
-    </div>
+    );
+  }
+
+  const dashboardTabs: DashboardTab[] = [
+    { id: "build", label: "Build" },
+    { id: "home", label: "Home" },
+    { id: "games", label: "Games" },
+    { id: "process", label: "My Process" },
+    { id: "library", label: "Agentic Game Assets" },
+    { id: "hire", label: "Hire Me" },
+    { id: "chat", label: "Chat" },
+    { id: "master", label: "Master Control" }
+  ];
+
+  return (
+    <main style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", overflow: "hidden", position: "relative", pointerEvents: "none" }}>
+      {/* CMS Header Frame */}
+      <header id="master-cms-header" style={{ 
+        height: "80px", 
+        width: "100%", 
+        background: "#000000", 
+        borderBottom: "1px solid rgba(255, 255, 255, 0.15)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        position: "relative",
+        zIndex: 9999,
+        pointerEvents: "auto",
+        boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)"
+      }}>
+        <DashboardNav 
+          tabs={dashboardTabs} 
+          activeTab={activeCmsTab} 
+          onTabChange={setActiveCmsTab} 
+        />
+      </header>
+
+          {/* Dynamic CMS View Instantiation */}
+      <div id="website-canvas" style={{ flex: 1, position: "relative", overflow: "hidden", minHeight: 0, pointerEvents: "auto" }}>
+        <GlobalBackground />
+        
+        {/* The WebsiteBuildCMS acts as the persistent shell for the Build environment */}
+        {activeCmsTab === "build" && (
+          <WebsiteBuildCMS />
+        )}
+
+        {/* The other CMS tabs render RAW isolated components for developer editing */}
+        {activeCmsTab === "home" && <div style={{ position: 'absolute', inset: 0, overflowY: 'auto' }}><HomeCMS /></div>}
+        {activeCmsTab === "games" && <div style={{ position: 'absolute', inset: 0, overflowY: 'auto' }}><GamesCMS /></div>}
+        {activeCmsTab === "process" && <div style={{ position: 'absolute', inset: 0, overflowY: 'auto' }}><ProcessCMS /></div>}
+        {activeCmsTab === "library" && <div style={{ position: 'absolute', inset: 0, overflowY: 'auto' }}><LibraryCMS /></div>}
+        {activeCmsTab === "hire" && <div style={{ position: 'absolute', inset: 0, overflowY: 'auto', display: 'flex', justifyContent: 'center', alignItems: 'center' }}><HireMeView /></div>}
+        {activeCmsTab === "chat" && <div style={{ position: 'absolute', inset: 0, overflowY: 'auto' }}><ChatCMS /></div>}
+
+        {/* Master Controller is a completely separate isolated view */}
+        {activeCmsTab === "master" && (
+          <div style={{ position: 'absolute', inset: 0, overflowY: 'auto' }}>
+            <MasterControllerView />
+          </div>
+        )}
+      </div>
+    </main>
+  );
+}
+
+export default function MasterDashboard() {
+  return (
+    <Suspense fallback={<div style={{ color: 'white', display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>Loading...</div>}>
+      <DashboardContent />
+    </Suspense>
   );
 }

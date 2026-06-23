@@ -1,0 +1,770 @@
+[
+  {
+    "id": "engine_cosmic_racers",
+    "title": "Cosmic Racers Engine",
+    "subtitle": "The definitive WebGL hover-racing framework.",
+    "description": "A high-performance Next.js and Three.js framework specifically engineered for zero-G tubular racing games. Complete with physics, AI opponents, and modular vehicle assets.",
+    "category": "Games",
+    "isFeatured": true,
+    "price": "$89.99",
+    "sub_categories": [
+      "Racing",
+      "WebGL",
+      "3D"
+    ],
+    "globalApiEndpoint": "http://localhost:3009/api/engine/cosmic_racers",
+    "media": {
+      "thumbnail": "/assets/features/july/Group 129 (1).png"
+    },
+    "downloads": 150000,
+    "rating": 5,
+    "editorial": {
+      "kicker": "EDITOR'S CHOICE",
+      "introParagraph": "Cosmic Racers Engine has revolutionized how we build high-speed WebGL experiences. A comprehensive suite for building modern 3D racing games. Includes spline-based track generation, advanced vehicle physics, and modular logic designed to plug seamlessly into your autonomous AI agent workflow.",
+      "sections": [
+        {
+          "heading": "Built for Speed",
+          "body": "Utilizing React Three Fiber and Rapier physics, this engine handles complex collision and raycasting at 60fps in the browser. You can seamlessly swap out the default hovering logic with standard wheeled-vehicle physics."
+        },
+        {
+          "heading": "Modular Architecture",
+          "body": "Every single part of Cosmic Racers is decoupled. Want to use the AI splines for a flying game? Just grab the AI component. Want the neon assets? Grab the models. The choice is yours."
+        }
+      ],
+      "screenshots": [
+        "/assets/features/july/Group 129 (1).png"
+      ]
+    },
+    "components": [
+      {
+        "id": "comp_cr_1",
+        "name": "Zero-G Hover Physics",
+        "type": "logic",
+        "apiEndpoint": "http://localhost:3009/api/component/comp_cr_1",
+        "description": "Pure headless typescript logic for raycast-based hovering and acceleration.",
+        "price": "$14.99",
+        "icon": "/assets/features/july/Group 129 (1).png"
+      },
+      {
+        "id": "comp_cr_2",
+        "name": "Torus Spline Track Generator",
+        "type": "system",
+        "apiEndpoint": "http://localhost:3009/api/component/comp_cr_2",
+        "description": "Core system handler for procedural 3D tube tracks along a spline path.",
+        "price": "$29.99",
+        "icon": "/assets/features/july/Group 129 (1).png"
+      },
+      {
+        "id": "comp_cr_3",
+        "name": "Neon Hovercar Asset",
+        "type": "asset",
+        "apiEndpoint": "http://localhost:3009/api/component/comp_cr_3",
+        "description": "High-quality 3D model asset for a sleek, low-poly hover vehicle.",
+        "price": "$9.99",
+        "icon": "/assets/features/july/Group 129 (1).png"
+      },
+      {
+        "id": "comp_cr_4",
+        "name": "Racer AI Controller",
+        "type": "logic",
+        "apiEndpoint": "http://localhost:3009/api/component/comp_cr_4",
+        "description": "Autonomous waypoint-following logic for opponent vehicles.",
+        "price": "$19.99",
+        "icon": "/assets/features/july/Group 129 (1).png"
+      },
+      {
+        "id": "comp_cr_5",
+        "name": "Chase Camera Rig",
+        "type": "system",
+        "apiEndpoint": "http://localhost:3009/api/component/comp_cr_5",
+        "description": "A dynamic spring-based camera controller that responds to velocity and drift.",
+        "price": "Free",
+        "icon": "/assets/features/july/Group 129 (1).png"
+      }
+    ]
+  },
+  {
+    "id": "c1",
+    "title": "Combat Module",
+    "subtitle": "Core combat interactions",
+    "description": "A lightweight modular slice of the Combat Engine, focused strictly on melee and hit-reaction logic.",
+    "category": "Developer Tools",
+    "sub_categories": [
+      "Combat",
+      "Logic"
+    ],
+    "globalApiEndpoint": "http://localhost:3009/api/engine/c1",
+    "media": {
+      "thumbnail": "/assets/features/july/Group 126.png"
+    },
+    "downloads": 12400,
+    "rating": 4.5,
+    "components": [
+      {
+        "id": "comp_cm_1",
+        "name": "Melee Strike Logic",
+        "type": "logic",
+        "apiEndpoint": "http://localhost:3009/api/component/comp_cm_1",
+        "description": "Pure headless typescript logic for melee strike logic.",
+        "price": "Free",
+        "icon": "/assets/features/july/Group 126.png"
+      },
+      {
+        "id": "comp_cm_2",
+        "name": "Damage Number UI",
+        "type": "asset",
+        "apiEndpoint": "http://localhost:3009/api/component/comp_cm_2",
+        "description": "High-quality 3D model/UI asset for damage number ui.",
+        "price": "Free",
+        "icon": "/assets/features/july/Group 126.png"
+      }
+    ],
+    "isFeatured": true,
+    "price": "$9.99",
+    "editorial": {
+      "kicker": "DEVELOPER TOOLS",
+      "introParagraph": "Combat Module has been an essential tool since it launched. A lightweight modular slice of the Combat Engine, focused strictly on melee and hit-reaction logic.",
+      "sections": [
+        {
+          "heading": "New Features",
+          "body": "Better add an extension to your workflow. This component's array of features has raced past expectations. In addition to core systems, you can now utilize high-performance sub-modules. But be warned: integrating this means serious power!"
+        }
+      ],
+      "screenshots": [
+        "/assets/features/july/Group 126.png"
+      ]
+    }
+  },
+  {
+    "id": "c6",
+    "title": "Racing Assets",
+    "subtitle": "Vehicles and Tracks",
+    "description": "Hovercars, neon tracks, and modular tunnel assets.",
+    "category": "Graphics & Design",
+    "sub_categories": [
+      "3D Models",
+      "Environments"
+    ],
+    "globalApiEndpoint": "http://localhost:3009/api/engine/c6",
+    "media": {
+      "thumbnail": "/assets/features/july/Group 129 (1).png"
+    },
+    "downloads": 14000,
+    "rating": 4.4,
+    "components": [
+      {
+        "id": "comp_c6_1",
+        "name": "Neon Highway Spline",
+        "type": "asset",
+        "apiEndpoint": "http://localhost:3009/api/component/comp_c6_1",
+        "description": "High-quality 3D model/UI asset for neon highway spline.",
+        "price": "Free",
+        "icon": "/assets/features/july/Group 129 (1).png"
+      },
+      {
+        "id": "comp_c6_2",
+        "name": "Hovercar Model Pack",
+        "type": "asset",
+        "apiEndpoint": "http://localhost:3009/api/component/comp_c6_2",
+        "description": "High-quality 3D model/UI asset for hovercar model pack.",
+        "price": "Free",
+        "icon": "/assets/features/july/Group 129 (1).png"
+      }
+    ],
+    "isFeatured": false,
+    "price": "$4.99",
+    "editorial": {
+      "kicker": "GRAPHICS & DESIGN",
+      "introParagraph": "Racing Assets has been an essential tool since it launched. Hovercars, neon tracks, and modular tunnel assets.",
+      "sections": [
+        {
+          "heading": "New Features",
+          "body": "Better add an extension to your workflow. This component's array of features has raced past expectations. In addition to core systems, you can now utilize high-performance sub-modules. But be warned: integrating this means serious power!"
+        }
+      ],
+      "screenshots": [
+        "/assets/features/july/Group 129 (1).png"
+      ]
+    }
+  },
+  {
+    "id": "c2",
+    "title": "Racing Module",
+    "subtitle": "High-speed physics",
+    "description": "The foundation for any modern racing game. Features complex tire friction models, slipstreaming logic, and suspension systems that agents can bolt right into standard vehicular assets.",
+    "category": "Developer Tools",
+    "sub_categories": [
+      "Racing",
+      "Physics"
+    ],
+    "globalApiEndpoint": "http://localhost:3009/api/engine/c2",
+    "media": {
+      "thumbnail": "/assets/features/july/Group 129 (1).png"
+    },
+    "downloads": 8900,
+    "rating": 4.7,
+    "components": [
+      {
+        "id": "comp_rc_1",
+        "name": "Tire Friction Model",
+        "type": "logic",
+        "apiEndpoint": "http://localhost:3009/api/component/comp_rc_1",
+        "description": "Pure headless typescript logic for tire friction model.",
+        "price": "Free",
+        "icon": "/assets/features/july/Group 129 (1).png"
+      },
+      {
+        "id": "comp_rc_2",
+        "name": "Hovercar Suspension Logic",
+        "type": "system",
+        "apiEndpoint": "http://localhost:3009/api/component/comp_rc_2",
+        "description": "Core system handler for hovercar suspension logic.",
+        "price": "Free",
+        "icon": "/assets/features/july/Group 129 (1).png"
+      },
+      {
+        "id": "comp_rc_3",
+        "name": "Sci-Fi Speedometer UI",
+        "type": "asset",
+        "apiEndpoint": "http://localhost:3009/api/component/comp_rc_3",
+        "description": "High-quality 3D model/UI asset for sci-fi speedometer ui.",
+        "price": "Free",
+        "icon": "/assets/features/july/Group 129 (1).png"
+      }
+    ],
+    "isFeatured": false,
+    "price": "$9.99",
+    "editorial": {
+      "kicker": "DEVELOPER TOOLS",
+      "introParagraph": "Racing Module has been an essential tool since it launched. The foundation for any modern racing game. Features complex tire friction models, slipstreaming logic, and suspension systems that agents can bolt right into standard vehicular assets.",
+      "sections": [
+        {
+          "heading": "New Features",
+          "body": "Better add an extension to your workflow. This component's array of features has raced past expectations. In addition to core systems, you can now utilize high-performance sub-modules. But be warned: integrating this means serious power!"
+        }
+      ],
+      "screenshots": [
+        "/assets/features/july/Group 129 (1).png"
+      ]
+    }
+  },
+  {
+    "id": "c3",
+    "title": "Puzzle Module",
+    "subtitle": "Grid and logic handlers",
+    "description": "Robust spatial mapping and connection solvers for 2D and 3D puzzle environments.",
+    "category": "Developer Tools",
+    "sub_categories": [
+      "Puzzle",
+      "Core"
+    ],
+    "globalApiEndpoint": "http://localhost:3009/api/engine/c3",
+    "media": {
+      "thumbnail": "/assets/features/july/Green Light.png"
+    },
+    "downloads": 5300,
+    "rating": 4.8,
+    "components": [
+      {
+        "id": "comp_pz_1",
+        "name": "Hex Grid Generator",
+        "type": "logic",
+        "apiEndpoint": "http://localhost:3009/api/component/comp_pz_1",
+        "description": "Pure headless typescript logic for hex grid generator.",
+        "price": "Free",
+        "icon": "/assets/features/july/Green Light.png"
+      },
+      {
+        "id": "comp_pz_2",
+        "name": "A* Pathfinding Solver",
+        "type": "system",
+        "apiEndpoint": "http://localhost:3009/api/component/comp_pz_2",
+        "description": "Core system handler for a* pathfinding solver.",
+        "price": "Free",
+        "icon": "/assets/features/july/Green Light.png"
+      }
+    ],
+    "isFeatured": false,
+    "price": "$9.99",
+    "editorial": {
+      "kicker": "DEVELOPER TOOLS",
+      "introParagraph": "Puzzle Module has been an essential tool since it launched. Robust spatial mapping and connection solvers for 2D and 3D puzzle environments.",
+      "sections": [
+        {
+          "heading": "New Features",
+          "body": "Better add an extension to your workflow. This component's array of features has raced past expectations. In addition to core systems, you can now utilize high-performance sub-modules. But be warned: integrating this means serious power!"
+        }
+      ],
+      "screenshots": [
+        "/assets/features/july/Green Light.png"
+      ]
+    }
+  },
+  {
+    "id": "c11",
+    "title": "Puzzle Logic",
+    "subtitle": "Headless State Manager",
+    "description": "A pure typescript state machine for managing undo/redo stacks, validating moves, and triggering victory conditions.",
+    "category": "Utilities",
+    "sub_categories": [
+      "State"
+    ],
+    "globalApiEndpoint": "http://localhost:3009/api/engine/c11",
+    "media": {
+      "thumbnail": "/assets/features/july/Green Light.png"
+    },
+    "downloads": 4000,
+    "rating": 4.7,
+    "components": [
+      {
+        "id": "comp_c11_1",
+        "name": "Undo/Redo Stack Manager",
+        "type": "logic",
+        "apiEndpoint": "http://localhost:3009/api/component/comp_c11_1",
+        "description": "Pure headless typescript logic for undo/redo stack manager.",
+        "price": "Free",
+        "icon": "/assets/features/july/Green Light.png"
+      },
+      {
+        "id": "comp_c11_2",
+        "name": "Move Validation Engine",
+        "type": "logic",
+        "apiEndpoint": "http://localhost:3009/api/component/comp_c11_2",
+        "description": "Pure headless typescript logic for move validation engine.",
+        "price": "Free",
+        "icon": "/assets/features/july/Green Light.png"
+      }
+    ],
+    "isFeatured": false,
+    "price": "Free",
+    "editorial": {
+      "kicker": "UTILITIES",
+      "introParagraph": "Puzzle Logic has been an essential tool since it launched. A pure typescript state machine for managing undo/redo stacks, validating moves, and triggering victory conditions.",
+      "sections": [
+        {
+          "heading": "New Features",
+          "body": "Better add an extension to your workflow. This component's array of features has raced past expectations. In addition to core systems, you can now utilize high-performance sub-modules. But be warned: integrating this means serious power!"
+        }
+      ],
+      "screenshots": [
+        "/assets/features/july/Green Light.png"
+      ]
+    }
+  },
+  {
+    "id": "hero",
+    "title": "Combat Engine - Ultimate Edition",
+    "subtitle": "The definitive combat framework for your next title.",
+    "description": "A comprehensive suite for building modern 3D combat games. Includes targeting systems, advanced pathfinding, state-of-the-art physics collision, and modular weapon logic designed to plug seamlessly into your autonomous AI agent workflow.",
+    "category": "Games",
+    "sub_categories": [
+      "Action",
+      "3D",
+      "Multiplayer Ready"
+    ],
+    "globalApiEndpoint": "http://localhost:3009/api/engine/hero",
+    "media": {
+      "thumbnail": "/assets/features/july/Group 126.png"
+    },
+    "downloads": 45200,
+    "rating": 4.9,
+    "components": [
+      {
+        "id": "comp_cbt_1",
+        "name": "Hitbox System 2.0",
+        "type": "system",
+        "apiEndpoint": "http://localhost:3009/api/component/comp_cbt_1",
+        "description": "Core system handler for hitbox system 2.0.",
+        "price": "Free",
+        "icon": "/assets/features/july/Group 126.png"
+      },
+      {
+        "id": "comp_cbt_2",
+        "name": "Weapon Inventory Logic",
+        "type": "logic",
+        "apiEndpoint": "http://localhost:3009/api/component/comp_cbt_2",
+        "description": "Pure headless typescript logic for weapon inventory logic.",
+        "price": "Free",
+        "icon": "/assets/features/july/Group 126.png"
+      },
+      {
+        "id": "comp_cbt_3",
+        "name": "Plasma Rifle Asset",
+        "type": "asset",
+        "apiEndpoint": "http://localhost:3009/api/component/comp_cbt_3",
+        "description": "High-quality 3D model/UI asset for plasma rifle asset.",
+        "price": "Free",
+        "icon": "/assets/features/july/Group 126.png"
+      }
+    ],
+    "isFeatured": true,
+    "price": "$59.99",
+    "editorial": {
+      "kicker": "GAMES",
+      "introParagraph": "Combat Engine - Ultimate Edition has been an essential tool since it launched. A comprehensive suite for building modern 3D combat games. Includes targeting systems, advanced pathfinding, state-of-the-art physics collision, and modular weapon logic designed to plug seamlessly into your autonomous AI agent workflow.",
+      "sections": [
+        {
+          "heading": "New Features",
+          "body": "Better add an extension to your workflow. This component's array of features has raced past expectations. In addition to core systems, you can now utilize high-performance sub-modules. But be warned: integrating this means serious power!"
+        }
+      ],
+      "screenshots": [
+        "/assets/features/july/Group 126.png"
+      ]
+    }
+  },
+  {
+    "id": "c7",
+    "title": "Puzzle Assets",
+    "subtitle": "Blocks and Environments",
+    "description": "Clean, minimalist UI elements and 3D primitives for abstract puzzle games.",
+    "category": "Graphics & Design",
+    "sub_categories": [
+      "2D/3D",
+      "UI"
+    ],
+    "globalApiEndpoint": "http://localhost:3009/api/engine/c7",
+    "media": {
+      "thumbnail": "/assets/features/july/Green Light.png"
+    },
+    "downloads": 7800,
+    "rating": 4.6,
+    "components": [
+      {
+        "id": "comp_c7_1",
+        "name": "Glass Box Primitives",
+        "type": "asset",
+        "apiEndpoint": "http://localhost:3009/api/component/comp_c7_1",
+        "description": "High-quality 3D model/UI asset for glass box primitives.",
+        "price": "Free",
+        "icon": "/assets/features/july/Green Light.png"
+      }
+    ],
+    "isFeatured": false,
+    "price": "$4.99",
+    "editorial": {
+      "kicker": "GRAPHICS & DESIGN",
+      "introParagraph": "Puzzle Assets has been an essential tool since it launched. Clean, minimalist UI elements and 3D primitives for abstract puzzle games.",
+      "sections": [
+        {
+          "heading": "New Features",
+          "body": "Better add an extension to your workflow. This component's array of features has raced past expectations. In addition to core systems, you can now utilize high-performance sub-modules. But be warned: integrating this means serious power!"
+        }
+      ],
+      "screenshots": [
+        "/assets/features/july/Green Light.png"
+      ]
+    }
+  },
+  {
+    "id": "c4",
+    "title": "Match-3 Module",
+    "subtitle": "Classic mobile puzzle logic",
+    "description": "Everything an AI agent needs to spawn, drop, swap, and chain gems on a grid with cascading animations.",
+    "category": "Developer Tools",
+    "sub_categories": [
+      "Puzzle",
+      "Casual"
+    ],
+    "globalApiEndpoint": "http://localhost:3009/api/engine/c4",
+    "media": {
+      "thumbnail": "/assets/features/july/Group 129 (1).png"
+    },
+    "downloads": 21000,
+    "rating": 4.6,
+    "components": [
+      {
+        "id": "comp_m3_1",
+        "name": "Cascade Physics",
+        "type": "logic",
+        "apiEndpoint": "http://localhost:3009/api/component/comp_m3_1",
+        "description": "Pure headless typescript logic for cascade physics.",
+        "price": "Free",
+        "icon": "/assets/features/july/Group 129 (1).png"
+      },
+      {
+        "id": "comp_m3_2",
+        "name": "Gem Sprite Pack",
+        "type": "asset",
+        "apiEndpoint": "http://localhost:3009/api/component/comp_m3_2",
+        "description": "High-quality 3D model/UI asset for gem sprite pack.",
+        "price": "Free",
+        "icon": "/assets/features/july/Group 129 (1).png"
+      },
+      {
+        "id": "comp_m3_3",
+        "name": "Combo Multiplier Logic",
+        "type": "logic",
+        "apiEndpoint": "http://localhost:3009/api/component/comp_m3_3",
+        "description": "Pure headless typescript logic for combo multiplier logic.",
+        "price": "Free",
+        "icon": "/assets/features/july/Group 129 (1).png"
+      }
+    ],
+    "isFeatured": true,
+    "price": "$9.99",
+    "editorial": {
+      "kicker": "DEVELOPER TOOLS",
+      "introParagraph": "Match-3 Module has been an essential tool since it launched. Everything an AI agent needs to spawn, drop, swap, and chain gems on a grid with cascading animations.",
+      "sections": [
+        {
+          "heading": "New Features",
+          "body": "Better add an extension to your workflow. This component's array of features has raced past expectations. In addition to core systems, you can now utilize high-performance sub-modules. But be warned: integrating this means serious power!"
+        }
+      ],
+      "screenshots": [
+        "/assets/features/july/Group 129 (1).png"
+      ]
+    }
+  },
+  {
+    "id": "c8",
+    "title": "Match-3 Assets",
+    "subtitle": "Gems and Effects",
+    "description": "High-resolution glossy gem sprites and particle bursts.",
+    "category": "Graphics & Design",
+    "sub_categories": [
+      "2D",
+      "VFX"
+    ],
+    "globalApiEndpoint": "http://localhost:3009/api/engine/c8",
+    "media": {
+      "thumbnail": "/assets/features/july/Group 129 (1).png"
+    },
+    "downloads": 18000,
+    "rating": 4.8,
+    "components": [
+      {
+        "id": "comp_c8_1",
+        "name": "Gem Burst Particle System",
+        "type": "asset",
+        "apiEndpoint": "http://localhost:3009/api/component/comp_c8_1",
+        "description": "High-quality 3D model/UI asset for gem burst particle system.",
+        "price": "Free",
+        "icon": "/assets/features/july/Group 129 (1).png"
+      }
+    ],
+    "isFeatured": false,
+    "price": "$4.99",
+    "editorial": {
+      "kicker": "GRAPHICS & DESIGN",
+      "introParagraph": "Match-3 Assets has been an essential tool since it launched. High-resolution glossy gem sprites and particle bursts.",
+      "sections": [
+        {
+          "heading": "New Features",
+          "body": "Better add an extension to your workflow. This component's array of features has raced past expectations. In addition to core systems, you can now utilize high-performance sub-modules. But be warned: integrating this means serious power!"
+        }
+      ],
+      "screenshots": [
+        "/assets/features/july/Group 129 (1).png"
+      ]
+    }
+  },
+  {
+    "id": "c10",
+    "title": "Racing Logic",
+    "subtitle": "AI Drivers and Timers",
+    "description": "Headless AI driver wayfinding logic and lap timing systems.",
+    "category": "Utilities",
+    "sub_categories": [
+      "Systems",
+      "AI"
+    ],
+    "globalApiEndpoint": "http://localhost:3009/api/engine/c10",
+    "media": {
+      "thumbnail": "/assets/features/july/Group 129 (1).png"
+    },
+    "downloads": 3000,
+    "rating": 4.6,
+    "components": [
+      {
+        "id": "comp_c10_1",
+        "name": "Spline Follower AI",
+        "type": "logic",
+        "apiEndpoint": "http://localhost:3009/api/component/comp_c10_1",
+        "description": "Pure headless typescript logic for spline follower ai.",
+        "price": "Free",
+        "icon": "/assets/features/july/Group 129 (1).png"
+      },
+      {
+        "id": "comp_c10_2",
+        "name": "Lap Timing System",
+        "type": "system",
+        "apiEndpoint": "http://localhost:3009/api/component/comp_c10_2",
+        "description": "Core system handler for lap timing system.",
+        "price": "Free",
+        "icon": "/assets/features/july/Group 129 (1).png"
+      }
+    ],
+    "isFeatured": false,
+    "price": "Free",
+    "editorial": {
+      "kicker": "UTILITIES",
+      "introParagraph": "Racing Logic has been an essential tool since it launched. Headless AI driver wayfinding logic and lap timing systems.",
+      "sections": [
+        {
+          "heading": "New Features",
+          "body": "Better add an extension to your workflow. This component's array of features has raced past expectations. In addition to core systems, you can now utilize high-performance sub-modules. But be warned: integrating this means serious power!"
+        }
+      ],
+      "screenshots": [
+        "/assets/features/july/Group 129 (1).png"
+      ]
+    }
+  },
+  {
+    "id": "c9",
+    "title": "Combat Logic",
+    "subtitle": "Pure math and state machines",
+    "description": "Headless combat logic. No visuals, just pure typescript systems for calculating damage, managing states, and coordinating AI squads.",
+    "category": "Utilities",
+    "sub_categories": [
+      "Systems",
+      "AI"
+    ],
+    "globalApiEndpoint": "http://localhost:3009/api/engine/c9",
+    "media": {
+      "thumbnail": "/assets/features/july/Group 126.png"
+    },
+    "downloads": 5000,
+    "rating": 4.9,
+    "components": [
+      {
+        "id": "comp_c9_1",
+        "name": "Squad Flanking AI",
+        "type": "logic",
+        "apiEndpoint": "http://localhost:3009/api/component/comp_c9_1",
+        "description": "Pure headless typescript logic for squad flanking ai.",
+        "price": "Free",
+        "icon": "/assets/features/july/Group 126.png"
+      },
+      {
+        "id": "comp_c9_2",
+        "name": "Damage Calculation Engine",
+        "type": "logic",
+        "apiEndpoint": "http://localhost:3009/api/component/comp_c9_2",
+        "description": "Pure headless typescript logic for damage calculation engine.",
+        "price": "Free",
+        "icon": "/assets/features/july/Group 126.png"
+      }
+    ],
+    "isFeatured": false,
+    "price": "Free",
+    "editorial": {
+      "kicker": "UTILITIES",
+      "introParagraph": "Combat Logic has been an essential tool since it launched. Headless combat logic. No visuals, just pure typescript systems for calculating damage, managing states, and coordinating AI squads.",
+      "sections": [
+        {
+          "heading": "New Features",
+          "body": "Better add an extension to your workflow. This component's array of features has raced past expectations. In addition to core systems, you can now utilize high-performance sub-modules. But be warned: integrating this means serious power!"
+        }
+      ],
+      "screenshots": [
+        "/assets/features/july/Group 126.png"
+      ]
+    }
+  },
+  {
+    "id": "c5",
+    "title": "Combat Assets",
+    "subtitle": "Models and Textures",
+    "description": "A curated library of modular sci-fi armor, weapons, and particle effects.",
+    "category": "Graphics & Design",
+    "sub_categories": [
+      "3D Models",
+      "VFX"
+    ],
+    "globalApiEndpoint": "http://localhost:3009/api/engine/c5",
+    "media": {
+      "thumbnail": "/assets/features/july/green_light_01.png"
+    },
+    "downloads": 32000,
+    "rating": 4.3,
+    "components": [
+      {
+        "id": "comp_c5_1",
+        "name": "Mech Chassis Asset",
+        "type": "asset",
+        "apiEndpoint": "http://localhost:3009/api/component/comp_c5_1",
+        "description": "High-quality 3D model/UI asset for mech chassis asset.",
+        "price": "Free",
+        "icon": "/assets/features/july/Group 126.png"
+      },
+      {
+        "id": "comp_c5_2",
+        "name": "Laser Beam VFX",
+        "type": "asset",
+        "apiEndpoint": "http://localhost:3009/api/component/comp_c5_2",
+        "description": "High-quality 3D model/UI asset for laser beam vfx.",
+        "price": "Free",
+        "icon": "/assets/features/july/Group 126.png"
+      }
+    ],
+    "isFeatured": false,
+    "price": "$4.99",
+    "editorial": {
+      "kicker": "GRAPHICS & DESIGN",
+      "introParagraph": "Combat Assets has been an essential tool since it launched. A curated library of modular sci-fi armor, weapons, and particle effects.",
+      "sections": [
+        {
+          "heading": "New Features",
+          "body": "Better add an extension to your workflow. This component's array of features has raced past expectations. In addition to core systems, you can now utilize high-performance sub-modules. But be warned: integrating this means serious power!"
+        }
+      ],
+      "screenshots": [
+        "/assets/features/july/Group 126.png"
+      ]
+    }
+  },
+  {
+    "id": "c12",
+    "title": "Match-3 Logic",
+    "subtitle": "Headless Grid Engine",
+    "description": "The mathematical core of a match-3 game. Handles finding matches, dropping pieces, and calculating chains without any rendering overhead.",
+    "category": "Utilities",
+    "sub_categories": [
+      "Algorithms"
+    ],
+    "globalApiEndpoint": "http://localhost:3009/api/engine/c12",
+    "media": {
+      "thumbnail": "/assets/features/july/Group 129 (1).png"
+    },
+    "downloads": 6000,
+    "rating": 4.9,
+    "components": [
+      {
+        "id": "comp_c12_1",
+        "name": "Grid Gravity Resolver",
+        "type": "logic",
+        "apiEndpoint": "http://localhost:3009/api/component/comp_c12_1",
+        "description": "Pure headless typescript logic for grid gravity resolver.",
+        "price": "Free",
+        "icon": "/assets/features/july/Group 129 (1).png"
+      },
+      {
+        "id": "comp_c12_2",
+        "name": "Pattern Match Finder",
+        "type": "logic",
+        "apiEndpoint": "http://localhost:3009/api/component/comp_c12_2",
+        "description": "Pure headless typescript logic for pattern match finder.",
+        "price": "Free",
+        "icon": "/assets/features/july/Group 129 (1).png"
+      }
+    ],
+    "isFeatured": false,
+    "price": "Free",
+    "editorial": {
+      "kicker": "UTILITIES",
+      "introParagraph": "Match-3 Logic has been an essential tool since it launched. The mathematical core of a match-3 game. Handles finding matches, dropping pieces, and calculating chains without any rendering overhead.",
+      "sections": [
+        {
+          "heading": "New Features",
+          "body": "Better add an extension to your workflow. This component's array of features has raced past expectations. In addition to core systems, you can now utilize high-performance sub-modules. But be warned: integrating this means serious power!"
+        }
+      ],
+      "screenshots": [
+        "/assets/features/july/Group 129 (1).png"
+      ]
+    }
+  }
+]

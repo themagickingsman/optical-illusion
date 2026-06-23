@@ -1,0 +1,6 @@
+{
+  "name": "optical-illusions-website",
+  "framework": "nextjs",
+  "buildCommand": "NEXT_PUBLIC_BUILD=true next build",
+  "outputDirectory": "out"
+}

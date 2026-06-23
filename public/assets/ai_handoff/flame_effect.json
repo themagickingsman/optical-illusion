@@ -1,0 +1,27 @@
+{
+  "asset_name": "Cosmic_Flame_FX_01",
+  "version": "1.0.0",
+  "source_engine": "WebGL_Custom",
+  "target_engines": ["Unreal Engine 5", "Unity 2022+"],
+  "colors": {
+    "idle": "#0D33FF",
+    "active": "#00FFFF"
+  },
+  "physics_curves": {
+    "throttle_scale": 0.8,
+    "noise_frequency": 15.0,
+    "core_smoothness": 0.4,
+    "edge_smoothness": 1.0,
+    "y_fade": -0.5
+  },
+  "shader_logic": {
+    "blending": "Additive",
+    "depthWrite": false,
+    "alpha_equation": "(edge + core) * yFade"
+  },
+  "metadata": {
+    "author": "Neyo Onalenna",
+    "studio": "Optical Illusions",
+    "description": "AI-compiled engine exhaust flame parameter block."
+  }
+}

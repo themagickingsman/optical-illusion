@@ -341,7 +341,7 @@ export function SplashCursor({
 
     const baseVertexShader = compileShader(
       gl.VERTEX_SHADER,
-      \`
+      `
         precision highp float;
         attribute vec2 aPosition;
         varying vec2 vUv;
@@ -359,12 +359,12 @@ export function SplashCursor({
             vB = vUv - vec2(0.0, texelSize.y);
             gl_Position = vec4(aPosition, 0.0, 1.0);
         }
-      \`
+      `
     );
 
     const copyShader = compileShader(
       gl.FRAGMENT_SHADER,
-      \`
+      `
         precision mediump float;
         precision mediump sampler2D;
         varying highp vec2 vUv;
@@ -373,12 +373,12 @@ export function SplashCursor({
         void main () {
             gl_FragColor = texture2D(uTexture, vUv);
         }
-      \`
+      `
     );
 
     const clearShader = compileShader(
       gl.FRAGMENT_SHADER,
-      \`
+      `
         precision mediump float;
         precision mediump sampler2D;
         varying highp vec2 vUv;
@@ -388,10 +388,10 @@ export function SplashCursor({
         void main () {
             gl_FragColor = value * texture2D(uTexture, vUv);
         }
-      \`
+      `
     );
 
-    const displayShaderSource = \`
+    const displayShaderSource = `
       precision highp float;
       precision highp sampler2D;
       varying vec2 vUv;
@@ -438,11 +438,11 @@ export function SplashCursor({
 
           gl_FragColor = vec4(c, a);
       }
-    \`;
+    `;
 
     const splatShader = compileShader(
       gl.FRAGMENT_SHADER,
-      \`
+      `
         precision highp float;
         precision highp sampler2D;
         varying vec2 vUv;
@@ -459,12 +459,12 @@ export function SplashCursor({
             vec3 base = texture2D(uTarget, vUv).xyz;
             gl_FragColor = vec4(base + splat, 1.0);
         }
-      \`
+      `
     );
 
     const advectionShader = compileShader(
       gl.FRAGMENT_SHADER,
-      \`
+      `
         precision highp float;
         precision highp sampler2D;
         varying vec2 vUv;
@@ -505,13 +505,13 @@ export function SplashCursor({
             
             gl_FragColor = result / decay;
         }
-      \`,
+      `,
       ext.supportLinearFiltering ? null : ["MANUAL_FILTERING"]
     );
 
     const divergenceShader = compileShader(
       gl.FRAGMENT_SHADER,
-      \`
+      `
         precision mediump float;
         precision mediump sampler2D;
         varying highp vec2 vUv;
@@ -533,12 +533,12 @@ export function SplashCursor({
             float div = 0.5 * (R - L + T - B);
             gl_FragColor = vec4(div, 0.0, 0.0, 1.0);
         }
-      \`
+      `
     );
 
     const curlShader = compileShader(
       gl.FRAGMENT_SHADER,
-      \`
+      `
         precision mediump float;
         precision mediump sampler2D;
         varying highp vec2 vUv;
@@ -556,12 +556,12 @@ export function SplashCursor({
             float vorticity = R - L - T + B;
             gl_FragColor = vec4(0.5 * vorticity, 0.0, 0.0, 1.0);
         }
-      \`
+      `
     );
 
     const vorticityShader = compileShader(
       gl.FRAGMENT_SHADER,
-      \`
+      `
         precision highp float;
         precision highp sampler2D;
         varying vec2 vUv;
@@ -591,12 +591,12 @@ export function SplashCursor({
             velocity = min(max(velocity, -1000.0), 1000.0);
             gl_FragColor = vec4(velocity, 0.0, 1.0);
         }
-      \`
+      `
     );
 
     const pressureShader = compileShader(
       gl.FRAGMENT_SHADER,
-      \`
+      `
         precision mediump float;
         precision mediump sampler2D;
         varying highp vec2 vUv;
@@ -617,12 +617,12 @@ export function SplashCursor({
             float pressure = (L + R + B + T - divergence) * 0.25;
             gl_FragColor = vec4(pressure, 0.0, 0.0, 1.0);
         }
-      \`
+      `
     );
 
     const gradientSubtractShader = compileShader(
       gl.FRAGMENT_SHADER,
-      \`
+      `
         precision mediump float;
         precision mediump sampler2D;
         varying highp vec2 vUv;
@@ -642,7 +642,7 @@ export function SplashCursor({
             velocity.xy -= vec2(R - L, T - B);
             gl_FragColor = vec4(velocity, 0.0, 1.0);
         }
-      \`
+      `
     );
 
     const blit = (() => {

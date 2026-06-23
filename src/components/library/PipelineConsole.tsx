@@ -98,7 +98,8 @@ export default function PipelineConsole() {
           onClick={handleDeploy}
           disabled={isDeploying}
           style={{
-            background: isDeploying ? 'rgba(3, 255, 192, 0.2)' : 'rgba(3, 255, 192, 0.1)',
+            position: 'relative',
+            background: isDeploying ? 'rgba(3, 255, 192, 0.15)' : 'rgba(3, 255, 192, 0.1)',
             border: '1px solid #03FFC0',
             color: '#03FFC0',
             padding: '16px 40px',
@@ -109,24 +110,81 @@ export default function PipelineConsole() {
             transition: 'all 0.3s ease',
             textTransform: 'uppercase',
             letterSpacing: '2px',
-            boxShadow: isDeploying ? 'none' : '0 0 20px rgba(3, 255, 192, 0.2)',
+            boxShadow: isDeploying ? '0 0 30px rgba(3, 255, 192, 0.4)' : '0 0 20px rgba(3, 255, 192, 0.2)',
+            overflow: 'hidden',
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '12px'
           }}
           onMouseOver={(e) => !isDeploying && (e.currentTarget.style.background = 'rgba(3, 255, 192, 0.2)')}
           onMouseOut={(e) => !isDeploying && (e.currentTarget.style.background = 'rgba(3, 255, 192, 0.1)')}
         >
-          {isDeploying ? 'Executing Pipeline...' : 'Go Live Now'}
+          {isDeploying && (
+            <svg 
+              className="animate-spin" 
+              style={{ width: '20px', height: '20px', color: '#03FFC0' }} 
+              xmlns="http://www.w3.org/2000/svg" 
+              fill="none" 
+              viewBox="0 0 24 24"
+            >
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+          )}
+          {isDeploying ? 'EXECUTING PIPELINE...' : 'GO LIVE NOW'}
         </button>
         
+        {isDeploying && (
+          <div style={{ marginTop: '16px', color: '#03FFC0', fontSize: '14px', fontFamily: 'monospace', animation: 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite' }}>
+            $ Pushing to GitHub & Deploying to Vercel. Please wait...
+          </div>
+        )}
+
         {deployResult && (
-          <div style={{ 
-            marginTop: '16px', 
-            padding: '12px', 
-            borderRadius: '8px', 
+          <div className="animate-in fade-in zoom-in duration-300" style={{ 
+            marginTop: '24px', 
+            padding: '24px', 
+            borderRadius: '16px', 
             background: deployResult.success ? 'rgba(3, 255, 192, 0.1)' : 'rgba(255, 51, 102, 0.1)',
             color: deployResult.success ? '#03FFC0' : '#FF3366',
-            border: `1px solid ${deployResult.success ? '#03FFC0' : '#FF3366'}`
+            border: `2px solid ${deployResult.success ? '#03FFC0' : '#FF3366'}`,
+            boxShadow: `0 0 30px ${deployResult.success ? 'rgba(3, 255, 192, 0.2)' : 'rgba(255, 51, 102, 0.2)'}`
           }}>
-            {deployResult.message}
+            {deployResult.success ? (
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
+                <div style={{ fontSize: '24px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  DEPLOYMENT SUCCESSFUL!
+                </div>
+                <p style={{ margin: 0, color: 'white', fontSize: '16px' }}>Your site is now live on the internet.</p>
+                <a 
+                  href={`https://${config.hosting.projectName}.vercel.app`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    background: '#03FFC0',
+                    color: 'black',
+                    padding: '12px 30px',
+                    borderRadius: '8px',
+                    fontWeight: 'bold',
+                    textDecoration: 'none',
+                    display: 'inline-block',
+                    marginTop: '8px',
+                    boxShadow: '0 4px 15px rgba(3, 255, 192, 0.4)'
+                  }}
+                >
+                  OPEN LIVE WEBSITE
+                </a>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
+                <div style={{ fontSize: '20px', fontWeight: 'bold' }}>❌ PIPELINE FAILED</div>
+                <div style={{ fontFamily: 'monospace', background: 'rgba(0,0,0,0.5)', padding: '12px', borderRadius: '8px', width: '100%', textAlign: 'left', overflowX: 'auto' }}>
+                  {deployResult.message}
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>

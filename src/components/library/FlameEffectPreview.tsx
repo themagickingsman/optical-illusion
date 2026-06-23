@@ -6,7 +6,7 @@ import * as THREE from 'three';
 export default function FlameEffectPreview() {
   const containerRef = useRef<HTMLDivElement>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
-  const requestRef = useRef<number>();
+  const requestRef = useRef<number>(0);
   
   // UI State for instructions
   const [hasInteracted, setHasInteracted] = useState(false);

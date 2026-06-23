@@ -4,8 +4,9 @@ import path from 'path';
 
 const dataFilePath = path.join(process.cwd(), 'src', 'data', 'engines.json');
 
-export async function PUT(request: Request, { params }: { params: { id: string } }) {
+export async function PUT(request: Request, context: { params: Promise<{ id: string }> }) {
   try {
+    const params = await context.params;
     const updatedData = await request.json();
     const fileContents = await fs.readFile(dataFilePath, 'utf8');
     let engines = JSON.parse(fileContents);
@@ -25,8 +26,9 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   }
 }
 
-export async function DELETE(request: Request, { params }: { params: { id: string } }) {
+export async function DELETE(request: Request, context: { params: Promise<{ id: string }> }) {
   try {
+    const params = await context.params;
     const fileContents = await fs.readFile(dataFilePath, 'utf8');
     let engines = JSON.parse(fileContents);
     

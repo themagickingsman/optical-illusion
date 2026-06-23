@@ -2,8 +2,8 @@ import { NextResponse } from 'next/server';
 import { exec } from 'child_process';
 import path from 'path';
 
-export async function POST() {
-  return new Promise((resolve) => {
+export async function POST(): Promise<Response> {
+  return new Promise<Response>((resolve) => {
     // Only allow this in local development
     if (process.env.NODE_ENV === 'production') {
       return resolve(NextResponse.json({ success: false, error: 'Cannot run deploy script from production.' }, { status: 403 }));

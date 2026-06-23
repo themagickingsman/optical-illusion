@@ -255,9 +255,20 @@ export function SplashCursor({
         this.activeProgram = null;
         this.uniforms = {};
       }
+      
+      hashCode(s: string) {
+        if (s.length === 0) return 0;
+        let hash = 0;
+        for (let i = 0; i < s.length; i++) {
+          hash = (hash << 5) - hash + s.charCodeAt(i);
+          hash |= 0;
+        }
+        return hash;
+      }
+
       setKeywords(keywords: any) {
         let hash = 0;
-        for (let i = 0; i < keywords.length; i++) hash += hashCode(keywords[i]);
+        for (let i = 0; i < keywords.length; i++) hash += this.hashCode(keywords[i]);
         let program = this.programs[hash];
         if (program == null) {
           let fragmentShader = compileShader(gl.FRAGMENT_SHADER, this.fragmentShaderSource, keywords);

@@ -6,12 +6,12 @@
   },
   "repository": {
     "provider": "github",
-    "owner": "uxmagicman",
-    "repoName": "optical-illusions"
+    "owner": "themagickingsman",
+    "repoName": "optical-illusion"
   },
   "hosting": {
     "provider": "vercel",
-    "projectName": "optical-illusions-website",
+    "projectName": "optical-illusion",
     "framework": "nextjs"
   },
   "buildPipeline": {

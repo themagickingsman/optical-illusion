@@ -35,6 +35,12 @@
       "name": "Visitor",
       "email": null,
       "lastActive": "2026-06-22T18:53:58.258Z"
+    },
+    {
+      "id": "session_1782212271960_777",
+      "name": "Visitor",
+      "email": null,
+      "lastActive": "2026-06-23T10:58:51.742Z"
     }
   ],
   "messages": [
@@ -142,6 +148,20 @@
       "sender": "admin",
       "text": "Thank you for reaching out! I'll review your message and get back to you shortly.",
       "timestamp": "2026-06-22T18:53:58.247Z"
+    },
+    {
+      "id": "1782212330209",
+      "profileId": "session_1782212271960_777",
+      "sender": "user",
+      "text": "i need you",
+      "timestamp": "2026-06-23T10:58:50.209Z"
+    },
+    {
+      "id": "1782212331729",
+      "profileId": "session_1782212271960_777",
+      "sender": "admin",
+      "text": "Thank you for reaching out! I'll review your message and get back to you shortly.",
+      "timestamp": "2026-06-23T10:58:51.728Z"
     }
   ],
   "ndaLinks": [

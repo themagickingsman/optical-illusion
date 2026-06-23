@@ -20,7 +20,7 @@ export default function LoginPill() {
   }, [formRef]);
 
   // Tuned Spring Physics for buttery smoothness
-  const springConfig = { type: 'spring', stiffness: 500, damping: 35, mass: 1 };
+  const springConfig = { type: 'spring' as const, stiffness: 500, damping: 35, mass: 1 };
 
   return (
     <div style={{ height: '56px', marginBottom: '25px', display: 'flex', justifyContent: 'center', transform: 'translateY(-80px)' }}>

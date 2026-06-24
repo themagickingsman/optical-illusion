@@ -12,7 +12,7 @@ export default function HireMeView() {
   const [ndaStatus, setNdaStatus] = useState<"idle" | "submitting" | "success">("idle");
 
   // Chat State
-  const { messages: dbMessages, sendMessage, isPolling } = useChatLogic(sessionId);
+  const { messages: dbMessages, sendMessage } = useChatLogic(sessionId);
   const [inputText, setInputText] = useState("");
   const [isThinking, setIsThinking] = useState(false);
   const [tutorialStep, setTutorialStep] = useState(0);

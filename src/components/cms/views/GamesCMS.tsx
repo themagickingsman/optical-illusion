@@ -6,6 +6,7 @@ import { useGamepadNavigation } from '@/hooks/useGamepadNavigation';
 import { useQueryState } from '@/hooks/useQueryState';
 import LiveScreensaver from '@/components/library/LiveScreensaver';
 import CosmicFlameAsset from '@/components/library/CosmicFlameAsset';
+import EngineFlameComponent from '@/components/library/EngineFlameComponent';
 
 export default function GamesCMS() {
   const { engines, isLoading } = useLibraryLogic();
@@ -160,6 +161,7 @@ export default function GamesCMS() {
           style={{ position: 'fixed', inset: 0, zIndex: 100, cursor: 'pointer', background: 'transparent' }}
           onClick={() => setShowCosmicFlame(false)}
         >
+          <EngineFlameComponent />
           <CosmicFlameAsset />
         </div>
       )}

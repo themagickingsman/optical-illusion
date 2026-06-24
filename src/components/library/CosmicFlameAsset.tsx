@@ -1,9 +1,6 @@
 "use client";
 
 import React, { useRef, useEffect, useState } from 'react';
-import dynamic from 'next/dynamic';
-
-const SplashCursor = dynamic(() => import('./SplashCursor').then(m => m.SplashCursor), { ssr: false });
 
 export default function CosmicFlameAsset() {
   const splashEmitRef = useRef<any[]>([]);
@@ -163,18 +160,10 @@ export default function CosmicFlameAsset() {
              if (m[i].life <= 0) m.splice(i, 1);
          }
 
-         window.dispatchEvent(new CustomEvent('SYNC_NEXUS_CURSOR', {
-            detail: {
-               ships: [], // Disconnect giant metaball from the ship
-               missiles: m.map(proj => ({ id: proj.id, x: rect.left + proj.x, y: rect.top + proj.y }))
-            }
-         }));
-
-         const emitMult = config.emissionForceMult ?? 1.0;
-         
          // Autopilot also uses currentThrusting logic for engine emission
+         const emits: any[] = [];
          if (currentThrusting) {
-             const emits: any[] = [];
+             const emitMult = config.emissionForceMult ?? 1.0;
              const inv = config.invertForce ?? true;
              
              // The force pushes the fluid trailing behind
@@ -190,17 +179,21 @@ export default function CosmicFlameAsset() {
              
              emits.push({
                 id: "sandbox_ship",
-                x: tailX,
-                y: tailY,
+                x: globalTailX,
+                y: globalTailY,
                 dx: forceX,
                 dy: forceY,
-                color: engineRgb
+                color: engineRgb,
+                splatRadius: config.splatRadius
              });
-             
-             splashEmitRef.current = emits;
-         } else {
-             splashEmitRef.current = [];
          }
+
+         window.dispatchEvent(new CustomEvent('SYNC_NEXUS_CURSOR', {
+            detail: {
+               ships: emits, 
+               missiles: m.map(proj => ({ id: proj.id, x: rect.left + proj.x, y: rect.top + proj.y }))
+            }
+         }));
       }
 
       animationFrame = requestAnimationFrame(loop);
@@ -229,23 +222,6 @@ export default function CosmicFlameAsset() {
           background: 'transparent' 
         }}
       >
-          
-          <div style={{ position: "absolute", inset: 0, zIndex: 1 }}>
-             <SplashCursor 
-                externalEmitsRef={splashEmitRef}
-                cameraDeltaRef={{ current: { x: 0, y: 0 } }}
-                SPLAT_RADIUS={config.splatRadius}
-                SPLAT_FORCE={config.splatForce}
-                DENSITY_DISSIPATION={config.densityDissipation}
-                VELOCITY_DISSIPATION={config.velocityDissipation}
-                CURL={config.curl}
-                DYE_RESOLUTION={config.dyeResolution}
-                SIM_RESOLUTION={config.simResolution}
-                PRESSURE={config.pressure}
-                PRESSURE_ITERATIONS={config.pressureIterations}
-             />
-          </div>
-
           <div 
             ref={shipRef}
             style={{

@@ -86,7 +86,7 @@ export default function WebsiteBuildCMS() {
   }
 
   // Find the selected engine object if one is selected
-  const selectedEngine = selectedEngineId ? engines.find(e => e.id === selectedEngineId) : null;
+  const selectedEngine = selectedEngineId ? engines.find((e: any) => e.id === selectedEngineId) : null;
 
   return (
     <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}>

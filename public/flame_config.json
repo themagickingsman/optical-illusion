@@ -1,0 +1,11 @@
+{
+  "splatRadius": 0.04,
+  "splatForce": 9450,
+  "densityDissipation": 3.5,
+  "velocityDissipation": 0.9,
+  "curl": 3,
+  "dyeResolution": 1440,
+  "simResolution": 128,
+  "pressure": 0.1,
+  "pressureIterations": 20
+}

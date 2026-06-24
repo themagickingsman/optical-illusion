@@ -24,7 +24,7 @@ function DashboardContent() {
   // we completely bypass the developer CMS and ONLY render the WebsiteBuildCMS tab.
   if (process.env.NEXT_PUBLIC_BUILD === 'true') {
     return (
-      <main style={{ width: "100%", height: "100%", overflow: "hidden", position: "relative", background: "#ff6600" }}>
+      <main id="website-canvas" style={{ width: "100%", height: "100%", overflow: "hidden", position: "relative" }}>
         <GlobalBackground />
         <WebsiteBuildCMS />
       </main>

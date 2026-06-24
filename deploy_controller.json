@@ -11,7 +11,7 @@
   },
   "hosting": {
     "provider": "vercel",
-    "projectName": "optical-illusion",
+    "projectName": "optical-illusion-eight",
     "framework": "nextjs"
   },
   "buildPipeline": {

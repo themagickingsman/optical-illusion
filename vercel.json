@@ -1,5 +1,5 @@
 {
-  "name": "optical-illusion",
+  "name": "optical-illusion-eight",
   "framework": "nextjs",
   "buildCommand": "NEXT_TELEMETRY_DISABLED=1 NEXT_PUBLIC_BUILD=true next build",
   "outputDirectory": ".next"

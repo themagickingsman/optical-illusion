@@ -17,6 +17,29 @@ export default function GamesCMS() {
   const [showCosmicFlame, setShowCosmicFlame] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
 
+  // Global ESC to exit any preview
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setShowScreensaver(false);
+        setShowCosmicFlame(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  // Broadcast preview state to global components (like GlobalBackground) to unmount heavy assets
+  // We only unmount the metaballs for the full-screen opaque screensaver.
+  // The Cosmic Flame has a transparent background and NEEDS the metaballs behind it.
+  React.useEffect(() => {
+    const isPreviewing = showScreensaver;
+    window.dispatchEvent(new CustomEvent('preview-state-change', { detail: { isPreviewing } }));
+    return () => {
+      window.dispatchEvent(new CustomEvent('preview-state-change', { detail: { isPreviewing: false } }));
+    };
+  }, [showScreensaver]);
+
   React.useEffect(() => {
     if (!showScreensaver && !showCosmicFlame) {
       setHasInteracted(false);
@@ -148,11 +171,22 @@ export default function GamesCMS() {
 
       {/* Live Screensaver Background */}
       {showScreensaver && (
-        <div 
-          style={{ position: 'fixed', inset: 0, zIndex: -1, cursor: 'pointer' }}
-          onClick={() => setShowScreensaver(false)}
-        >
+        <div style={{ position: 'fixed', inset: 0, zIndex: 50 }}>
           <LiveScreensaver />
+          <button
+            onClick={() => setShowScreensaver(false)}
+            style={{
+              position: 'absolute', top: '40px', right: '40px', zIndex: 100,
+              background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.2)',
+              color: 'white', padding: '12px 24px', borderRadius: '8px', cursor: 'pointer',
+              fontFamily: 'var(--font-rubik)', fontSize: '12px', fontWeight: 'bold', letterSpacing: '0.1em',
+              backdropFilter: 'blur(8px)', transition: 'background 0.2s ease'
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
+            onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(0,0,0,0.5)'}
+          >
+            EXIT PREVIEW (ESC)
+          </button>
         </div>
       )}
 
@@ -168,8 +202,8 @@ export default function GamesCMS() {
         document.getElementById('website-canvas') || document.body
       )}
 
-      {/* Controls Indicator for Review Mode */}
-      {(showScreensaver || showCosmicFlame) && (
+      {/* Controls Indicator for Review Mode (Only for Cosmic Flame) */}
+      {showCosmicFlame && (
         <div style={{ 
           position: 'fixed', 
           top: '50%',

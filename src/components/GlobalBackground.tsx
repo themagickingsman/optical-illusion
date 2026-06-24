@@ -11,9 +11,17 @@ function GlobalBackgroundInner() {
   const currentTab = searchParams.get('tab');
   const isBuildTab = currentTab === 'build' || currentTab === null;
 
+  const [isPreviewing, setIsPreviewing] = React.useState(false);
+
+  React.useEffect(() => {
+    const handlePreviewChange = (e: any) => setIsPreviewing(e.detail?.isPreviewing || false);
+    window.addEventListener('preview-state-change', handlePreviewChange);
+    return () => window.removeEventListener('preview-state-change', handlePreviewChange);
+  }, []);
+
   // Only render the heavy WebGL metaballs on the exact home page,
   // AND only when there is no engine selected in the SPA view.
-  if (pathname !== '/' || hasEngineSelected) {
+  if (pathname !== '/' || hasEngineSelected || isPreviewing) {
     return null;
   }
 

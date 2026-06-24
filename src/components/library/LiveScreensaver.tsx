@@ -15,7 +15,7 @@ export default function LiveScreensaver() {
       height: '100%',
       overflow: 'hidden',
       zIndex: 0,
-      pointerEvents: 'none', // Allow clicks to pass through to the UI on top
+      pointerEvents: 'auto', // Allow clicks to pass through to the UI on top
     }}>
       <iframe
         src="http://localhost:3006"

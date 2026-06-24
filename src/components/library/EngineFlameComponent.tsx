@@ -24,9 +24,9 @@ export default function EngineFlameComponent() {
       const customEvent = e as CustomEvent;
       const detail = customEvent.detail;
       
-      // We read the 'ships' array to extract the engine emission coordinates
-      if (detail && detail.ships && detail.ships.length > 0) {
-        externalEmitsRef.current = detail.ships.map((s: any) => ({
+      // We read the 'engineEmits' array to extract the engine emission coordinates
+      if (detail && detail.engineEmits && detail.engineEmits.length > 0) {
+        externalEmitsRef.current = detail.engineEmits.map((s: any) => ({
           id: s.id || 'ship-engine',
           x: s.x,
           y: s.y,

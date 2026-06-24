@@ -190,7 +190,8 @@ export default function CosmicFlameAsset() {
 
          window.dispatchEvent(new CustomEvent('SYNC_NEXUS_CURSOR', {
             detail: {
-               ships: emits, 
+               ships: [], // Disconnect giant metaball from the ship
+               engineEmits: emits, 
                missiles: m.map(proj => ({ id: proj.id, x: rect.left + proj.x, y: rect.top + proj.y }))
             }
          }));

@@ -7,6 +7,10 @@ import React from 'react';
  * running on localhost:3006 into a full-screen, borderless background layer.
  */
 export default function LiveScreensaver() {
+  // Use the live deployed URL in production to prevent mixed-content blocking.
+  const isProd = process.env.NODE_ENV === 'production';
+  const iframeSrc = isProd ? "https://cosmic-racers-website.vercel.app/" : "http://localhost:3006";
+
   return (
     <div style={{
       position: 'absolute',
@@ -18,7 +22,7 @@ export default function LiveScreensaver() {
       pointerEvents: 'auto', // Allow clicks to pass through to the UI on top
     }}>
       <iframe
-        src="http://localhost:3006"
+        src={iframeSrc}
         style={{
           width: '100%',
           height: '100%',

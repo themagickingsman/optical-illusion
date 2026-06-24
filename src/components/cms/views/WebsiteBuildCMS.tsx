@@ -74,10 +74,9 @@ export default function WebsiteBuildCMS() {
   const [selectedEngineId, setSelectedEngineId] = useQueryState<string | null>('engine', null);
 
   const handleNavClick = (tab: 'home' | 'games' | 'library' | 'process' | 'hire') => {
-    // We update the local query state explicitly, and clear the engine to drop out of project view
-    setPreviewMode(tab);
-    // Note: To completely drop the engine we could do router.push(`?tab=build&preview=${tab}`)
-    // but we can just use router.push to ensure everything is atomic.
+    // To cleanly navigate and simultaneously clear any open project engines, 
+    // we use a single atomic router.push. Calling setPreviewMode simultaneously 
+    // causes Next.js router race conditions.
     router.push(`?tab=build&preview=${tab}`);
   };
 

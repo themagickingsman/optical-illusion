@@ -91,7 +91,9 @@ export default function CosmicFlameAsset() {
          // Physics constants
          const thrustPower = 1200 * dt;
          const turnSpeed = 4 * dt;
-         const friction = 0.98;
+         // Make friction frame-rate independent (tuned for 120fps)
+         const baseFriction = 0.98;
+         const friction = Math.pow(baseFriction, dt * 120);
 
          if (p.rotatingLeft) p.angle -= turnSpeed;
          if (p.rotatingRight) p.angle += turnSpeed;

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useLibraryLogic } from '@/hooks/useLibraryLogic';
 import { useGamepadNavigation } from '@/hooks/useGamepadNavigation';
 import { useQueryState } from '@/hooks/useQueryState';
@@ -156,14 +157,15 @@ export default function GamesCMS() {
       )}
 
       {/* Native Cosmic Flame Asset */}
-      {showCosmicFlame && (
+      {showCosmicFlame && typeof document !== 'undefined' && createPortal(
         <div 
           style={{ position: 'fixed', inset: 0, zIndex: 100, cursor: 'pointer', background: 'transparent' }}
           onClick={() => setShowCosmicFlame(false)}
         >
           <EngineFlameComponent />
           <CosmicFlameAsset />
-        </div>
+        </div>,
+        document.getElementById('website-canvas') || document.body
       )}
 
       {/* Controls Indicator for Review Mode */}

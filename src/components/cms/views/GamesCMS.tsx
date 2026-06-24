@@ -13,6 +13,22 @@ export default function GamesCMS() {
   const [selectedEngineId, setSelectedEngineId] = useQueryState<string | null>('engine', null);
   const [showScreensaver, setShowScreensaver] = useState(false);
   const [showCosmicFlame, setShowCosmicFlame] = useState(false);
+  const [hasInteracted, setHasInteracted] = useState(false);
+
+  React.useEffect(() => {
+    if (!showScreensaver && !showCosmicFlame) {
+      setHasInteracted(false);
+      return;
+    }
+    const onKeyDown = (e: KeyboardEvent) => {
+      const keys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'w', 'a', 's', 'd', ' ', 'W', 'A', 'S', 'D'];
+      if (keys.includes(e.key)) {
+        setHasInteracted(true);
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [showScreensaver, showCosmicFlame]);
 
   const activeCardRef = React.useRef<HTMLDivElement>(null);
 
@@ -97,11 +113,19 @@ export default function GamesCMS() {
   }
 
   return (
-    <div className="w-full h-full flex flex-col items-center justify-center" style={{ position: 'relative' }}>
+    <div className="w-full min-h-full flex flex-col items-center justify-start pt-[120px] pb-16" style={{ position: 'relative' }}>
       
       {/* Top Text Container (45px above hero cards to move it down 15px) */}
-      <div style={{ marginBottom: '45px', textAlign: 'center', zIndex: 10, fontFamily: 'var(--font-rubik), sans-serif' }}>
-        <h1 style={{ fontSize: '36px', fontWeight: 500, margin: '0 0 20px 0', color: 'white' }}>Simple Review and Iteration Process</h1>
+      <div style={{ 
+        marginBottom: '45px', 
+        textAlign: 'center', 
+        zIndex: 10, 
+        fontFamily: 'var(--font-rubik), sans-serif',
+        transform: (showScreensaver || showCosmicFlame) ? 'translateY(-50px)' : 'translateY(0)',
+        pointerEvents: (showScreensaver || showCosmicFlame) ? 'none' : 'auto',
+        transition: 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)'
+      }}>
+        <h1 style={{ fontSize: '50pt', fontWeight: 500, margin: '0 0 20px 0', color: 'white' }}>Co-Development Process</h1>
         <p style={{ 
           fontSize: '20px', 
           margin: 0, 
@@ -140,23 +164,62 @@ export default function GamesCMS() {
         </div>
       )}
 
-      {/* Centered Close Text for Review Mode */}
+      {/* Controls Indicator for Review Mode */}
       {(showScreensaver || showCosmicFlame) && (
         <div style={{ 
           position: 'fixed', 
-          top: '50%', 
-          left: '50%', 
-          transform: 'translate(-50%, -50%)', 
-          zIndex: 90, // Placed below the CosmicFlameAsset wrapper (100) but above Screensaver (-1)
-          color: 'white', 
-          opacity: 0.5,
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          zIndex: 90, 
           pointerEvents: 'none',
-          fontSize: '16px', // Smaller text
-          fontWeight: 700, // Bold
-          fontFamily: 'var(--font-rubik), sans-serif',
-          letterSpacing: '0.1em'
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '25px',
+          opacity: hasInteracted ? 0 : 0.6,
+          transition: 'opacity 0.8s ease-out'
         }}>
-          CLICK ANYWHERE TO CLOSE
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
+            <div style={{
+              width: '38px', height: '38px', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '8px',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white',
+              background: 'rgba(0,0,0,0.3)', backdropFilter: 'blur(4px)'
+            }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="white" stroke="white" strokeWidth="4" strokeLinejoin="round"><polygon points="12,4 4,20 20,20" /></svg>
+            </div>
+            <div style={{ display: 'flex', gap: '2px' }}>
+              <div style={{
+                width: '38px', height: '38px', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '8px',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white',
+                background: 'rgba(0,0,0,0.3)', backdropFilter: 'blur(4px)'
+              }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="white" stroke="white" strokeWidth="4" strokeLinejoin="round" style={{ transform: 'rotate(-90deg)' }}><polygon points="12,4 4,20 20,20" /></svg>
+              </div>
+              <div style={{
+                width: '38px', height: '38px', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '8px',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white',
+                background: 'rgba(0,0,0,0.3)', backdropFilter: 'blur(4px)'
+              }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="white" stroke="white" strokeWidth="4" strokeLinejoin="round" style={{ transform: 'rotate(180deg)' }}><polygon points="12,4 4,20 20,20" /></svg>
+              </div>
+              <div style={{
+                width: '38px', height: '38px', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '8px',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white',
+                background: 'rgba(0,0,0,0.3)', backdropFilter: 'blur(4px)'
+              }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="white" stroke="white" strokeWidth="4" strokeLinejoin="round" style={{ transform: 'rotate(90deg)' }}><polygon points="12,4 4,20 20,20" /></svg>
+              </div>
+            </div>
+          </div>
+          <div style={{
+            width: '118px', height: '38px', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '8px',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white',
+            background: 'rgba(0,0,0,0.3)', backdropFilter: 'blur(4px)',
+            fontFamily: 'var(--font-rubik), sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '0.1em'
+          }}>
+            SPACEBAR
+          </div>
         </div>
       )}
 
@@ -272,7 +335,16 @@ export default function GamesCMS() {
           </button>
         )}
 
-        <img src="/assets/logo/platform_logos.png" alt="Platform Logos" style={{ maxHeight: '40px', objectFit: 'contain' }} />
+        <img 
+          src="/assets/logo/platform_logos.png" 
+          alt="Platform Logos" 
+          style={{ 
+            maxHeight: '40px', 
+            objectFit: 'contain',
+            transform: (showScreensaver || showCosmicFlame) ? 'translateY(50px)' : 'translateY(0)',
+            transition: 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)'
+          }} 
+        />
       </div>
 
     </div>

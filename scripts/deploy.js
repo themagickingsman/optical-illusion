@@ -49,7 +49,7 @@ try {
   // Execute the Vercel CLI production deployment
   console.log('\n🚀 Step 4: Deploying to Vercel...');
   try {
-    const deployCmd = `npx vercel --prod --yes`;
+    const deployCmd = `npx --yes vercel --prod --yes`;
     console.log(`Executing: ${deployCmd}`);
     
     // Capture stdout/stderr so we can extract the dynamically assigned Vercel URL

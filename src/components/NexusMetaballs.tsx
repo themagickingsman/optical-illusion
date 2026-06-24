@@ -39,6 +39,8 @@ export default function NexusMetaballs({
     let pane: any = null;
     let fpsBadgeRef: HTMLDivElement | null = null;
     let lastFpsDisplay = -1;
+    let heroTargetX = 0;
+    let heroTargetY = 0;
     // Canvas ref for CSS blur (set in init)
     let canvasEl: HTMLCanvasElement | null = null;
     let canvasBlur = 0; // px — smooths half-res upscale edges
@@ -458,11 +460,11 @@ export default function NexusMetaballs({
             float dcBall = sdSphere(dcv, uCursorRadius);
             result = smin(result, dcBall, uSmoothness);
 
-            // ── Hero orb — slides through other blobs with a loose k (0.05)
-            // so it barely merges but still touches them without hard clipping
+            // ── Hero orb — now that we drive it, we want it to heavily stretch the fluid!
+            // Increased 'k' from 0.05 to 0.45 to create thick string-cheese viscosity.
             vec3 heroV = pos - uHeroOrb;
             float heroD = sdSphere(heroV, uHeroOrbRadius);
-            result = smin(result, heroD, 0.05);
+            result = smin(result, heroD, 0.45);
 
             // Traversing asteroid metaballs (MID + BACK)
             int tCount = min(uTravelerCount, 30);
@@ -638,6 +640,24 @@ export default function NexusMetaballs({
             // Hero orb — large halo needs a generous bounding radius
             earlyField = min(earlyField, length(ep - uHeroOrb) - uHeroOrbRadius * 3.5);
 
+            // Entities (ship & missiles) bounding check
+            int eBound = min(uEntityCount, 32);
+            for (int ei = 0; ei < 32; ei++) {
+              if (ei >= eBound) break;
+              if (uEntities[ei].z > 0.01) {
+                earlyField = min(earlyField, length(ep.xy - uEntities[ei].xy) - uEntities[ei].z * 3.0);
+              }
+            }
+            
+            // Travelers bounding check
+            int tBound = min(uTravelerCount, 30);
+            for (int ti = 0; ti < 30; ti++) {
+              if (ti >= tBound) break;
+              if (uTravelers[ti].z > 0.01) {
+                earlyField = min(earlyField, length(ep.xy - uTravelers[ti].xy) - uTravelers[ti].z * 3.0);
+              }
+            }
+
             float t = -1.0;
             vec3 p = ro;
             vec4 sdfGrad = vec4(MAX_DIST, 0.0, 1.0, 0.0);
@@ -738,8 +758,8 @@ export default function NexusMetaballs({
         material.uniforms.uSmallBottomRightRadius.value = 0.2 + Math.random() * 0.6;
         // Stable homes for center blobs
         pos5HomeX = 0.15 + Math.random() * 0.70;  pos5HomeY = 0.15 + Math.random() * 0.70;
-        pos6HomeX = 0.25 + Math.random() * 0.50;  pos6HomeY = 0.25 + Math.random() * 0.50;
-        pos7HomeX = 0.30 + Math.random() * 0.40;  pos7HomeY = 0.30 + Math.random() * 0.40;
+        pos6HomeX = 0.25 + Math.random() * 0.50;  pos6HomeY = 0.25 + Math.random() * 0.60;
+        pos7HomeX = 0.30 + Math.random() * 0.40;  pos7HomeY = 0.30 + Math.random() * 0.50;
         material.uniforms.uPos5.value.set(pos5HomeX, pos5HomeY);
         material.uniforms.uPos5Radius.value = 0.35 + Math.random() * 0.65;
         material.uniforms.uPos6.value.set(pos6HomeX, pos6HomeY);
@@ -924,13 +944,14 @@ export default function NexusMetaballs({
         const ents: THREE.Vector3[] = material.uniforms.uEntities.value;
         const col: THREE.Vector3[]  = material.uniforms.uEntityColors.value;
 
-        // Slot 0: Ship
+        // Slot 0: Ship or Hero Control
         if (d.ships && Array.isArray(d.ships) && d.ships.length > 0) {
           const s = d.ships[0];
           const sw = toShader(s.x, s.y);
-          ents[0].x = sw.x;
-          ents[0].y = sw.y;
-          entityTargetR[0] = 0.04;
+          heroTargetX = sw.x;
+          heroTargetY = sw.y;
+          // Disable the small cyan ship blob since we are driving the main orb now
+          entityTargetR[0] = 0;
           const hex = (s.color as string) || '#0088ff';
           col[0].set(
             parseInt(hex.slice(1,3), 16) / 255,
@@ -1366,7 +1387,7 @@ export default function NexusMetaballs({
       if (!fpsBadge) {
         fpsBadge = document.createElement('div');
         fpsBadge.id = "nexus-fps-badge";
-        fpsBadge.style.cssText = "position: absolute; bottom: 20px; left: 20px; font-size: 11px; font-weight: 500; font-family: 'Rubik', sans-serif; color: #4ade80; letter-spacing: 1px; transition: color 0.5s; z-index: 2000000; pointer-events: none;";
+        fpsBadge.style.cssText = "position: absolute; bottom: 20px; left: 20px; font-size: 13px; font-weight: 500; font-family: 'Rubik', sans-serif; color: white; letter-spacing: 1px; transition: color 0.5s; z-index: 2000000; pointer-events: none;";
         fpsBadge.innerText = 'FPS --';
         canvasParent.appendChild(fpsBadge);
       }
@@ -1408,8 +1429,8 @@ export default function NexusMetaballs({
         if (fpsBadgeRef && fps !== lastFpsDisplay) {
           lastFpsDisplay = fps;
           fpsBadgeRef.innerText = `FPS ${fps}`;
-          const color = fps >= 55 ? '#4ade80' : fps >= 35 ? '#facc15' : '#f87171';
-          const border = fps >= 55 ? 'rgba(74,222,128,0.3)' : fps >= 35 ? 'rgba(250,204,21,0.3)' : 'rgba(248,113,113,0.3)';
+          const color = fps >= 55 ? 'white' : fps >= 35 ? '#facc15' : '#f87171';
+          const border = fps >= 55 ? 'rgba(255,255,255,0.3)' : fps >= 35 ? 'rgba(250,204,21,0.3)' : 'rgba(248,113,113,0.3)';
           fpsBadgeRef.style.color = color;
           fpsBadgeRef.style.borderColor = border;
         }
@@ -1459,11 +1480,19 @@ export default function NexusMetaballs({
           floatSpherePos.y += (lissY - floatSpherePos.y) * 0.025;
           floatSpherePos.z += (floatZ - floatSpherePos.z) * 0.05;
 
-          // ── Hero orb — stationary at screen center (world-space 0,0,0) ──────
-          // Smoothly lerp to exact center so it eases in on first load rather
-          // than snapping. Once there it stays perfectly still.
-          material.uniforms.uHeroOrb.value.x += (0 - material.uniforms.uHeroOrb.value.x) * 0.04;
-          material.uniforms.uHeroOrb.value.y += (0 - material.uniforms.uHeroOrb.value.y) * 0.04;
+          // ── Hero orb — driven by the ship's coordinates ──────
+          // Smoothly lerp to pilot's target, but snap instantly if the physics wrapped across the screen!
+          if (Math.abs(heroTargetX - material.uniforms.uHeroOrb.value.x) > 1.0) {
+             material.uniforms.uHeroOrb.value.x = heroTargetX;
+          } else {
+             material.uniforms.uHeroOrb.value.x += (heroTargetX - material.uniforms.uHeroOrb.value.x) * 0.04;
+          }
+          
+          if (Math.abs(heroTargetY - material.uniforms.uHeroOrb.value.y) > 1.0) {
+             material.uniforms.uHeroOrb.value.y = heroTargetY;
+          } else {
+             material.uniforms.uHeroOrb.value.y += (heroTargetY - material.uniforms.uHeroOrb.value.y) * 0.04;
+          }
           material.uniforms.uHeroOrb.value.z += (0 - material.uniforms.uHeroOrb.value.z) * 0.04;
 
           // ── Entity blob radius fade ──────────────────────────────────

@@ -10,17 +10,17 @@ export default function HomeCMS() {
         
         {/* Top Content (Anchored to the top of the title) */}
         <div style={{ position: 'absolute', bottom: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', width: '1200px' }}>
-          <div style={{ fontSize: '22px', opacity: 0.7, margin: '0 0 35px 0', color: 'white', letterSpacing: '2px', fontWeight: 500, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px' }}>
+          <div style={{ fontSize: '22px', opacity: 0.7, margin: '0 0 65px 0', color: 'white', letterSpacing: '2px', fontWeight: 500, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px' }}>
             <span>Front-End Design + Tech Art</span>
           </div>
         </div>
 
         {/* Main Title (Dead Center) */}
         <h1 style={{ fontSize: '128px', fontWeight: 500, margin: 0, letterSpacing: '-0.02em', color: 'white', lineHeight: 1 }}>NEYO ONALENNA</h1>
-        <div style={{ fontSize: '22px', opacity: 0.6, color: 'white', letterSpacing: '6px', marginTop: '20px', textTransform: 'uppercase' }}>LONDON</div>
+        <div style={{ fontSize: '25px', opacity: 0.6, color: 'white', letterSpacing: '6px', marginTop: '80px', textTransform: 'uppercase' }}>LONDON</div>
 
         {/* Bottom Content (Anchored to the bottom of the title) */}
-        <div style={{ position: 'absolute', top: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', width: '1200px', paddingTop: '60px' }}>
+        <div style={{ position: 'absolute', top: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', width: '1200px', paddingTop: '110px' }}>
           <p style={{ fontSize: '32px', opacity: 0.8, margin: 0, color: 'white' }}>
             Unreal, Unity, Apple, Android, Xbox, PlayStation, Switch
           </p>

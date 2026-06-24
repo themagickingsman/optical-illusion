@@ -118,7 +118,7 @@ export default function CosmicFlameAsset() {
          p.x += p.vx * dt;
          p.y += p.vy * dt;
 
-         // Screen wrap
+         // Screen wrap within the card component
          if (p.x < 0) p.x += rect.width;
          if (p.x > rect.width) p.x -= rect.width;
          if (p.y < 0) p.y += rect.height;
@@ -130,7 +130,7 @@ export default function CosmicFlameAsset() {
          shipRef.current.style.left = `${p.x}px`;
          shipRef.current.style.top = `${p.y}px`;
 
-         const tailOffset = 15;
+         const tailOffset = 40; // Moved back to sit behind the ship image
          const tailX = p.x - Math.cos(p.angle) * tailOffset;
          const tailY = p.y - Math.sin(p.angle) * tailOffset;
 
@@ -165,7 +165,7 @@ export default function CosmicFlameAsset() {
 
          window.dispatchEvent(new CustomEvent('SYNC_NEXUS_CURSOR', {
             detail: {
-               ships: [], // Removed the ship metaball per user request
+               ships: [], // Disconnect giant metaball from the ship
                missiles: m.map(proj => ({ id: proj.id, x: rect.left + proj.x, y: rect.top + proj.y }))
             }
          }));
@@ -178,11 +178,15 @@ export default function CosmicFlameAsset() {
              const inv = config.invertForce ?? true;
              
              // The force pushes the fluid trailing behind
-             const forceX = -Math.cos(p.angle) * 0.02 * emitMult * (inv ? -1 : 1);
-             const forceY =  Math.sin(p.angle) * 0.02 * emitMult * (inv ? -1 : 1);
+             const forceX = -Math.cos(p.angle) * 0.008 * emitMult * (inv ? -1 : 1);
+             const forceY =  Math.sin(p.angle) * 0.008 * emitMult * (inv ? -1 : 1);
 
-             // Use a solid color for the engine flame
-             const engineRgb = { r: 1.0, g: 0.0, b: 0.333 }; // #ff0055
+             // Cycle color for the Skittles engine
+             const cycle = (time % 3000) / 3000;
+             let engineRgb = { r: 0.0, g: 0.9, b: 1.0 }; // cyan
+             if (cycle > 0.5) {
+                engineRgb = { r: 0.0, g: 0.7, b: 1.0 };
+             }
              
              emits.push({
                 id: "sandbox_ship",
@@ -259,14 +263,15 @@ export default function CosmicFlameAsset() {
             }}
           >
             <img 
-              src="/ships/skittles.webp" 
-              alt="Skittles Ship" 
+              src="/ships/jamba_tang.webp" 
+              alt="Jamba Tang Ship" 
               style={{ 
                 width: '100%', 
                 height: '100%', 
                 objectFit: 'contain', 
                 position: 'relative', 
-                zIndex: 10
+                zIndex: 10, 
+                filter: 'drop-shadow(0 0 12px rgba(0, 229, 255, 0.4))' 
               }} 
             />
           </div>

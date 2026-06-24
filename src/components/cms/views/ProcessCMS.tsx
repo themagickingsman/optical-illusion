@@ -29,13 +29,13 @@ export default function ProcessCMS({ onTryItNow }: { onTryItNow?: () => void }) 
           ...getStyle(0.1) 
         }}>
         <h1 style={{ fontSize: '84px', fontWeight: 600, letterSpacing: '-0.03em', lineHeight: '1.1', marginBottom: '12px' }}>
-          The End of Static Mocks.
+          Co-Development
         </h1>
         <div style={{ fontSize: '36px', color: '#0ff', fontWeight: 500, marginBottom: '24px', letterSpacing: '-0.01em' }}>
-          Real-time Front-end Integration
+          The End of Static Mocks.
         </div>
         <p style={{ fontSize: '28px', color: 'rgba(255,255,255,0.6)', lineHeight: '1.4', fontWeight: 400 }}>
-          I build live, interactive mocks that seamlessly integrate directly into your Unity and Unreal Engine projects.
+          I build live, interactive experiences that seamlessly integrate directly into your Unity and Unreal Engine projects.
         </p>
         <button 
           onClick={onTryItNow}
@@ -97,10 +97,10 @@ export default function ProcessCMS({ onTryItNow }: { onTryItNow?: () => void }) 
           03 — Engine Integration
         </div>
         <h2 style={{ fontSize: '56px', fontWeight: 500, letterSpacing: '-0.02em', marginBottom: '24px', lineHeight: '1.1' }}>
-          Seamless Engine Consumption.
+          Seamless MCP Engine Consumption.
         </h2>
         <p style={{ fontSize: '24px', color: 'rgba(255,255,255,0.6)', lineHeight: '1.5', maxWidth: '800px', margin: '0 auto' }}>
-          My clients connect to the API link. Unreal Engine (UMG) and Unity (UI Toolkit) instantly consume the structured data, automatically mapping out prefabs and blueprints perfectly matching the web prototype.
+          Through a standalone MCP (Model Context Protocol) server, AI Agents and developer IDEs securely pull the unified JSON manifests. This structured data is then instantly injected into Unreal Engine (UMG) or Unity (UI Toolkit), automatically mapping out blueprints and prefabs perfectly matching the live web prototype.
         </p>
       </div>
 

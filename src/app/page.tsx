@@ -39,7 +39,7 @@ function DashboardContent() {
     { id: "hire", label: "Hire Me" },
     { id: "chat", label: "Chat" },
     { id: "variables", label: "Variables" },
-    { id: "master", label: "Master Control" }
+    { id: "master-control", label: "Master Control" }
   ];
 
   return (
@@ -92,7 +92,7 @@ function DashboardContent() {
           </div>
         )}
 
-        {activeCmsTab === "master" && (
+        {activeCmsTab === "master-control" && (
           <div style={{ position: "absolute", inset: 0, zIndex: 20 }}>
             <MasterControllerView />
           </div>

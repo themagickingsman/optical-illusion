@@ -10,7 +10,7 @@ const TOC = [
   { id: 'compiler', label: '5. AI Compiler Engine', status: '🟢', statusText: 'Live' },
   { id: 'cloud', label: '6. Data Pipeline & Cloud', status: '🟢', statusText: 'Live' },
   { id: 'monetization', label: '7. Monetization & KPIs', status: '🟢', statusText: 'Live' },
-  { id: 'agent_insertion', label: '8. Agent Protocol & Signal Flow', status: '🔴', statusText: 'Strict' },
+  { id: 'agent_insertion', label: '8. Agent Protocol & MCP Architecture', status: '🔴', statusText: 'Strict' },
   { id: 'cms_vs_build', label: '9. CMS vs Build Architecture', status: '🔴', statusText: 'Strict' },
   { id: 'thermodynamic_hub', label: '10. Thermodynamic Agent Hub', status: '🟢', statusText: 'Live' },
   { id: 'deploy_pipeline', label: '11. Autonomous Deploy Pipeline', status: '🟢', statusText: 'Live' },
@@ -836,7 +836,7 @@ export default function MasterControllerView() {
           {activeSection === 'agent_insertion' && (
             <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-16">
               <div className="border-b border-white/10 pb-8">
-                <h1 className="text-5xl font-extrabold tracking-tight mb-4 text-orange-400">8. Agent Protocol & Signal Flow</h1>
+                <h1 className="text-5xl font-extrabold tracking-tight mb-4 text-orange-400">8. Agent Protocol & MCP Architecture</h1>
                 <p className="text-white/50 text-xl leading-relaxed">
                   <strong>CRITICAL AI DIRECTIVE:</strong> This is the 3009 Agentic Game Asset System. Do NOT assume a standard 3000 web project. 
                   Below is the exact architectural blueprint, folder structure, and sandbox wiring you MUST follow when inserting components into a target repository.
@@ -878,18 +878,27 @@ export default function MasterControllerView() {
                   {/* Visual Flow Chart Container */}
                   <div className="flex flex-col items-center gap-8 relative z-10">
                     
-                    {/* Node 1: The API */}
+                    {/* Node 1: The DB / Core */}
                     <div className="bg-black border border-orange-500 p-6 rounded-xl shadow-[0_0_30px_rgba(249,115,22,0.3)] text-center w-96 relative">
-                      <h3 className="text-xl font-bold text-orange-400 mb-2">UGCS App Store API</h3>
-                      <p className="text-xs text-white/50 font-mono">Dynamic Environment URL</p>
-                      <div className="absolute -bottom-10 left-1/2 w-0.5 h-10 bg-gradient-to-b from-orange-500 to-blue-500 transform -translate-x-1/2"></div>
+                      <h3 className="text-xl font-bold text-orange-400 mb-2">UGCS App Store Data</h3>
+                      <p className="text-xs text-white/50 font-mono">Master Asset Repository</p>
+                      <div className="absolute -bottom-10 left-1/2 w-0.5 h-10 bg-gradient-to-b from-orange-500 to-purple-500 transform -translate-x-1/2"></div>
+                      <div className="absolute -bottom-10 left-1/2 w-3 h-3 border-r-2 border-b-2 border-purple-500 transform -translate-x-1/2 rotate-45 translate-y-3.5"></div>
+                    </div>
+
+                    {/* Node 2: MCP Server */}
+                    <div className="bg-purple-950/40 border border-purple-500/40 p-5 rounded-xl text-center w-96 relative">
+                      <h4 className="text-lg font-bold text-purple-300 mb-1">Standalone MCP Server</h4>
+                      <p className="text-xs text-purple-200/60">Node.js (External)</p>
+                      <p className="text-[10px] text-purple-400/80 mt-2 font-mono uppercase">Exposes JSON Manifests via Model Context Protocol</p>
+                      <div className="absolute -bottom-10 left-1/2 w-0.5 h-10 bg-gradient-to-b from-purple-500 to-blue-500 transform -translate-x-1/2"></div>
                       <div className="absolute -bottom-10 left-1/2 w-3 h-3 border-r-2 border-b-2 border-blue-500 transform -translate-x-1/2 rotate-45 translate-y-3.5"></div>
                     </div>
 
-                    {/* Node 2: The Agent Payload */}
+                    {/* Node 3: The Agent Payload */}
                     <div className="bg-blue-950/40 border border-blue-500/40 p-4 rounded-xl text-center w-80 relative">
-                      <h4 className="text-sm font-bold text-blue-300">Asset Key (JSON Manifest)</h4>
-                      <p className="text-xs text-blue-200/60 mt-1">Intercepted by AI Agent</p>
+                      <h4 className="text-sm font-bold text-blue-300">AI Agent (MCP Client)</h4>
+                      <p className="text-xs text-blue-200/60 mt-1">Intercepts Asset Key & JSON Payload</p>
                       <div className="absolute -bottom-10 left-1/2 w-0.5 h-10 bg-blue-500 transform -translate-x-1/2"></div>
                       <div className="absolute -bottom-10 left-1/2 w-3 h-3 border-r-2 border-b-2 border-blue-500 transform -translate-x-1/2 rotate-45 translate-y-3.5"></div>
                     </div>
@@ -969,6 +978,50 @@ export default function MasterControllerView() {
                       </div>
 
                     </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Step 3: MCP Architecture */}
+              <div className="space-y-6">
+                <h2 className="text-2xl font-bold flex items-center gap-3">
+                  <span className="w-3 h-3 bg-cyan-500 rounded-full shadow-[0_0_10px_rgba(6,182,212,0.8)]"></span>
+                  8.3 Standalone MCP Architecture
+                </h2>
+                <div className="bg-cyan-950/20 border border-cyan-500/30 rounded-2xl p-8 relative overflow-hidden">
+                  <p className="text-cyan-200/80 mb-6 font-mono text-sm leading-relaxed">
+                    <strong className="text-cyan-400 text-base">EXTERNAL INTEGRATION:</strong> To allow seamless integration by external AI Agents (Claude, Cursor, etc.), we utilize a standalone Model Context Protocol (MCP) server. It lives completely outside our custom framework and is strictly dedicated to .json consumption.
+                  </p>
+
+                  {/* Pipeline Diagram */}
+                  <div className="flex items-center justify-between bg-black/40 rounded-2xl p-6 border border-white/5 gap-4">
+                    
+                    {/* Agent Node */}
+                    <div className="flex-1 p-6 bg-white/5 rounded-xl border border-white/10 text-center">
+                      <div className="text-4xl mb-4">🤖</div>
+                      <div className="text-lg font-bold text-white mb-2">AI IDE / Agent</div>
+                      <div className="text-xs text-white/50 leading-relaxed font-mono">Passes "Asset Key" to the protocol via tool execution</div>
+                    </div>
+
+                    <div className="text-cyan-400 text-2xl font-bold opacity-80">→</div>
+
+                    {/* MCP Server Node */}
+                    <div className="flex-[1.2] p-6 bg-cyan-950/40 rounded-xl border border-cyan-500/40 text-center relative shadow-[0_0_20px_rgba(6,182,212,0.15)]">
+                      <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-cyan-400 text-black text-[10px] px-3 py-1 rounded-full font-bold uppercase tracking-widest">Standalone Node</div>
+                      <div className="text-4xl mb-4">🔌</div>
+                      <div className="text-lg font-bold text-cyan-300 mb-2">MCP Server</div>
+                      <div className="text-xs text-cyan-200/60 leading-relaxed font-mono">Locates and returns the exact compiled .json manifest</div>
+                    </div>
+
+                    <div className="text-cyan-400 text-2xl font-bold opacity-80">→</div>
+
+                    {/* Game Engine Code Node */}
+                    <div className="flex-1 p-6 bg-white/5 rounded-xl border border-white/10 text-center">
+                      <div className="text-4xl mb-4">🎮</div>
+                      <div className="text-lg font-bold text-white mb-2">Engine Context</div>
+                      <div className="text-xs text-white/50 leading-relaxed font-mono">Agent authors Unity or Unreal C#/C++ integration</div>
+                    </div>
+
                   </div>
                 </div>
               </div>

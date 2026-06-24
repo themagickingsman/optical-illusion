@@ -12,7 +12,8 @@ export default function EngineFlameComponent() {
 
   useEffect(() => {
     // Read the physics configuration from the external JSON file
-    fetch('/flame_config.json')
+    // Bust cache in production to guarantee the optimization loads
+    fetch(`/flame_config.json?v=${Date.now()}`)
       .then(res => res.json())
       .then(data => setConfig(data))
       .catch(err => console.error("Failed to load flame config:", err));

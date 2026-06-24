@@ -131,8 +131,9 @@ export default function NexusMetaballs({
         premultipliedAlpha: false
       });
 
-      // Render at device pixel ratio (up to 2)
-      renderer.setPixelRatio(devicePixelRatio);
+      // Render at device pixel ratio, strictly capped at 1.5 for performance
+      // since the raymarching shader is incredibly heavy on Retina displays (2.0 dpr).
+      renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
 
       // Use container's actual bounding rect so the orb is always round
       // regardless of whether the container fills the full window or not.

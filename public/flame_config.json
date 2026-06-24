@@ -4,7 +4,7 @@
   "densityDissipation": 3.5,
   "velocityDissipation": 0.9,
   "curl": 3,
-  "dyeResolution": 1440,
+  "dyeResolution": 512,
   "simResolution": 128,
   "pressure": 0.1,
   "pressureIterations": 20

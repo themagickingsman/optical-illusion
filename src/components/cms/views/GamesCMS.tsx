@@ -8,6 +8,78 @@ import { useQueryState } from '@/hooks/useQueryState';
 import LiveScreensaver from '@/components/library/LiveScreensaver';
 import CosmicFlameAsset from '@/components/library/CosmicFlameAsset';
 import EngineFlameComponent from '@/components/library/EngineFlameComponent';
+import TerrainGenerator from '@/components/library/TerrainGenerator';
+
+const InfoPanel = ({ index, title, description, isHovered }: { index: number, title: string, description: string, isHovered: boolean }) => (
+  <div style={{
+    position: 'absolute',
+    bottom: '-240px', // Doubled slack offset for 0.5 scale container
+    left: 0,
+    width: '100%',
+    height: 'auto', 
+    background: 'linear-gradient(180deg, rgba(200, 200, 200, 0.45) 0%, rgba(180, 180, 180, 0.65) 100%)', // Tinted 10-15% darker to help white text pop
+    backdropFilter: 'blur(32px) saturate(200%)',
+    WebkitBackdropFilter: 'blur(32px) saturate(200%)',
+    borderTop: '2px solid rgba(0, 0, 0, 0.1)', // Thicker border for scale
+    display: 'flex',
+    flexDirection: 'row', 
+    justifyContent: 'space-between', 
+    alignItems: 'center', 
+    padding: index === 0 ? '55px 65px 280px 65px' : '40px 50px 280px 50px', // More compact padding
+    transform: isHovered ? 'translateY(0)' : 'translateY(100%)',
+    transition: 'transform 0.5s cubic-bezier(0.1, 1.4, 0.2, 1)', 
+    zIndex: 2,
+    pointerEvents: 'none',
+    boxShadow: '0 -30px 80px rgba(0,0,0,0.1)', // Smoother shadow
+  }}>
+    <div style={{ flex: 1, paddingRight: index === 0 ? '40px' : '30px' }}>
+      <h3 style={{ 
+        fontSize: index === 0 ? '72px' : '52px', 
+        fontWeight: 700, // Bolder to make the gradient pop
+        margin: '0 0 8px 0', // Extremely compact margin like Apple
+        lineHeight: 1.05, // Tight line height for wrapped text
+        fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif',
+        letterSpacing: '-0.03em', // Ultra tight tracking
+        color: '#FFF', // Solid white text
+      }}>
+        {title}
+      </h3>
+      <p style={{ 
+        fontSize: index === 0 ? '42px' : '34px', // Scaled up significantly
+        margin: 0, 
+        color: 'rgba(0, 0, 0, 0.7)', 
+        lineHeight: 1.3, 
+        fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
+        fontWeight: 700, // Bold weight as requested
+        letterSpacing: '-0.01em',
+        maxWidth: '100%' 
+      }}>
+        {description}
+      </p>
+    </div>
+    
+    <div style={{ flexShrink: 0 }}>
+      <div style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: '16px',
+        background: 'rgba(255, 255, 255, 0.95)', 
+        color: '#000', 
+        padding: index === 0 ? '24px 48px' : '18px 36px', // Tighter horizontally to make it "shorter"
+        borderRadius: '9999px',
+        fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
+        fontSize: index === 0 ? '40px' : '32px', // Scaled up!
+        fontWeight: 600,
+        boxShadow: '0 8px 28px rgba(0,0,0,0.1)'
+      }}>
+        <svg width={index === 0 ? 32 : 24} height={index === 0 ? 32 : 24} viewBox="0 0 24 24" fill="black">
+          <path d="M5 3l14 9-14 9V3z"/>
+        </svg>
+        Play
+      </div>
+    </div>
+  </div>
+);
 
 export default function GamesCMS() {
   const { engines, isLoading } = useLibraryLogic();
@@ -15,6 +87,8 @@ export default function GamesCMS() {
   const [selectedEngineId, setSelectedEngineId] = useQueryState<string | null>('engine', null);
   const [showScreensaver, setShowScreensaver] = useState(false);
   const [showCosmicFlame, setShowCosmicFlame] = useState(false);
+  const [showTerrainGenerator, setShowTerrainGenerator] = useState(false);
+  const [isExitingTerrainGenerator, setIsExitingTerrainGenerator] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
 
   // Global ESC to exit any preview
@@ -23,6 +97,7 @@ export default function GamesCMS() {
       if (e.key === 'Escape') {
         setShowScreensaver(false);
         setShowCosmicFlame(false);
+        if (showTerrainGenerator) setIsExitingTerrainGenerator(true);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -33,15 +108,16 @@ export default function GamesCMS() {
   // We only unmount the metaballs for the full-screen opaque screensaver.
   // The Cosmic Flame has a transparent background and NEEDS the metaballs behind it.
   React.useEffect(() => {
-    const isPreviewing = showScreensaver;
+    // If TerrainGenerator is exiting, we consider the preview OVER so the metaballs can remount behind the fading UI!
+    const isPreviewing = showScreensaver || (showTerrainGenerator && !isExitingTerrainGenerator);
     window.dispatchEvent(new CustomEvent('preview-state-change', { detail: { isPreviewing } }));
     return () => {
       window.dispatchEvent(new CustomEvent('preview-state-change', { detail: { isPreviewing: false } }));
     };
-  }, [showScreensaver]);
+  }, [showScreensaver, showTerrainGenerator, isExitingTerrainGenerator]);
 
   React.useEffect(() => {
-    if (!showScreensaver && !showCosmicFlame) {
+    if (!showScreensaver && !showCosmicFlame && !showTerrainGenerator) {
       setHasInteracted(false);
       return;
     }
@@ -53,7 +129,8 @@ export default function GamesCMS() {
     };
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [showScreensaver, showCosmicFlame]);
+  }, [showScreensaver, showCosmicFlame, showTerrainGenerator]);
+
 
   const activeCardRef = React.useRef<HTMLDivElement>(null);
 
@@ -64,7 +141,7 @@ export default function GamesCMS() {
       const el = document.getElementById(id);
       if (el) {
         el.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
-        if (showScreensaver || showCosmicFlame) {
+        if (showScreensaver || showCosmicFlame || (showTerrainGenerator && !isExitingTerrainGenerator)) {
           el.style.opacity = '0';
           el.style.pointerEvents = 'none';
           el.style.transform = 'translateY(-20px)';
@@ -87,18 +164,30 @@ export default function GamesCMS() {
         }
       });
     };
-  }, [showScreensaver, showCosmicFlame]);
+  }, [showScreensaver, showCosmicFlame, showTerrainGenerator]);
 
   const handleSelect = (index: number) => {
     if (index === 0) {
       // For the first box, toggle the live screensaver background
       setShowScreensaver(prev => !prev);
+      setShowTerrainGenerator(false);
+      setShowCosmicFlame(false);
+      return;
+    }
+    
+    if (index === 1) {
+      // For the second box, toggle the Terrain Generator
+      setShowTerrainGenerator(prev => !prev);
+      setShowScreensaver(false);
+      setShowCosmicFlame(false);
       return;
     }
     
     if (index === 2) {
       // For the third box, show the native CosmicFlameAsset
       setShowCosmicFlame(prev => !prev);
+      setShowScreensaver(false);
+      setShowTerrainGenerator(false);
       return;
     }
 
@@ -177,15 +266,16 @@ export default function GamesCMS() {
             onClick={() => setShowScreensaver(false)}
             style={{
               position: 'absolute', top: '40px', right: '40px', zIndex: 100,
-              background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.2)',
-              color: 'white', padding: '12px 24px', borderRadius: '8px', cursor: 'pointer',
-              fontFamily: 'var(--font-rubik)', fontSize: '12px', fontWeight: 'bold', letterSpacing: '0.1em',
-              backdropFilter: 'blur(8px)', transition: 'background 0.2s ease'
+              background: 'rgba(52, 199, 89, 0.9)', border: '1px solid rgba(52, 199, 89, 1)',
+              color: 'white', padding: '16px 32px', borderRadius: '9999px', cursor: 'pointer',
+              fontFamily: 'system-ui, -apple-system, sans-serif', fontSize: '16px', fontWeight: '600', letterSpacing: '0.5px',
+              backdropFilter: 'blur(8px)', transition: 'all 0.2s ease',
+              boxShadow: '0 8px 24px rgba(52, 199, 89, 0.4)'
             }}
-            onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
-            onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(0,0,0,0.5)'}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(52, 199, 89, 1)'; e.currentTarget.style.transform = 'scale(1.05)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(52, 199, 89, 0.9)'; e.currentTarget.style.transform = 'scale(1)'; }}
           >
-            EXIT PREVIEW (ESC)
+            Close Window
           </button>
         </div>
       )}
@@ -198,6 +288,22 @@ export default function GamesCMS() {
         >
           <EngineFlameComponent />
           <CosmicFlameAsset />
+        </div>,
+        document.getElementById('website-canvas') || document.body
+      )}
+
+      {/* Terrain Generator Asset */}
+      {showTerrainGenerator && typeof document !== 'undefined' && createPortal(
+        <div 
+          style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'transparent' }}
+        >
+          <TerrainGenerator 
+            onStartExit={() => setIsExitingTerrainGenerator(true)}
+            onClose={() => {
+              setShowTerrainGenerator(false);
+              setIsExitingTerrainGenerator(false);
+            }}
+          />
         </div>,
         document.getElementById('website-canvas') || document.body
       )}
@@ -294,6 +400,12 @@ export default function GamesCMS() {
                 alt={engines[0].title} 
                 className="absolute inset-0 w-full h-full object-cover block"
               />
+              <InfoPanel 
+                index={0}
+                title="Delivering Full Games"
+                description="1:13 trillion exact scale simulation of the solar system integrating NASA JPL data."
+                isHovered={hoveredCardIndex === 0}
+              />
             </div>
           </div>
         )}
@@ -314,6 +426,12 @@ export default function GamesCMS() {
                   alt={engines[1].title} 
                   className="absolute inset-0 w-full h-full object-cover block"
                 />
+                <InfoPanel 
+                  index={1}
+                  title="Delivering Full Features"
+                  description="Voxel Mini Game with Weapons System"
+                  isHovered={hoveredCardIndex === 1}
+                />
               </div>
             </div>
           )}
@@ -331,6 +449,12 @@ export default function GamesCMS() {
                   src={engines[2].media?.thumbnail || engines[2].icon} 
                   alt={engines[2].title} 
                   className="absolute inset-0 w-full h-full object-cover block"
+                />
+                <InfoPanel 
+                  index={2}
+                  title="Delivering Components"
+                  description="Ship Flight Model and Thermodynamic thruster physics."
+                  isHovered={hoveredCardIndex === 2}
                 />
               </div>
             </div>

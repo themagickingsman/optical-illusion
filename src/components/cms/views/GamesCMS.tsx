@@ -20,7 +20,7 @@ const InfoPanel = ({ index, title, description, isHovered }: { index: number, ti
     background: 'linear-gradient(180deg, rgba(200, 200, 200, 0.45) 0%, rgba(180, 180, 180, 0.65) 100%)', // Tinted 10-15% darker to help white text pop
     backdropFilter: 'blur(32px) saturate(200%)',
     WebkitBackdropFilter: 'blur(32px) saturate(200%)',
-    borderTop: '2px solid rgba(0, 0, 0, 0.1)', // Thicker border for scale
+    borderTop: 'none',
     display: 'flex',
     flexDirection: 'row', 
     justifyContent: 'space-between', 
@@ -30,7 +30,7 @@ const InfoPanel = ({ index, title, description, isHovered }: { index: number, ti
     transition: 'transform 0.5s cubic-bezier(0.1, 1.4, 0.2, 1)', 
     zIndex: 2,
     pointerEvents: 'none',
-    boxShadow: '0 -30px 80px rgba(0,0,0,0.1)', // Smoother shadow
+    boxShadow: 'none',
   }}>
     <div style={{ flex: 1, paddingRight: index === 0 ? '40px' : '30px' }}>
       <h3 style={{ 
@@ -44,18 +44,6 @@ const InfoPanel = ({ index, title, description, isHovered }: { index: number, ti
       }}>
         {title}
       </h3>
-      <p style={{ 
-        fontSize: index === 0 ? '42px' : '34px', // Scaled up significantly
-        margin: 0, 
-        color: 'rgba(0, 0, 0, 0.7)', 
-        lineHeight: 1.3, 
-        fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
-        fontWeight: 700, // Bold weight as requested
-        letterSpacing: '-0.01em',
-        maxWidth: '100%' 
-      }}>
-        {description}
-      </p>
     </div>
     
     <div style={{ flexShrink: 0 }}>
@@ -89,38 +77,82 @@ export default function GamesCMS() {
   const [showCosmicFlame, setShowCosmicFlame] = useState(false);
   const [showTerrainGenerator, setShowTerrainGenerator] = useState(false);
   const [isExitingTerrainGenerator, setIsExitingTerrainGenerator] = useState(false);
+  const [isScreensaverLoaded, setIsScreensaverLoaded] = useState(false);
+  const [isScreensaverStarted, setIsScreensaverStarted] = useState(false);
+  const [isIdle, setIsIdle] = useState(false);
+  const [isButtonVisible, setIsButtonVisible] = useState(false);
+  const idleTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+
+  React.useEffect(() => {
+    if (showScreensaver || showCosmicFlame || showTerrainGenerator) {
+      const t = setTimeout(() => setIsButtonVisible(true), 50);
+      return () => clearTimeout(t);
+    } else {
+      setIsButtonVisible(false);
+    }
+  }, [showScreensaver, showCosmicFlame, showTerrainGenerator]);
+
+  React.useEffect(() => {
+    const onStart = () => setIsScreensaverStarted(true);
+    window.addEventListener('arn_screensaver_started', onStart);
+    return () => window.removeEventListener('arn_screensaver_started', onStart);
+  }, []);
   const [hasInteracted, setHasInteracted] = useState(false);
 
   // Global ESC to exit any preview
   React.useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
+    const onEsc = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         setShowScreensaver(false);
+        setIsExitingTerrainGenerator(true); // Trigger fade out for TerrainGenerator
         setShowCosmicFlame(false);
-        if (showTerrainGenerator) setIsExitingTerrainGenerator(true);
       }
     };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener('keydown', onEsc);
+    return () => window.removeEventListener('keydown', onEsc);
   }, []);
+
+  // Reset loaded state when screensaver is closed
+  React.useEffect(() => {
+    if (!showScreensaver) {
+      setIsScreensaverLoaded(false);
+    }
+  }, [showScreensaver]);
 
   // Broadcast preview state to global components (like GlobalBackground) to unmount heavy assets
   // We only unmount the metaballs for the full-screen opaque screensaver.
   // The Cosmic Flame has a transparent background and NEEDS the metaballs behind it.
   React.useEffect(() => {
+    // For screensaver, we wait until the splash image is fully loaded before unmounting metaballs!
     // If TerrainGenerator is exiting, we consider the preview OVER so the metaballs can remount behind the fading UI!
-    const isPreviewing = showScreensaver || (showTerrainGenerator && !isExitingTerrainGenerator);
+    const isPreviewing = (showScreensaver && isScreensaverLoaded) || (showTerrainGenerator && !isExitingTerrainGenerator);
     window.dispatchEvent(new CustomEvent('preview-state-change', { detail: { isPreviewing } }));
     return () => {
       window.dispatchEvent(new CustomEvent('preview-state-change', { detail: { isPreviewing: false } }));
     };
-  }, [showScreensaver, showTerrainGenerator, isExitingTerrainGenerator]);
+  }, [showScreensaver, isScreensaverLoaded, showTerrainGenerator, isExitingTerrainGenerator]);
 
   React.useEffect(() => {
     if (!showScreensaver && !showCosmicFlame && !showTerrainGenerator) {
       setHasInteracted(false);
+      setIsScreensaverStarted(false);
+      setIsIdle(false);
+      if (idleTimeoutRef.current) clearTimeout(idleTimeoutRef.current);
       return;
     }
+
+    const resetIdleTimer = () => {
+      setIsIdle(false);
+      if (idleTimeoutRef.current) clearTimeout(idleTimeoutRef.current);
+      idleTimeoutRef.current = setTimeout(() => {
+        setIsIdle(true);
+      }, 5000);
+    };
+
+    resetIdleTimer();
+    window.addEventListener('mousemove', resetIdleTimer);
+    window.addEventListener('keydown', resetIdleTimer);
+
     const onKeyDown = (e: KeyboardEvent) => {
       const keys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'w', 'a', 's', 'd', ' ', 'W', 'A', 'S', 'D'];
       if (keys.includes(e.key)) {
@@ -128,7 +160,13 @@ export default function GamesCMS() {
       }
     };
     window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
+    
+    return () => {
+      window.removeEventListener('mousemove', resetIdleTimer);
+      window.removeEventListener('keydown', resetIdleTimer);
+      window.removeEventListener('keydown', onKeyDown);
+      if (idleTimeoutRef.current) clearTimeout(idleTimeoutRef.current);
+    };
   }, [showScreensaver, showCosmicFlame, showTerrainGenerator]);
 
 
@@ -229,15 +267,17 @@ export default function GamesCMS() {
   return (
     <div className="w-full min-h-full flex flex-col items-center justify-start pt-[120px] pb-16" style={{ position: 'relative' }}>
       
-      {/* Top Text Container (45px above hero cards to move it down 15px) */}
+      {/* Top Text Container */}
       <div style={{ 
-        marginBottom: '45px', 
+        marginTop: '0px',
+        marginBottom: '95px', 
         textAlign: 'center', 
-        zIndex: 10, 
+        zIndex: 60, 
         fontFamily: 'var(--font-rubik), sans-serif',
         transform: (showScreensaver || showCosmicFlame) ? 'translateY(-50px)' : 'translateY(0)',
-        pointerEvents: (showScreensaver || showCosmicFlame) ? 'none' : 'auto',
-        transition: 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)'
+        opacity: showScreensaver ? 0 : 1,
+        pointerEvents: showScreensaver ? 'none' : 'auto',
+        transition: 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)'
       }}>
         <h1 style={{ fontSize: '50pt', fontWeight: 500, margin: '0 0 20px 0', color: 'white' }}>Co-Development Process</h1>
         <p style={{ 
@@ -261,7 +301,7 @@ export default function GamesCMS() {
       {/* Live Screensaver Background */}
       {showScreensaver && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 50 }}>
-          <LiveScreensaver />
+          <LiveScreensaver onReady={() => setIsScreensaverLoaded(true)} />
           <button
             onClick={() => setShowScreensaver(false)}
             style={{
@@ -304,12 +344,47 @@ export default function GamesCMS() {
               setIsExitingTerrainGenerator(false);
             }}
           />
+          {/* Copy Asset Key Button for Terrain Generator (Portaled together) */}
+          {!isExitingTerrainGenerator && (
+            <div style={{ position: 'fixed', top: '110px', left: 0, right: 0, display: 'flex', justifyContent: 'center', pointerEvents: 'none', zIndex: 9999 }}>
+              <button 
+                style={{
+                  background: '#03FFC0',
+                  color: 'black',
+                  padding: '16px 40px',
+                  borderRadius: '9999px',
+                  fontWeight: 600,
+                  fontSize: '20px',
+                  cursor: 'pointer',
+                  border: 'none',
+                  fontFamily: 'var(--font-rubik), sans-serif',
+                  boxShadow: '0 4px 20px rgba(3, 255, 192, 0.4)',
+                  transition: 'transform 0.2s, box-shadow 0.2s, opacity 0.8s ease-in-out',
+                  whiteSpace: 'nowrap',
+                  opacity: (isButtonVisible && !isIdle) ? 1 : 0,
+                  pointerEvents: isIdle ? 'none' : 'auto'
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.05)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigator.clipboard.writeText("terrain_generator");
+                  e.currentTarget.innerText = "Copied!";
+                  setTimeout(() => {
+                    if (e.currentTarget) e.currentTarget.innerText = "Copy Asset Key";
+                  }, 2000);
+                }}
+              >
+                Copy Asset Key
+              </button>
+            </div>
+          )}
         </div>,
         document.getElementById('website-canvas') || document.body
       )}
 
-      {/* Controls Indicator for Review Mode (Only for Cosmic Flame) */}
-      {showCosmicFlame && (
+      {/* Controls Indicator for Review Mode */}
+      {(showCosmicFlame || (showScreensaver && isScreensaverStarted)) && (
         <div style={{ 
           position: 'fixed', 
           top: '50%',
@@ -466,36 +541,48 @@ export default function GamesCMS() {
       {/* Action Button & Platform Logos */}
       <div style={{ marginTop: '75px', zIndex: 200, display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative' }}>
         
-        {(showScreensaver || showCosmicFlame) && (
-          <button 
-            style={{
-              position: 'absolute',
-              bottom: '100%',
-              marginBottom: '30px',
-              background: '#03FFC0',
-              color: 'black',
-              padding: '16px 40px',
-              borderRadius: '9999px',
-              fontWeight: 600,
-              fontSize: '20px',
-              cursor: 'pointer',
-              border: 'none',
-              fontFamily: 'var(--font-rubik), sans-serif',
-              boxShadow: '0 4px 20px rgba(3, 255, 192, 0.4)',
-              transition: 'transform 0.2s, box-shadow 0.2s',
-              whiteSpace: 'nowrap'
-            }}
-            onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.05)'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
-            onClick={(e) => {
-              e.stopPropagation();
-              navigator.clipboard.writeText("sample-asset-key-123");
-              alert("Asset key copied!");
-            }}
-          >
-            Copy Asset Key
-          </button>
-        )}
+        {(() => {
+          if (!showScreensaver && !showCosmicFlame) return null;
+          
+          return (
+            <button 
+              style={{
+                position: 'absolute',
+                bottom: '100%',
+                marginBottom: '135px',
+                width: 'max-content',
+                background: '#03FFC0',
+                color: 'black',
+                padding: '16px 40px',
+                borderRadius: '9999px',
+                fontWeight: 600,
+                fontSize: '20px',
+                cursor: 'pointer',
+                border: 'none',
+                fontFamily: 'var(--font-rubik), sans-serif',
+                boxShadow: '0 4px 20px rgba(3, 255, 192, 0.4)',
+                transition: 'transform 0.2s, box-shadow 0.2s, opacity 0.8s ease-in-out',
+                whiteSpace: 'nowrap',
+                opacity: (isButtonVisible && !isIdle) ? 1 : 0,
+                pointerEvents: isIdle ? 'none' : 'auto',
+                zIndex: 9999
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.05)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
+              onClick={(e) => {
+                e.stopPropagation();
+                const key = showScreensaver ? "cosmic_racers" : showCosmicFlame ? "cosmic_flame" : "terrain_generator";
+                navigator.clipboard.writeText(key);
+                e.currentTarget.innerText = "Copied!";
+                setTimeout(() => {
+                  if (e.currentTarget) e.currentTarget.innerText = "Copy Asset Key";
+                }, 2000);
+              }}
+            >
+              Copy Asset Key
+            </button>
+          );
+        })()}
 
         <img 
           src="/assets/logo/platform_logos.png" 
@@ -503,7 +590,7 @@ export default function GamesCMS() {
           style={{ 
             maxHeight: '40px', 
             objectFit: 'contain',
-            transform: (showScreensaver || showCosmicFlame) ? 'translateY(50px)' : 'translateY(0)',
+            transform: (showScreensaver || showCosmicFlame) ? 'translateY(25px)' : 'translateY(0)',
             transition: 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)'
           }} 
         />

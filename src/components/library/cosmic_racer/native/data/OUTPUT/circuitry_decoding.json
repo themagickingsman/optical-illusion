@@ -1,0 +1,458 @@
+{
+  "decoder_version": "1.0",
+  "logic": "Average Vector Energy Resonance",
+  "total_scanned": 103,
+  "matches_found": 101,
+  "circuitry_map": [
+    {
+      "id": "CORPUS_0012",
+      "meroitic_text": "SlXS .eqetme...",
+      "meroitic_energy": 93.0,
+      "decoded_tech": "RELAY",
+      "tech_energy": 93.0,
+      "variance": 0.0,
+      "type": "Unknown"
+    },
+    {
+      "id": "CORPUS_0028",
+      "meroitic_text": "WES qetNyinqeli SEri qetrri qE...",
+      "meroitic_energy": 90.0,
+      "decoded_tech": "SHIELD",
+      "tech_energy": 90.0,
+      "variance": 0.0,
+      "type": "Unknown"
+    },
+    {
+      "id": "CORPUS_0039",
+      "meroitic_text": "pelmES adblis yetmetN kdite lE...",
+      "meroitic_energy": 86.25,
+      "decoded_tech": "SINK",
+      "tech_energy": 86.25,
+      "variance": 0.0,
+      "type": "Unknown"
+    },
+    {
+      "id": "CORPUS_0046",
+      "meroitic_text": "tewisti are.ke asmiye yeSEa...",
+      "meroitic_energy": 90.0,
+      "decoded_tech": "SHIELD",
+      "tech_energy": 90.0,
+      "variance": 0.0,
+      "type": "Unknown"
+    },
+    {
+      "id": "CORPUS_0051",
+      "meroitic_text": "tnbelile mXewitr...",
+      "meroitic_energy": 80.0,
+      "decoded_tech": "AMPLITUDE",
+      "tech_energy": 80.0,
+      "variance": 0.0,
+      "type": "Unknown"
+    },
+    {
+      "id": "CORPUS_0060",
+      "meroitic_text": "WES qetNyinqeli SEri qetrri qE...",
+      "meroitic_energy": 90.0,
+      "decoded_tech": "SHIELD",
+      "tech_energy": 90.0,
+      "variance": 0.0,
+      "type": "Unknown"
+    },
+    {
+      "id": "CORPUS_0075",
+      "meroitic_text": "pestE abyetli pestE n. yetmde ...",
+      "meroitic_energy": 93.0,
+      "decoded_tech": "RELAY",
+      "tech_energy": 93.0,
+      "variance": 0.0,
+      "type": "Unknown"
+    },
+    {
+      "id": "CORPUS_0088",
+      "meroitic_text": "wES weNyi Nqeli SE ri qetrri. ...",
+      "meroitic_energy": 87.5,
+      "decoded_tech": "GATE",
+      "tech_energy": 87.5,
+      "variance": 0.0,
+      "type": "Unknown"
+    },
+    {
+      "id": "CORPUS_0015",
+      "meroitic_text": "wESi SEreyi qE widelXye qEwi a...",
+      "meroitic_energy": 88.6,
+      "decoded_tech": "TRANSFORMER",
+      "tech_energy": 88.64,
+      "variance": 0.03,
+      "type": "Unknown"
+    },
+    {
+      "id": "CORPUS_0033",
+      "meroitic_text": "wESi SEreyi qE xbxeNkdi t.bliy...",
+      "meroitic_energy": 87.56,
+      "decoded_tech": "GATE",
+      "tech_energy": 87.5,
+      "variance": 0.06,
+      "type": "Unknown"
+    },
+    {
+      "id": "CORPUS_0061",
+      "meroitic_text": "wESi SEreyi qE widelXye qEwi a...",
+      "meroitic_energy": 88.69,
+      "decoded_tech": "TRANSFORMER",
+      "tech_energy": 88.64,
+      "variance": 0.06,
+      "type": "Unknown"
+    },
+    {
+      "id": "CORPUS_0071",
+      "meroitic_text": "wESi wetNyi Nqeli SEri wetrri ...",
+      "meroitic_energy": 85.65,
+      "decoded_tech": "LATTICE",
+      "tech_energy": 85.71,
+      "variance": 0.06,
+      "type": "Offering Table"
+    },
+    {
+      "id": "CORPUS_0074",
+      "meroitic_text": "tdxe mleqerebr qE ret abrye pt...",
+      "meroitic_energy": 81.49,
+      "decoded_tech": "CURRENT",
+      "tech_energy": 81.43,
+      "variance": 0.06,
+      "type": "Offering Table"
+    },
+    {
+      "id": "CORPUS_0024",
+      "meroitic_text": "bEqterel wteli pkeli yirEXetew...",
+      "meroitic_energy": 100.07,
+      "decoded_tech": "REFLECTOR",
+      "tech_energy": 100.0,
+      "variance": 0.07,
+      "type": "Unknown"
+    },
+    {
+      "id": "CORPUS_0073",
+      "meroitic_text": "wESi SEre yi qe pte.Eye qewi p...",
+      "meroitic_energy": 87.07,
+      "decoded_tech": "PRISM",
+      "tech_energy": 87.0,
+      "variance": 0.07,
+      "type": "Funerary Offering Formula"
+    },
+    {
+      "id": "CORPUS_0002",
+      "meroitic_text": "lEwi aribet wetemtr yetmdelEwi...",
+      "meroitic_energy": 82.59,
+      "decoded_tech": "RECEIVER",
+      "tech_energy": 82.5,
+      "variance": 0.09,
+      "type": "Funerary Offering Formula"
+    },
+    {
+      "id": "CORPUS_0004",
+      "meroitic_text": "lEwi aribet wetemtr yetmdelEwi...",
+      "meroitic_energy": 82.59,
+      "decoded_tech": "RECEIVER",
+      "tech_energy": 82.5,
+      "variance": 0.09,
+      "type": "Funerary Offering Formula"
+    },
+    {
+      "id": "CORPUS_0029",
+      "meroitic_text": "lEwi aribet wetemtr yetmdelEwi...",
+      "meroitic_energy": 82.59,
+      "decoded_tech": "RECEIVER",
+      "tech_energy": 82.5,
+      "variance": 0.09,
+      "type": "Funerary Offering Formula"
+    },
+    {
+      "id": "CORPUS_0034",
+      "meroitic_text": "wESi SEre yi qe Ntelletey qewi...",
+      "meroitic_energy": 83.91,
+      "decoded_tech": "PHASE",
+      "tech_energy": 84.0,
+      "variance": 0.09,
+      "type": "Funerary Offering Formula"
+    },
+    {
+      "id": "CORPUS_0044",
+      "meroitic_text": "lEwi aribet wetemtr yetmdelEwi...",
+      "meroitic_energy": 82.59,
+      "decoded_tech": "RECEIVER",
+      "tech_energy": 82.5,
+      "variance": 0.09,
+      "type": "Funerary Offering Formula"
+    },
+    {
+      "id": "CORPUS_0084",
+      "meroitic_text": "lEwi aribet wetemtr yetmdelEwi...",
+      "meroitic_energy": 82.59,
+      "decoded_tech": "RECEIVER",
+      "tech_energy": 82.5,
+      "variance": 0.09,
+      "type": "Funerary Offering Formula"
+    },
+    {
+      "id": "CORPUS_0085",
+      "meroitic_text": "lEwi aribet wetemtr yetmdelEwi...",
+      "meroitic_energy": 82.59,
+      "decoded_tech": "RECEIVER",
+      "tech_energy": 82.5,
+      "variance": 0.09,
+      "type": "Funerary Offering Formula"
+    },
+    {
+      "id": "CORPUS_0091",
+      "meroitic_text": "lEwi aribet wetemtr yetmdelEwi...",
+      "meroitic_energy": 82.59,
+      "decoded_tech": "RECEIVER",
+      "tech_energy": 82.5,
+      "variance": 0.09,
+      "type": "Funerary Offering Formula"
+    },
+    {
+      "id": "CORPUS_0049",
+      "meroitic_text": "wESi SEr eyi qE beni blye qEwi...",
+      "meroitic_energy": 88.73,
+      "decoded_tech": "TRANSFORMER",
+      "tech_energy": 88.64,
+      "variance": 0.1,
+      "type": "Unknown"
+    },
+    {
+      "id": "CORPUS_0037",
+      "meroitic_text": "pelmES adblis atmetH kdite lE ...",
+      "meroitic_energy": 83.89,
+      "decoded_tech": "PHASE",
+      "tech_energy": 84.0,
+      "variance": 0.11,
+      "type": "Unknown"
+    },
+    {
+      "id": "CORPUS_0057",
+      "meroitic_text": "tewisti are.ke nptble yeSEa...",
+      "meroitic_energy": 87.39,
+      "decoded_tech": "GATE",
+      "tech_energy": 87.5,
+      "variance": 0.11,
+      "type": "Unknown"
+    },
+    {
+      "id": "CORPUS_0040",
+      "meroitic_text": "pelmES adblis atmtl kdite lE w...",
+      "meroitic_energy": 87.12,
+      "decoded_tech": "PRISM",
+      "tech_energy": 87.0,
+      "variance": 0.12,
+      "type": "Unknown"
+    },
+    {
+      "id": "CORPUS_0087",
+      "meroitic_text": "kiSri wEmnis axid kiN kisrisqt...",
+      "meroitic_energy": 85.56,
+      "decoded_tech": "LATTICE",
+      "tech_energy": 85.71,
+      "variance": 0.15,
+      "type": "Unknown"
+    },
+    {
+      "id": "CORPUS_0030",
+      "meroitic_text": "xrpxN pXrs te l...",
+      "meroitic_energy": 66.25,
+      "decoded_tech": "CARRIER",
+      "tech_energy": 66.43,
+      "variance": 0.18,
+      "type": "Unknown"
+    },
+    {
+      "id": "CORPUS_0010",
+      "meroitic_text": "wESi wetNyi Nqeli SEri wetrri ...",
+      "meroitic_energy": 87.19,
+      "decoded_tech": "PRISM",
+      "tech_energy": 87.0,
+      "variance": 0.19,
+      "type": "Offering Table"
+    },
+    {
+      "id": "CORPUS_0032",
+      "meroitic_text": "kiSri wtemtr...",
+      "meroitic_energy": 85.91,
+      "decoded_tech": "LATTICE",
+      "tech_energy": 85.71,
+      "variance": 0.19,
+      "type": "Unknown"
+    },
+    {
+      "id": "CORPUS_0100",
+      "meroitic_text": "t dxe mlEqErebr qEre s l kditr...",
+      "meroitic_energy": 87.69,
+      "decoded_tech": "GATE",
+      "tech_energy": 87.5,
+      "variance": 0.19,
+      "type": "Unknown"
+    },
+    {
+      "id": "CORPUS_0027",
+      "meroitic_text": "wES weNyi Nqeli SE ri qetrri. ...",
+      "meroitic_energy": 90.21,
+      "decoded_tech": "SHIELD",
+      "tech_energy": 90.0,
+      "variance": 0.21,
+      "type": "Unknown"
+    },
+    {
+      "id": "CORPUS_0011",
+      "meroitic_text": "wESi SEreyi qE dikes qEwi apN ...",
+      "meroitic_energy": 87.73,
+      "decoded_tech": "GATE",
+      "tech_energy": 87.5,
+      "variance": 0.23,
+      "type": "Unknown"
+    },
+    {
+      "id": "CORPUS_0058",
+      "meroitic_text": "wES wetNyiNqeli Seriqetrri qe ...",
+      "meroitic_energy": 95.6,
+      "decoded_tech": "CHARGE",
+      "tech_energy": 95.83,
+      "variance": 0.23,
+      "type": "Offering Table"
+    },
+    {
+      "id": "CORPUS_0066",
+      "meroitic_text": "wESi SEre yi qe pte.Eye qewi a...",
+      "meroitic_energy": 85.95,
+      "decoded_tech": "LATTICE",
+      "tech_energy": 85.71,
+      "variance": 0.23,
+      "type": "Funerary Offering Formula"
+    },
+    {
+      "id": "CORPUS_0038",
+      "meroitic_text": "pelmES adblis yetmetl kdite lE...",
+      "meroitic_energy": 88.39,
+      "decoded_tech": "TRANSFORMER",
+      "tech_energy": 88.64,
+      "variance": 0.24,
+      "type": "Unknown"
+    },
+    {
+      "id": "CORPUS_0054",
+      "meroitic_text": "wESi SEreyi qE xrpxN pXrste at...",
+      "meroitic_energy": 99.62,
+      "decoded_tech": "SPECTRUM",
+      "tech_energy": 99.38,
+      "variance": 0.24,
+      "type": "Unknown"
+    },
+    {
+      "id": "CORPUS_0031",
+      "meroitic_text": "wESi SEreyi qE xbxeNkdi t.bliy...",
+      "meroitic_energy": 88.38,
+      "decoded_tech": "TRANSFORMER",
+      "tech_energy": 88.64,
+      "variance": 0.25,
+      "type": "Unknown"
+    },
+    {
+      "id": "CORPUS_0072",
+      "meroitic_text": "wErEteliye krErE...",
+      "meroitic_energy": 64.0,
+      "decoded_tech": "LINK",
+      "tech_energy": 63.75,
+      "variance": 0.25,
+      "type": "Unknown"
+    },
+    {
+      "id": "CORPUS_0013",
+      "meroitic_text": "wESi SEre yi qe pte.Eye qewi a...",
+      "meroitic_energy": 84.31,
+      "decoded_tech": "PHASE",
+      "tech_energy": 84.0,
+      "variance": 0.31,
+      "type": "Funerary Offering Formula"
+    },
+    {
+      "id": "CORPUS_0083",
+      "meroitic_text": "wES wetNyiNqeli Seriqetrri qe ...",
+      "meroitic_energy": 92.69,
+      "decoded_tech": "RELAY",
+      "tech_energy": 93.0,
+      "variance": 0.31,
+      "type": "Offering Table"
+    },
+    {
+      "id": "CORPUS_0055",
+      "meroitic_text": "wES wetNyiNqeli SEriwetrri qE ...",
+      "meroitic_energy": 93.32,
+      "decoded_tech": "RELAY",
+      "tech_energy": 93.0,
+      "variance": 0.32,
+      "type": "Offering Table"
+    },
+    {
+      "id": "CORPUS_0006",
+      "meroitic_text": "wESi SEre yi qe pte.Eye qewi a...",
+      "meroitic_energy": 82.16,
+      "decoded_tech": "RECEIVER",
+      "tech_energy": 82.5,
+      "variance": 0.34,
+      "type": "Funerary Offering Formula"
+    },
+    {
+      "id": "CORPUS_0048",
+      "meroitic_text": "wES wet NyiNqeli SE ri wetrri ...",
+      "meroitic_energy": 90.36,
+      "decoded_tech": "SHIELD",
+      "tech_energy": 90.0,
+      "variance": 0.36,
+      "type": "Unknown"
+    },
+    {
+      "id": "CORPUS_0089",
+      "meroitic_text": "kiSri abrye axid kiN kisrisqti...",
+      "meroitic_energy": 87.86,
+      "decoded_tech": "GATE",
+      "tech_energy": 87.5,
+      "variance": 0.36,
+      "type": "Unknown"
+    },
+    {
+      "id": "CORPUS_0005",
+      "meroitic_text": "tdxe mlEqErebr qEret aplXye...",
+      "meroitic_energy": 84.38,
+      "decoded_tech": "PHASE",
+      "tech_energy": 84.0,
+      "variance": 0.38,
+      "type": "Unknown"
+    },
+    {
+      "id": "CORPUS_0007",
+      "meroitic_text": "bEke wteli pkeli yirEXetewi wE...",
+      "meroitic_energy": 98.75,
+      "decoded_tech": "RESONANCE",
+      "tech_energy": 98.33,
+      "variance": 0.42,
+      "type": "Unknown"
+    },
+    {
+      "id": "CORPUS_0035",
+      "meroitic_text": "wES wetNyiNqeli SEriwetrri qE ...",
+      "meroitic_energy": 89.07,
+      "decoded_tech": "TRANSFORMER",
+      "tech_energy": 88.64,
+      "variance": 0.43,
+      "type": "Offering Table"
+    },
+    {
+      "id": "CORPUS_0095",
+      "meroitic_text": "wES weNyi Nqeli SE ri qetrri. ...",
+      "meroitic_energy": 88.2,
+      "decoded_tech": "TRANSFORMER",
+      "tech_energy": 88.64,
+      "variance": 0.44,
+      "type": "Unknown"
+    }
+  ]
+}

@@ -1,0 +1,149 @@
+[
+  {
+    "name": "Alanine",
+    "symbol": "A",
+    "abbr": "Ala",
+    "mass": 89.09,
+    "formula": "C3H7NO2"
+  },
+  {
+    "name": "Arginine",
+    "symbol": "R",
+    "abbr": "Arg",
+    "mass": 174.2,
+    "formula": "C6H14N4O2"
+  },
+  {
+    "name": "Asparagine",
+    "symbol": "N",
+    "abbr": "Asn",
+    "mass": 132.12,
+    "formula": "C4H8N2O3"
+  },
+  {
+    "name": "Aspartic Acid",
+    "symbol": "D",
+    "abbr": "Asp",
+    "mass": 133.1,
+    "formula": "C4H7NO4"
+  },
+  {
+    "name": "Cysteine",
+    "symbol": "C",
+    "abbr": "Cys",
+    "mass": 121.16,
+    "formula": "C3H7NO2S"
+  },
+  {
+    "name": "Glutamic Acid",
+    "symbol": "E",
+    "abbr": "Glu",
+    "mass": 147.13,
+    "formula": "C5H9NO4"
+  },
+  {
+    "name": "Glutamine",
+    "symbol": "Q",
+    "abbr": "Gln",
+    "mass": 146.14,
+    "formula": "C5H10N2O3"
+  },
+  {
+    "name": "Glycine",
+    "symbol": "G",
+    "abbr": "Gly",
+    "mass": 75.07,
+    "formula": "C2H5NO2"
+  },
+  {
+    "name": "Histidine",
+    "symbol": "H",
+    "abbr": "His",
+    "mass": 155.15,
+    "formula": "C6H9N3O2"
+  },
+  {
+    "name": "Isoleucine",
+    "symbol": "I",
+    "abbr": "Ile",
+    "mass": 131.17,
+    "formula": "C6H13NO2"
+  },
+  {
+    "name": "Leucine",
+    "symbol": "L",
+    "abbr": "Leu",
+    "mass": 131.17,
+    "formula": "C6H13NO2"
+  },
+  {
+    "name": "Lysine",
+    "symbol": "K",
+    "abbr": "Lys",
+    "mass": 146.19,
+    "formula": "C6H14N2O2"
+  },
+  {
+    "name": "Methionine",
+    "symbol": "M",
+    "abbr": "Met",
+    "mass": 149.21,
+    "formula": "C5H11NO2S"
+  },
+  {
+    "name": "Phenylalanine",
+    "symbol": "F",
+    "abbr": "Phe",
+    "mass": 165.19,
+    "formula": "C9H11NO2"
+  },
+  {
+    "name": "Proline",
+    "symbol": "P",
+    "abbr": "Pro",
+    "mass": 115.13,
+    "formula": "C5H9NO2"
+  },
+  {
+    "name": "Serine",
+    "symbol": "S",
+    "abbr": "Ser",
+    "mass": 105.09,
+    "formula": "C3H7NO3"
+  },
+  {
+    "name": "Threonine",
+    "symbol": "T",
+    "abbr": "Thr",
+    "mass": 119.12,
+    "formula": "C4H9NO3"
+  },
+  {
+    "name": "Tryptophan",
+    "symbol": "W",
+    "abbr": "Trp",
+    "mass": 204.23,
+    "formula": "C11H12N2O2"
+  },
+  {
+    "name": "Tyrosine",
+    "symbol": "Y",
+    "abbr": "Tyr",
+    "mass": 181.19,
+    "formula": "C9H11NO3"
+  },
+  {
+    "name": "Valine",
+    "symbol": "V",
+    "abbr": "Val",
+    "mass": 117.15,
+    "formula": "C5H11NO2"
+  },
+  {
+    "name": "Stop",
+    "symbol": "*",
+    "abbr": "Stop",
+    "mass": 0,
+    "formula": ""
+  }
+]

@@ -1,0 +1,189 @@
+{
+  "meta": {
+    "generator": "BiologicalTranslationEngine v1.0",
+    "harmonic_constant": 27.77,
+    "logic": "Mass = Frequency / Harmonic_Constant"
+  },
+  "recipes": [
+    {
+      "id": "sleep_tincture",
+      "title": "Deep Sleep Tincture",
+      "source": "Folio 88r",
+      "formula": "2(Do) + 1(Ic)",
+      "stoichiometry": [
+        {
+          "component": "Valerian",
+          "geometry": "Dodecahedron",
+          "frequency_hz": "667.04",
+          "calculated_mass": "24.02g",
+          "role": "Primary Sedative"
+        },
+        {
+          "component": "Passionflower",
+          "geometry": "Dodecahedron",
+          "frequency_hz": "385.45",
+          "calculated_mass": "13.88g",
+          "role": "Harmonic Bridge"
+        },
+        {
+          "component": "Magnesium",
+          "geometry": "Icosahedron",
+          "frequency_hz": "560.40",
+          "calculated_mass": "20.18g",
+          "role": "Stabilizer"
+        }
+      ],
+      "verification_status": "ENGINE_VERIFIED"
+    },
+    {
+      "id": "anxiety_relief",
+      "title": "Nerve Calm Elixir",
+      "source": "Folio 89v",
+      "formula": "1(Do) + 1(Oc) + 1(Ic)",
+      "stoichiometry": [
+        {
+          "component": "Kava",
+          "geometry": "Dodecahedron",
+          "frequency_hz": "638.43",
+          "calculated_mass": "22.99g",
+          "role": "GABA Agonist"
+        },
+        {
+          "component": "Chamomile",
+          "geometry": "Octahedron",
+          "frequency_hz": "250.21",
+          "calculated_mass": "9.01g",
+          "role": "Inflammation Mod"
+        },
+        {
+          "component": "GABA",
+          "geometry": "Icosahedron",
+          "frequency_hz": "1109.41",
+          "calculated_mass": "39.95g",
+          "role": "Neuro-Inhibitor"
+        }
+      ],
+      "verification_status": "ENGINE_VERIFIED"
+    },
+    {
+      "id": "focus_blend",
+      "title": "Cognitive Clarity Matrix",
+      "source": "Folio 76v",
+      "formula": "1(Oc) + 1(Te) + 1(Me)",
+      "stoichiometry": [
+        {
+          "component": "Green Tea",
+          "geometry": "Octahedron",
+          "frequency_hz": "2433.21",
+          "calculated_mass": "87.62g",
+          "role": "L-Theanine Source"
+        },
+        {
+          "component": "Rosemary",
+          "geometry": "Tetrahedron",
+          "frequency_hz": "2218.82",
+          "calculated_mass": "79.9g",
+          "role": "AChE Inhibitor"
+        },
+        {
+          "component": "Lemon Balm",
+          "geometry": "Tetrahedron",
+          "frequency_hz": "1249.65",
+          "calculated_mass": "45.0g",
+          "role": "GABA Transaminase"
+        }
+      ],
+      "verification_status": "ENGINE_VERIFIED"
+    },
+    {
+      "id": "pain_relief",
+      "title": "Anti-Inflammatory Balancer",
+      "source": "Folio 92r",
+      "formula": "2(St) + 1(Cu)",
+      "stoichiometry": [
+        {
+          "component": "Willow Bark",
+          "geometry": "Star Tetra",
+          "frequency_hz": "1000.55",
+          "calculated_mass": "36.03g",
+          "role": "COX-2 Inhibitor"
+        },
+        {
+          "component": "Boswellia",
+          "geometry": "Star Tetra",
+          "frequency_hz": "2016.94",
+          "calculated_mass": "72.63g",
+          "role": "5-LOX Inhibitor"
+        },
+        {
+          "component": "Turmeric",
+          "geometry": "Cube",
+          "frequency_hz": "675.09",
+          "calculated_mass": "24.31g",
+          "role": "Cytokine Modulator"
+        }
+      ],
+      "verification_status": "ENGINE_VERIFIED"
+    },
+    {
+      "id": "cellular_regen",
+      "title": "Cellular Regen Serum",
+      "source": "Folio 42r",
+      "formula": "2(Dn) + 1(Te)",
+      "stoichiometry": [
+        {
+          "component": "L-Theanine",
+          "geometry": "DNA Helix",
+          "frequency_hz": "111.08",
+          "calculated_mass": "4.0g",
+          "role": "Nucleic Support"
+        },
+        {
+          "component": "Amino Acids",
+          "geometry": "DNA Helix",
+          "frequency_hz": "333.24",
+          "calculated_mass": "12.0g",
+          "role": "Building Blocks"
+        },
+        {
+          "component": "Peppermint",
+          "geometry": "Tetrahedron",
+          "frequency_hz": "984.45",
+          "calculated_mass": "35.45g",
+          "role": "Vasodilator"
+        }
+      ],
+      "verification_status": "ENGINE_VERIFIED"
+    },
+    {
+      "id": "vitality_boost",
+      "title": "Vitality Surge",
+      "source": "Folio 45v",
+      "formula": "2(Te) + 1(To)",
+      "stoichiometry": [
+        {
+          "component": "Peppermint",
+          "geometry": "Tetrahedron",
+          "frequency_hz": "984.45",
+          "calculated_mass": "35.45g",
+          "role": "Stimulant"
+        },
+        {
+          "component": "Ginseng",
+          "geometry": "Tetrahedron",
+          "frequency_hz": "1166.34",
+          "calculated_mass": "42.0g",
+          "role": "Adaptogen"
+        },
+        {
+          "component": "Cordyceps",
+          "geometry": "Torus",
+          "frequency_hz": "777.56",
+          "calculated_mass": "28.0g",
+          "role": "ATP Precursor"
+        }
+      ],
+      "verification_status": "ENGINE_VERIFIED"
+    }
+  ]
+}

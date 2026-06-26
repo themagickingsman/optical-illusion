@@ -33,7 +33,7 @@ function DashboardContent() {
 
   const dashboardTabs: DashboardTab[] = [
     { id: "build", label: "Build" },
-    { id: "home", label: "Home" },
+    { id: "home", label: "About Me" },
     { id: "games", label: "Games" },
     { id: "process", label: "My Process" },
     { id: "library", label: "Agentic Game Assets" },

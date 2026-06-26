@@ -1,0 +1,416 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "description": "ALLIANCES equipment catalog. All ship modules, weapons, and upgrades with full cost and stat definitions.",
+    "costCurrency": "octave_11 is the base currency. Higher octaves unlock higher tier items.",
+    "statNote": "All stat values are deltas applied on top of base ship stats."
+  },
+
+  "weapons": [
+    {
+      "id": "wpn_rapidfire_t1",
+      "name": "Mk.1 Rapid-Fire Cannon",
+      "tier": 1, "category": "weapon", "slot": "weapon",
+      "octaveRequirement": 11,
+      "arcUnlock": "venus-protocol",
+      "description": "Standard issue. Fires fast. Doesn't ask questions.",
+      "stats": { "magazine": 1, "cooldownReduction": 0.1, "projectileSpeed": 0 },
+      "cost": { "octave_11": 400, "energy": 80 },
+      "buildTime": 20
+    },
+    {
+      "id": "wpn_rapidfire_t2",
+      "name": "Mk.2 Rapid-Fire Cannon",
+      "tier": 2, "category": "weapon", "slot": "weapon",
+      "octaveRequirement": 11,
+      "arcUnlock": "forge-sequence",
+      "description": "Fires faster. Still doesn't ask questions.",
+      "stats": { "magazine": 2, "cooldownReduction": 0.2, "projectileSpeed": 0.5 },
+      "cost": { "octave_11": 1000, "energy": 200 },
+      "buildTime": 45,
+      "requires": "wpn_rapidfire_t1"
+    },
+    {
+      "id": "wpn_rapidfire_t3",
+      "name": "Mk.3 Rapid-Fire Cannon",
+      "tier": 3, "category": "weapon", "slot": "weapon",
+      "octaveRequirement": 12,
+      "arcUnlock": "alliance-formation",
+      "description": "The enemy doesn't get a turn.",
+      "stats": { "magazine": 3, "cooldownReduction": 0.35, "projectileSpeed": 1.2 },
+      "cost": { "octave_11": 2500, "octave_12": 500, "energy": 400 },
+      "buildTime": 90,
+      "requires": "wpn_rapidfire_t2"
+    },
+    {
+      "id": "wpn_heavymissile_t1",
+      "name": "Heavy Missile Battery",
+      "tier": 1, "category": "weapon", "slot": "weapon",
+      "octaveRequirement": 11,
+      "arcUnlock": "venus-protocol",
+      "description": "Slow to fire. Significant when it arrives.",
+      "stats": { "magazine": -1, "cooldownReduction": -0.1, "damageMultiplier": 2.0, "aoeRadius": 1 },
+      "cost": { "octave_11": 600, "energy": 120 },
+      "buildTime": 30
+    },
+    {
+      "id": "wpn_heavymissile_t2",
+      "name": "Siege Missile Battery",
+      "tier": 2, "category": "weapon", "slot": "weapon",
+      "octaveRequirement": 11,
+      "arcUnlock": "forge-sequence",
+      "description": "Tactical. Extremely so.",
+      "stats": { "magazine": -1, "cooldownReduction": -0.05, "damageMultiplier": 3.0, "aoeRadius": 2 },
+      "cost": { "octave_11": 1500, "energy": 300 },
+      "buildTime": 60,
+      "requires": "wpn_heavymissile_t1"
+    },
+    {
+      "id": "wpn_swarmlauncher_t1",
+      "name": "Swarm Launcher",
+      "tier": 1, "category": "weapon", "slot": "weapon",
+      "octaveRequirement": 11,
+      "arcUnlock": "forge-sequence",
+      "description": "Fires 3 projectiles simultaneously. Accuracy is 'contextual'.",
+      "stats": { "magazine": 2, "multiShot": 3, "cooldownReduction": -0.05 },
+      "cost": { "octave_11": 1200, "energy": 250 },
+      "buildTime": 50
+    },
+    {
+      "id": "wpn_railgun_t1",
+      "name": "Precision Rail Gun",
+      "tier": 1, "category": "weapon", "slot": "weapon",
+      "octaveRequirement": 12,
+      "arcUnlock": "alliance-formation",
+      "description": "One round. Correct target. No follow-up required.",
+      "stats": { "magazine": -2, "cooldownReduction": -0.2, "damageMultiplier": 4.0, "penetrating": true },
+      "cost": { "octave_11": 2000, "octave_12": 800, "energy": 500 },
+      "buildTime": 80
+    },
+    {
+      "id": "wpn_emp_t1",
+      "name": "EMP Pulse",
+      "tier": 1, "category": "weapon", "slot": "weapon",
+      "octaveRequirement": 12,
+      "arcUnlock": "breakout",
+      "description": "Disables target's weapon cooldown reset for 3s. Rude.",
+      "stats": { "empDuration": 3, "magazine": -1, "cooldownReduction": -0.15 },
+      "cost": { "octave_11": 1800, "octave_12": 600, "energy": 400 },
+      "buildTime": 70
+    }
+  ],
+
+  "engines": [
+    {
+      "id": "eng_mk1_t1",
+      "name": "Mk.1 Thruster",
+      "tier": 1, "category": "engine", "slot": "engine",
+      "octaveRequirement": 11,
+      "arcUnlock": "venus-protocol",
+      "description": "Standard propulsion. Gets you there. Eventually.",
+      "stats": { "speedBonus": 0.05, "rotSpeedBonus": 0.001 },
+      "cost": { "octave_11": 300, "energy": 60 },
+      "buildTime": 15
+    },
+    {
+      "id": "eng_vectornozzle_t1",
+      "name": "Vector Nozzle",
+      "tier": 1, "category": "engine", "slot": "engine",
+      "octaveRequirement": 11,
+      "arcUnlock": "venus-protocol",
+      "description": "Better turning. Pairs well with DRIFTER doctrine.",
+      "stats": { "speedBonus": 0.02, "rotSpeedBonus": 0.004 },
+      "cost": { "octave_11": 350, "energy": 70 },
+      "buildTime": 18
+    },
+    {
+      "id": "eng_afterburner_t1",
+      "name": "Afterburner",
+      "tier": 1, "category": "engine", "slot": "engine",
+      "octaveRequirement": 11,
+      "arcUnlock": "forge-sequence",
+      "description": "Speed burst available once per engagement. KITER doctrine optimal pairing.",
+      "stats": { "speedBonus": 0.15, "burstAvailable": true, "rotSpeedBonus": -0.001 },
+      "cost": { "octave_11": 900, "energy": 180 },
+      "buildTime": 40
+    },
+    {
+      "id": "eng_iondrive_t1",
+      "name": "Ion Drive",
+      "tier": 1, "category": "engine", "slot": "engine",
+      "octaveRequirement": 12,
+      "arcUnlock": "breakout",
+      "description": "Sustained high-efficiency thrust. Fuel efficient. Quiet. Effective.",
+      "stats": { "speedBonus": 0.12, "rotSpeedBonus": 0.002, "fuelEfficiency": 1.5 },
+      "cost": { "octave_11": 1600, "octave_12": 400, "energy": 350 },
+      "buildTime": 65
+    },
+    {
+      "id": "eng_mk2_t2",
+      "name": "Mk.2 Thruster",
+      "tier": 2, "category": "engine", "slot": "engine",
+      "octaveRequirement": 11,
+      "arcUnlock": "forge-sequence",
+      "description": "Gets you there faster. Still no opinion on the destination.",
+      "stats": { "speedBonus": 0.1, "rotSpeedBonus": 0.002 },
+      "cost": { "octave_11": 750, "energy": 150 },
+      "buildTime": 35,
+      "requires": "eng_mk1_t1"
+    },
+    {
+      "id": "eng_mk3_t3",
+      "name": "Mk.3 Thruster",
+      "tier": 3, "category": "engine", "slot": "engine",
+      "octaveRequirement": 12,
+      "arcUnlock": "alliance-formation",
+      "description": "Top-tier Alliance propulsion. Used by exactly the pilots who deserve it.",
+      "stats": { "speedBonus": 0.2, "rotSpeedBonus": 0.004 },
+      "cost": { "octave_11": 2000, "octave_12": 600, "energy": 400 },
+      "buildTime": 80,
+      "requires": "eng_mk2_t2"
+    }
+  ],
+
+  "shields": [
+    {
+      "id": "shd_ablative_t1",
+      "name": "Ablative Plating",
+      "tier": 1, "category": "shield", "slot": "hull",
+      "octaveRequirement": 11,
+      "arcUnlock": "venus-protocol",
+      "description": "+2 HP. It ablates. That's the whole thing.",
+      "stats": { "hpBonus": 2, "damageReduction": 0 },
+      "cost": { "octave_11": 350, "energy": 70 },
+      "buildTime": 15
+    },
+    {
+      "id": "shd_ablative_t2",
+      "name": "Reinforced Ablative Plating",
+      "tier": 2, "category": "shield", "slot": "hull",
+      "octaveRequirement": 11,
+      "arcUnlock": "forge-sequence",
+      "description": "+4 HP. More of the same, but more.",
+      "stats": { "hpBonus": 4, "damageReduction": 0 },
+      "cost": { "octave_11": 900, "energy": 180 },
+      "buildTime": 40,
+      "requires": "shd_ablative_t1"
+    },
+    {
+      "id": "shd_reactive_t1",
+      "name": "Reactive Armor",
+      "tier": 1, "category": "shield", "slot": "hull",
+      "octaveRequirement": 11,
+      "arcUnlock": "forge-sequence",
+      "description": "Reduces burst damage on the first hit per engagement. Pairs well with SENTINEL.",
+      "stats": { "hpBonus": 1, "firstHitReduction": 0.5 },
+      "cost": { "octave_11": 1100, "energy": 220 },
+      "buildTime": 50
+    },
+    {
+      "id": "shd_energy_t1",
+      "name": "Energy Shield",
+      "tier": 1, "category": "shield", "slot": "hull",
+      "octaveRequirement": 12,
+      "arcUnlock": "alliance-formation",
+      "description": "Regenerates 1 HP every 10s. Powered. Elegant. Expensive.",
+      "stats": { "hpBonus": 2, "regenRate": 1, "regenInterval": 10 },
+      "cost": { "octave_11": 1800, "octave_12": 500, "energy": 400 },
+      "buildTime": 70
+    },
+    {
+      "id": "shd_composite_t1",
+      "name": "Composite Armor",
+      "tier": 1, "category": "shield", "slot": "hull",
+      "octaveRequirement": 12,
+      "arcUnlock": "breakout",
+      "description": "+5 HP. Military-grade. Not subtle.",
+      "stats": { "hpBonus": 5, "damageReduction": 0.1 },
+      "cost": { "octave_11": 2200, "octave_12": 700, "energy": 500 },
+      "buildTime": 85
+    }
+  ],
+
+  "cargo": [
+    {
+      "id": "crg_small_t1",
+      "name": "Small Cargo Bay",
+      "tier": 1, "category": "cargo", "slot": "cargo",
+      "octaveRequirement": 11,
+      "arcUnlock": "venus-protocol",
+      "description": "Capacity +5. Every unit counts.",
+      "stats": { "cargoCapacity": 5, "speedPenalty": 0 },
+      "cost": { "octave_11": 250, "energy": 50 },
+      "buildTime": 12
+    },
+    {
+      "id": "crg_medium_t1",
+      "name": "Medium Cargo Bay",
+      "tier": 1, "category": "cargo", "slot": "cargo",
+      "octaveRequirement": 11,
+      "arcUnlock": "forge-sequence",
+      "description": "Capacity +15. Minor speed penalty.",
+      "stats": { "cargoCapacity": 15, "speedPenalty": 0.02 },
+      "cost": { "octave_11": 700, "energy": 140 },
+      "buildTime": 30,
+      "requires": "crg_small_t1"
+    },
+    {
+      "id": "crg_large_t1",
+      "name": "Large Cargo Bay",
+      "tier": 1, "category": "cargo", "slot": "cargo",
+      "octaveRequirement": 11,
+      "arcUnlock": "breakout",
+      "description": "Capacity +30. Noticeable speed penalty. Worth it for the mission.",
+      "stats": { "cargoCapacity": 30, "speedPenalty": 0.05 },
+      "cost": { "octave_11": 1400, "energy": 280 },
+      "buildTime": 55,
+      "requires": "crg_medium_t1"
+    },
+    {
+      "id": "crg_drill_t1",
+      "name": "Mining Drill",
+      "tier": 1, "category": "cargo", "slot": "utility",
+      "octaveRequirement": 11,
+      "arcUnlock": "venus-protocol",
+      "description": "Collects 2x cargo per pass. Howard has not commented on this either.",
+      "stats": { "cargoMultiplier": 2, "speedPenalty": 0.01 },
+      "cost": { "octave_11": 800, "energy": 160 },
+      "buildTime": 35
+    },
+    {
+      "id": "crg_drill_t2",
+      "name": "Heavy Mining Drill",
+      "tier": 2, "category": "cargo", "slot": "utility",
+      "octaveRequirement": 12,
+      "arcUnlock": "forge-sequence",
+      "description": "3x cargo per pass. Heavy. The ship knows.",
+      "stats": { "cargoMultiplier": 3, "speedPenalty": 0.03 },
+      "cost": { "octave_11": 1600, "octave_12": 300, "energy": 350 },
+      "buildTime": 65,
+      "requires": "crg_drill_t1"
+    }
+  ],
+
+  "sensors": [
+    {
+      "id": "sen_radar_t1",
+      "name": "Basic Radar",
+      "tier": 1, "category": "sensor", "slot": "sensor",
+      "octaveRequirement": 11,
+      "arcUnlock": "venus-protocol",
+      "description": "Extends target acquisition range. Finds things.",
+      "stats": { "targetRangeBonus": 1.2, "lockTimeReduction": 0 },
+      "cost": { "octave_11": 300, "energy": 60 },
+      "buildTime": 15
+    },
+    {
+      "id": "sen_combatai_t1",
+      "name": "Combat AI Mk.1",
+      "tier": 1, "category": "sensor", "slot": "sensor",
+      "octaveRequirement": 11,
+      "arcUnlock": "forge-sequence",
+      "description": "Improves doctrine decision-making. All doctrines benefit. JOUSTER benefits most.",
+      "stats": { "doctrineEfficiency": 1.15, "evasionBonus": 0.05 },
+      "cost": { "octave_11": 1200, "energy": 240 },
+      "buildTime": 50
+    },
+    {
+      "id": "sen_combatai_t2",
+      "name": "Combat AI Mk.2",
+      "tier": 2, "category": "sensor", "slot": "sensor",
+      "octaveRequirement": 12,
+      "arcUnlock": "alliance-formation",
+      "description": "Enhanced doctrine adaptation. Reads the battle 2 moves ahead.",
+      "stats": { "doctrineEfficiency": 1.3, "evasionBonus": 0.1, "reactiveTargeting": true },
+      "cost": { "octave_11": 2500, "octave_12": 600, "energy": 500 },
+      "buildTime": 85,
+      "requires": "sen_combatai_t1"
+    },
+    {
+      "id": "sen_scanner_t1",
+      "name": "Long Range Scanner",
+      "tier": 1, "category": "sensor", "slot": "sensor",
+      "octaveRequirement": 12,
+      "arcUnlock": "breakout",
+      "description": "Sees threats before the threat knows you exist. This is how Butterworth plans.",
+      "stats": { "targetRangeBonus": 1.5, "advanceWarning": true },
+      "cost": { "octave_11": 1800, "octave_12": 450, "energy": 400 },
+      "buildTime": 70
+    }
+  ],
+
+  "doctrineUpgrades": [
+    {
+      "id": "doc_jouster_t1",
+      "name": "JOUSTER Protocol: Breach",
+      "tier": 1, "category": "doctrine", "slot": "doctrine",
+      "doctrine": "JOUSTER",
+      "octaveRequirement": 11,
+      "arcUnlock": "venus-protocol",
+      "description": "JOUSTER ships gain +20% closing speed during attack runs.",
+      "stats": { "approachSpeedBonus": 0.2 },
+      "cost": { "octave_11": 500, "energy": 100 },
+      "buildTime": 25
+    },
+    {
+      "id": "doc_kiter_t1",
+      "name": "KITER Protocol: Slingshot",
+      "tier": 1, "category": "doctrine", "slot": "doctrine",
+      "doctrine": "KITER",
+      "octaveRequirement": 11,
+      "arcUnlock": "venus-protocol",
+      "description": "KITER ships can reverse thrust to reset engagement angle.",
+      "stats": { "reverseThrustAvailable": true, "evasionBonus": 0.1 },
+      "cost": { "octave_11": 500, "energy": 100 },
+      "buildTime": 25
+    },
+    {
+      "id": "doc_brawler_t1",
+      "name": "BRAWLER Protocol: Attrition",
+      "tier": 1, "category": "doctrine", "slot": "doctrine",
+      "doctrine": "BRAWLER",
+      "octaveRequirement": 11,
+      "arcUnlock": "forge-sequence",
+      "description": "BRAWLER ships deal +10% damage for each consecutive hit landed.",
+      "stats": { "comboMultiplier": 0.1 },
+      "cost": { "octave_11": 700, "energy": 140 },
+      "buildTime": 35
+    },
+    {
+      "id": "doc_flanker_t1",
+      "name": "FLANKER Protocol: Pincer",
+      "tier": 1, "category": "doctrine", "slot": "doctrine",
+      "doctrine": "FLANKER",
+      "octaveRequirement": 11,
+      "arcUnlock": "forge-sequence",
+      "description": "FLANKER ships coordinate. If two target the same enemy, both gain +15% damage.",
+      "stats": { "coordinatedBonus": 0.15 },
+      "cost": { "octave_11": 700, "energy": 140 },
+      "buildTime": 35
+    },
+    {
+      "id": "doc_drifter_t1",
+      "name": "DRIFTER Protocol: Ghost",
+      "tier": 1, "category": "doctrine", "slot": "doctrine",
+      "doctrine": "DRIFTER",
+      "octaveRequirement": 11,
+      "arcUnlock": "breakout",
+      "description": "DRIFTER ships partially clip behind allied ships for cover.",
+      "stats": { "coverBonus": 0.2, "evasionBonus": 0.15 },
+      "cost": { "octave_11": 900, "energy": 180 },
+      "buildTime": 45
+    },
+    {
+      "id": "doc_sentinel_t1",
+      "name": "SENTINEL Protocol: Overwatch",
+      "tier": 1, "category": "doctrine", "slot": "doctrine",
+      "doctrine": "SENTINEL",
+      "octaveRequirement": 12,
+      "arcUnlock": "alliance-formation",
+      "description": "SENTINEL ships intercept projectiles targeting adjacent allies.",
+      "stats": { "interceptRange": 1.5, "interceptChance": 0.3 },
+      "cost": { "octave_11": 1200, "octave_12": 300, "energy": 250 },
+      "buildTime": 55
+    }
+  ]
+}

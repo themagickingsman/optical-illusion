@@ -40,7 +40,7 @@ const SandboxWrapper = ({ children, assetKey }: { children: React.ReactNode, ass
 // Dynamically fetches the JSON Manifest from the App Store API and renders
 // the decoupled payload if the payload is verified.
 // ----------------------------------------------------------------------
-export default function UGCSComponentLoader({ assetKey }: { assetKey: string }) {
+export default function UGCSComponentLoader({ assetKey, onReady }: { assetKey: string, onReady?: () => void }) {
   const [manifest, setManifest] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -82,12 +82,8 @@ export default function UGCSComponentLoader({ assetKey }: { assetKey: string }) 
 
   if (isLoading) {
     return (
-      <div className="w-full h-full flex items-center justify-center bg-black/80">
-        <div className="text-center font-mono space-y-4">
-          <div className="w-12 h-12 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <p className="text-cyan-400 text-sm uppercase tracking-widest">Compiling Asset Key: {assetKey}</p>
-          <p className="text-white/40 text-[10px]">Fetching Manifest from UGCS Protocol...</p>
-        </div>
+      <div className="w-full h-full flex items-center justify-center bg-transparent pointer-events-none opacity-0">
+        {/* Invisible loader to prevent pop and gap */}
       </div>
     );
   }
@@ -123,7 +119,7 @@ export default function UGCSComponentLoader({ assetKey }: { assetKey: string }) 
   // Step 2 & 3: Ensure the payload is wrapped in the mandatory Sandbox Wrapper
   return (
     <SandboxWrapper assetKey={assetKey}>
-      <ComponentPayload />
+      <ComponentPayload onReady={onReady} />
     </SandboxWrapper>
   );
 }

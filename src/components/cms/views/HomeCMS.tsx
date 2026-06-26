@@ -1,8 +1,11 @@
 "use client";
 
 import React from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function HomeCMS() {
+  const router = useRouter();
+  
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', fontFamily: 'var(--font-rubik), sans-serif' }}>
       
@@ -10,7 +13,28 @@ export default function HomeCMS() {
         
         {/* Top Content (Anchored to the top of the title) */}
         <div style={{ position: 'absolute', bottom: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', width: '1200px' }}>
-          <div style={{ fontSize: '22px', opacity: 0.7, margin: '0 0 65px 0', color: 'white', letterSpacing: '2px', fontWeight: 500, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px' }}>
+          <button style={{
+            background: '#03FFC0',
+            color: 'black',
+            padding: '12px 32px',
+            borderRadius: '9999px',
+            fontWeight: 700,
+            fontSize: '14px',
+            letterSpacing: '1px',
+            border: 'none',
+            cursor: 'pointer',
+            marginBottom: '20px',
+            textTransform: 'uppercase',
+            boxShadow: '0 4px 20px rgba(3, 255, 192, 0.4)',
+            transition: 'transform 0.2s',
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
+          onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+          onClick={() => router.push('?tab=build&preview=hire')}
+          >
+            Hire Me
+          </button>
+          <div style={{ fontSize: '24px', opacity: 0.7, margin: '0 0 65px 0', color: 'white', letterSpacing: '2px', fontWeight: 500, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px' }}>
             <span>Front-End Design + Tech Art</span>
           </div>
         </div>

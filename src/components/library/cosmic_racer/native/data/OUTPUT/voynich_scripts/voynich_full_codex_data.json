@@ -1,0 +1,232 @@
+{
+    "1": {
+        "title": "Quantum Physics",
+        "summary": "This domain exhibits a **Chaotic / High Energy** signature (entropy `0.97`). The Resonance Index is `0.44`, indicating 43% alignment with Universal Harmonics. Contains detailed schematics for Quantum Physics structures.",
+        "engineering_directive": "INITIATE_CREATION_SEQUENCE (Optimize Alpha -> 0.97)",
+        "sub_chapters": [
+            {
+                "title": "Quantum Physics - Initiation",
+                "range": "0-9",
+                "type": "Setup Phase"
+            },
+            {
+                "title": "Quantum Physics - Process",
+                "range": "10-21",
+                "type": "Active Phase"
+            },
+            {
+                "title": "Quantum Physics - Conclusion",
+                "range": "22-30",
+                "type": "Integration Phase"
+            }
+        ],
+        "flux_params": []
+    },
+    "2": {
+        "title": "Molecular Chemistry",
+        "summary": "This domain exhibits a **Chaotic / High Energy** signature (entropy `0.97`). The Resonance Index is `0.44`, indicating 43% alignment with Universal Harmonics. Contains detailed schematics for Molecular Chemistry structures.",
+        "engineering_directive": "STABILIZE_MOLECULAR_BOND (Optimize Alpha -> 0.97)",
+        "sub_chapters": [
+            {
+                "title": "Molecular Chemistry - Initiation",
+                "range": "31-40",
+                "type": "Setup Phase"
+            },
+            {
+                "title": "Molecular Chemistry - Process",
+                "range": "41-52",
+                "type": "Active Phase"
+            },
+            {
+                "title": "Molecular Chemistry - Conclusion",
+                "range": "53-60",
+                "type": "Integration Phase"
+            }
+        ],
+        "flux_params": []
+    },
+    "3": {
+        "title": "Bio-Genetics",
+        "summary": "This domain exhibits a **Chaotic / High Energy** signature (entropy `0.97`). The Resonance Index is `0.44`, indicating 43% alignment with Universal Harmonics. Contains detailed schematics for Bio-Genetics structures.",
+        "engineering_directive": "SEQUENCE_RNA_CHAIN (Optimize Alpha -> 0.97)",
+        "sub_chapters": [
+            {
+                "title": "Bio-Genetics - Initiation",
+                "range": "61-73",
+                "type": "Setup Phase"
+            },
+            {
+                "title": "Bio-Genetics - Process",
+                "range": "74-89",
+                "type": "Active Phase"
+            },
+            {
+                "title": "Bio-Genetics - Conclusion",
+                "range": "90-100",
+                "type": "Integration Phase"
+            }
+        ],
+        "flux_params": []
+    },
+    "4": {
+        "title": "Biological Systems",
+        "summary": "This domain exhibits a **Chaotic / High Energy** signature (entropy `0.97`). The Resonance Index is `0.44`, indicating 43% alignment with Universal Harmonics. Contains detailed schematics for Biological Systems structures.",
+        "engineering_directive": "OPTIMIZE_ORGAN_FUNCTION (Optimize Alpha -> 0.97)",
+        "sub_chapters": [
+            {
+                "title": "Biological Systems - Initiation",
+                "range": "101-116",
+                "type": "Setup Phase"
+            },
+            {
+                "title": "Biological Systems - Process",
+                "range": "117-136",
+                "type": "Active Phase"
+            },
+            {
+                "title": "Biological Systems - Conclusion",
+                "range": "137-150",
+                "type": "Integration Phase"
+            }
+        ],
+        "flux_params": []
+    },
+    "5": {
+        "title": "Noetics",
+        "summary": "This domain exhibits a **Chaotic / High Energy** signature (entropy `0.97`). The Resonance Index is `0.44`, indicating 43% alignment with Universal Harmonics. Contains detailed schematics for Noetics structures.",
+        "engineering_directive": "AMPLIFY_CONSCIOUSNESS_WAVE (Optimize Alpha -> 0.97)",
+        "sub_chapters": [
+            {
+                "title": "Noetics - Initiation",
+                "range": "151-166",
+                "type": "Setup Phase"
+            },
+            {
+                "title": "Noetics - Process",
+                "range": "167-186",
+                "type": "Active Phase"
+            },
+            {
+                "title": "Noetics - Conclusion",
+                "range": "187-200",
+                "type": "Integration Phase"
+            }
+        ],
+        "flux_params": []
+    },
+    "6": {
+        "title": "Social Dynamics",
+        "summary": "This domain exhibits a **Chaotic / High Energy** signature (entropy `0.97`). The Resonance Index is `0.44`, indicating 43% alignment with Universal Harmonics. Contains detailed schematics for Social Dynamics structures.",
+        "engineering_directive": "SYNC_GROUP_COHERENCE (Optimize Alpha -> 0.97)",
+        "sub_chapters": [
+            {
+                "title": "Social Dynamics - Initiation",
+                "range": "201-216",
+                "type": "Setup Phase"
+            },
+            {
+                "title": "Social Dynamics - Process",
+                "range": "217-236",
+                "type": "Active Phase"
+            },
+            {
+                "title": "Social Dynamics - Conclusion",
+                "range": "237-250",
+                "type": "Integration Phase"
+            }
+        ],
+        "flux_params": []
+    },
+    "7": {
+        "title": "Planetary Physics",
+        "summary": "This domain exhibits a **Chaotic / High Energy** signature (entropy `0.97`). The Resonance Index is `0.44`, indicating 43% alignment with Universal Harmonics. Contains detailed schematics for Planetary Physics structures.",
+        "engineering_directive": "BALANCE_GEOTHERMAL_FLUX (Optimize Alpha -> 0.97)",
+        "sub_chapters": [
+            {
+                "title": "Planetary Physics - Initiation",
+                "range": "251-266",
+                "type": "Setup Phase"
+            },
+            {
+                "title": "Planetary Physics - Process",
+                "range": "267-286",
+                "type": "Active Phase"
+            },
+            {
+                "title": "Planetary Physics - Conclusion",
+                "range": "287-300",
+                "type": "Integration Phase"
+            }
+        ],
+        "flux_params": []
+    },
+    "8": {
+        "title": "Astrophysics",
+        "summary": "This domain exhibits a **Chaotic / High Energy** signature (entropy `0.97`). The Resonance Index is `0.44`, indicating 43% alignment with Universal Harmonics. Contains detailed schematics for Astrophysics structures.",
+        "engineering_directive": "HARVEST_SOLAR_IMPULSE (Optimize Alpha -> 0.97)",
+        "sub_chapters": [
+            {
+                "title": "Astrophysics - Initiation",
+                "range": "301-316",
+                "type": "Setup Phase"
+            },
+            {
+                "title": "Astrophysics - Process",
+                "range": "317-336",
+                "type": "Active Phase"
+            },
+            {
+                "title": "Astrophysics - Conclusion",
+                "range": "337-350",
+                "type": "Integration Phase"
+            }
+        ],
+        "flux_params": []
+    },
+    "9": {
+        "title": "Galactic Cosmology",
+        "summary": "This domain exhibits a **Chaotic / High Energy** signature (entropy `0.97`). The Resonance Index is `0.44`, indicating 43% alignment with Universal Harmonics. Contains detailed schematics for Galactic Cosmology structures.",
+        "engineering_directive": "NAVIGATE_INTERSTELLAR_MEDIUM (Optimize Alpha -> 0.97)",
+        "sub_chapters": [
+            {
+                "title": "Galactic Cosmology - Initiation",
+                "range": "351-366",
+                "type": "Setup Phase"
+            },
+            {
+                "title": "Galactic Cosmology - Process",
+                "range": "367-386",
+                "type": "Active Phase"
+            },
+            {
+                "title": "Galactic Cosmology - Conclusion",
+                "range": "387-400",
+                "type": "Integration Phase"
+            }
+        ],
+        "flux_params": []
+    },
+    "10": {
+        "title": "Universal Field Theory",
+        "summary": "This domain exhibits a **Chaotic / High Energy** signature (entropy `0.97`). The Resonance Index is `0.44`, indicating 43% alignment with Universal Harmonics. Contains detailed schematics for Universal Field Theory structures.",
+        "engineering_directive": "UNIFY_DIMENSIONAL_MEMBRANES (Optimize Alpha -> 0.97)",
+        "sub_chapters": [
+            {
+                "title": "Universal Field Theory - Initiation",
+                "range": "401-406",
+                "type": "Setup Phase"
+            },
+            {
+                "title": "Universal Field Theory - Process",
+                "range": "407-412",
+                "type": "Active Phase"
+            },
+            {
+                "title": "Universal Field Theory - Conclusion",
+                "range": "413-417",
+                "type": "Integration Phase"
+            }
+        ],
+        "flux_params": []
+    }
+}

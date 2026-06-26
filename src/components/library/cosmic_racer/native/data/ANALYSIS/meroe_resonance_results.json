@@ -1,0 +1,78 @@
+{
+  "pyramid_specs": {
+    "base_width": 8.0,
+    "height": 15.0,
+    "slope_angle": 70.0,
+    "chapel_present": true,
+    "nile_distance": 500.0
+  },
+  "chamber_resonances": {
+    "burial_chamber": {
+      "fundamental": 42.875,
+      "volume": 30.0,
+      "medium": "air",
+      "cavity_modes": {
+        "length_mode": 42.875,
+        "width_mode": 57.166666666666664,
+        "height_mode": 68.6,
+        "LW_diagonal": 71.45833333333334,
+        "LH_diagonal": 80.89638820738539,
+        "WH_diagonal": 89.29718796119943,
+        "body_diagonal": 99.05681906248442
+      }
+    },
+    "descending_passage": {
+      "fundamental": 14.291666666666666,
+      "volume": 21.599999999999998,
+      "medium": "air",
+      "cavity_modes": {
+        "length_mode": 14.291666666666666,
+        "width_mode": 142.91666666666669,
+        "height_mode": 114.33333333333333,
+        "LW_diagonal": 143.62947241851938,
+        "LH_diagonal": 115.22310031943343,
+        "WH_diagonal": 183.02263445328893,
+        "body_diagonal": 183.57978227008917
+      }
+    },
+    "pyramid_cavity": {
+      "fundamental": 21.4375,
+      "volume": 200.0,
+      "medium": "air",
+      "cavity_modes": {
+        "length_mode": 34.3,
+        "width_mode": 34.3,
+        "height_mode": 21.4375,
+        "LW_diagonal": 48.50752518939717,
+        "LH_diagonal": 40.44819410369269,
+        "WH_diagonal": 40.44819410369269,
+        "body_diagonal": 53.03344610950716
+      }
+    },
+    "water_chamber": {
+      "fundamental": 123.33333333333333,
+      "volume": 72.0,
+      "medium": "water",
+      "cavity_modes": {
+        "length_mode": 123.33333333333333,
+        "width_mode": 185.0,
+        "height_mode": 246.66666666666666,
+        "LW_diagonal": 222.34232865361267,
+        "LH_diagonal": 275.78171722497405,
+        "WH_diagonal": 308.33333333333337,
+        "body_diagonal": 332.08516310662776
+      }
+    }
+  },
+  "hydraulic_system": {
+    "acoustic_pulse_frequency": 1.48,
+    "mechanical_pulse_frequency": 0.0031527144043368943,
+    "pressure_wave_period": 0.6756756756756757,
+    "interpretation": "DC PULSE INJECTOR - Hydraulic Ram System"
+  },
+  "domain_comparison": {
+    "total_matches": 0,
+    "domain_coverage": 0,
+    "top_matches": []
+  }
+}

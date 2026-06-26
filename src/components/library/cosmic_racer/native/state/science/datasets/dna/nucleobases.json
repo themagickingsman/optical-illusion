@@ -1,0 +1,37 @@
+[
+  {
+    "name": "Adenine",
+    "symbol": "A",
+    "type": "Purine",
+    "formula": "C5H5N5",
+    "mass_gmol": 135.13
+  },
+  {
+    "name": "Guanine",
+    "symbol": "G",
+    "type": "Purine",
+    "formula": "C5H5N5O",
+    "mass_gmol": 151.13
+  },
+  {
+    "name": "Cytosine",
+    "symbol": "C",
+    "type": "Pyrimidine",
+    "formula": "C4H5N3O",
+    "mass_gmol": 111.1
+  },
+  {
+    "name": "Thymine",
+    "symbol": "T",
+    "type": "Pyrimidine",
+    "formula": "C5H6N2O2",
+    "mass_gmol": 126.11
+  },
+  {
+    "name": "Uracil",
+    "symbol": "U",
+    "type": "Pyrimidine",
+    "formula": "C4H4N2O2",
+    "mass_gmol": 112.09
+  }
+]

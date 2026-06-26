@@ -1,0 +1,66 @@
+.container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #e2e8f0;
+  z-index: 0;
+}
+
+@-moz-document url-prefix() {
+  .container {
+    filter: none;
+  }
+}
+
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  background: linear-gradient(120deg, #e0c3fc 0%, #8ec5fc 100%);
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(180px); }
+}
+
+@keyframes floatReverse {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-180px); }
+}
+
+@keyframes float2 {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(280px); }
+}
+
+@keyframes floatReverse2 {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-280px); }
+}
+
+.anim_float {
+  animation-name: float;
+  animation-iteration-count: infinite;
+  animation-fill-mode: forwards;
+}
+
+.anim_floatReverse {
+  animation-name: floatReverse;
+  animation-iteration-count: infinite;
+  animation-fill-mode: forwards;
+}
+
+.anim_float2 {
+  animation-name: float2;
+  animation-iteration-count: infinite;
+  animation-fill-mode: forwards;
+}
+
+.anim_floatReverse2 {
+  animation-name: floatReverse2;
+  animation-iteration-count: infinite;
+  animation-fill-mode: forwards;
+}

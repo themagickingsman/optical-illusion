@@ -1,0 +1,2514 @@
+{
+    "status": "DIMENSIONALLY_LOCKED",
+    "framework": "13D-V8.3",
+    "samples": [
+        {
+            "vector": "voynich_stream_level7_page_000.json",
+            "GEOMETRIC_DISPLACEMENT": 45.8,
+            "VIBRATIONAL_VELOCITY": 202.25,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_001.json",
+            "GEOMETRIC_DISPLACEMENT": 48.6,
+            "VIBRATIONAL_VELOCITY": 202.87,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_002.json",
+            "GEOMETRIC_DISPLACEMENT": 46.0,
+            "VIBRATIONAL_VELOCITY": 203.48,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_003.json",
+            "GEOMETRIC_DISPLACEMENT": 36.2,
+            "VIBRATIONAL_VELOCITY": 204.1,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_004.json",
+            "GEOMETRIC_DISPLACEMENT": 46.0,
+            "VIBRATIONAL_VELOCITY": 204.72,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_005.json",
+            "GEOMETRIC_DISPLACEMENT": 45.2,
+            "VIBRATIONAL_VELOCITY": 205.34,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_006.json",
+            "GEOMETRIC_DISPLACEMENT": 45.3,
+            "VIBRATIONAL_VELOCITY": 205.96,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_007.json",
+            "GEOMETRIC_DISPLACEMENT": 37.9,
+            "VIBRATIONAL_VELOCITY": 206.57,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_008.json",
+            "GEOMETRIC_DISPLACEMENT": 44.9,
+            "VIBRATIONAL_VELOCITY": 207.19,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_009.json",
+            "GEOMETRIC_DISPLACEMENT": 51.1,
+            "VIBRATIONAL_VELOCITY": 207.81,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_010.json",
+            "GEOMETRIC_DISPLACEMENT": 44.9,
+            "VIBRATIONAL_VELOCITY": 202.87,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_011.json",
+            "GEOMETRIC_DISPLACEMENT": 51.1,
+            "VIBRATIONAL_VELOCITY": 203.48,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_012.json",
+            "GEOMETRIC_DISPLACEMENT": 44.9,
+            "VIBRATIONAL_VELOCITY": 204.1,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_013.json",
+            "GEOMETRIC_DISPLACEMENT": 49.5,
+            "VIBRATIONAL_VELOCITY": 204.72,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_014.json",
+            "GEOMETRIC_DISPLACEMENT": 43.3,
+            "VIBRATIONAL_VELOCITY": 205.34,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_015.json",
+            "GEOMETRIC_DISPLACEMENT": 37.4,
+            "VIBRATIONAL_VELOCITY": 205.96,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_016.json",
+            "GEOMETRIC_DISPLACEMENT": 44.7,
+            "VIBRATIONAL_VELOCITY": 206.57,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_017.json",
+            "GEOMETRIC_DISPLACEMENT": 45.1,
+            "VIBRATIONAL_VELOCITY": 207.19,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_018.json",
+            "GEOMETRIC_DISPLACEMENT": 43.1,
+            "VIBRATIONAL_VELOCITY": 207.81,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_019.json",
+            "GEOMETRIC_DISPLACEMENT": 49.5,
+            "VIBRATIONAL_VELOCITY": 208.43,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_020.json",
+            "GEOMETRIC_DISPLACEMENT": 43.6,
+            "VIBRATIONAL_VELOCITY": 203.48,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_021.json",
+            "GEOMETRIC_DISPLACEMENT": 36.3,
+            "VIBRATIONAL_VELOCITY": 204.1,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_022.json",
+            "GEOMETRIC_DISPLACEMENT": 44.6,
+            "VIBRATIONAL_VELOCITY": 204.72,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_023.json",
+            "GEOMETRIC_DISPLACEMENT": 52.9,
+            "VIBRATIONAL_VELOCITY": 205.34,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_024.json",
+            "GEOMETRIC_DISPLACEMENT": 43.7,
+            "VIBRATIONAL_VELOCITY": 205.96,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_025.json",
+            "GEOMETRIC_DISPLACEMENT": 36.3,
+            "VIBRATIONAL_VELOCITY": 206.57,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_026.json",
+            "GEOMETRIC_DISPLACEMENT": 43.6,
+            "VIBRATIONAL_VELOCITY": 207.19,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_027.json",
+            "GEOMETRIC_DISPLACEMENT": 41.0,
+            "VIBRATIONAL_VELOCITY": 207.81,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_028.json",
+            "GEOMETRIC_DISPLACEMENT": 43.3,
+            "VIBRATIONAL_VELOCITY": 208.43,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_029.json",
+            "GEOMETRIC_DISPLACEMENT": 49.5,
+            "VIBRATIONAL_VELOCITY": 209.05,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_030.json",
+            "GEOMETRIC_DISPLACEMENT": 43.7,
+            "VIBRATIONAL_VELOCITY": 204.1,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_031.json",
+            "GEOMETRIC_DISPLACEMENT": 41.0,
+            "VIBRATIONAL_VELOCITY": 204.72,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_032.json",
+            "GEOMETRIC_DISPLACEMENT": 44.6,
+            "VIBRATIONAL_VELOCITY": 205.34,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_033.json",
+            "GEOMETRIC_DISPLACEMENT": 52.9,
+            "VIBRATIONAL_VELOCITY": 205.96,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_034.json",
+            "GEOMETRIC_DISPLACEMENT": 44.2,
+            "VIBRATIONAL_VELOCITY": 206.57,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_035.json",
+            "GEOMETRIC_DISPLACEMENT": 47.0,
+            "VIBRATIONAL_VELOCITY": 207.19,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_036.json",
+            "GEOMETRIC_DISPLACEMENT": 43.3,
+            "VIBRATIONAL_VELOCITY": 207.81,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_037.json",
+            "GEOMETRIC_DISPLACEMENT": 49.5,
+            "VIBRATIONAL_VELOCITY": 208.43,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_038.json",
+            "GEOMETRIC_DISPLACEMENT": 44.8,
+            "VIBRATIONAL_VELOCITY": 209.05,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_039.json",
+            "GEOMETRIC_DISPLACEMENT": 52.0,
+            "VIBRATIONAL_VELOCITY": 209.66,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_040.json",
+            "GEOMETRIC_DISPLACEMENT": 44.6,
+            "VIBRATIONAL_VELOCITY": 204.72,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_041.json",
+            "GEOMETRIC_DISPLACEMENT": 36.2,
+            "VIBRATIONAL_VELOCITY": 205.34,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_042.json",
+            "GEOMETRIC_DISPLACEMENT": 43.9,
+            "VIBRATIONAL_VELOCITY": 205.96,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_043.json",
+            "GEOMETRIC_DISPLACEMENT": 39.1,
+            "VIBRATIONAL_VELOCITY": 206.57,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_044.json",
+            "GEOMETRIC_DISPLACEMENT": 44.9,
+            "VIBRATIONAL_VELOCITY": 207.19,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_045.json",
+            "GEOMETRIC_DISPLACEMENT": 47.3,
+            "VIBRATIONAL_VELOCITY": 207.81,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_046.json",
+            "GEOMETRIC_DISPLACEMENT": 44.8,
+            "VIBRATIONAL_VELOCITY": 208.43,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_047.json",
+            "GEOMETRIC_DISPLACEMENT": 41.6,
+            "VIBRATIONAL_VELOCITY": 209.05,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_048.json",
+            "GEOMETRIC_DISPLACEMENT": 45.8,
+            "VIBRATIONAL_VELOCITY": 209.66,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_049.json",
+            "GEOMETRIC_DISPLACEMENT": 37.8,
+            "VIBRATIONAL_VELOCITY": 210.28,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_050.json",
+            "GEOMETRIC_DISPLACEMENT": 44.5,
+            "VIBRATIONAL_VELOCITY": 205.34,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_051.json",
+            "GEOMETRIC_DISPLACEMENT": 32.4,
+            "VIBRATIONAL_VELOCITY": 205.96,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_052.json",
+            "GEOMETRIC_DISPLACEMENT": 44.2,
+            "VIBRATIONAL_VELOCITY": 206.57,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_053.json",
+            "GEOMETRIC_DISPLACEMENT": 47.0,
+            "VIBRATIONAL_VELOCITY": 207.19,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_054.json",
+            "GEOMETRIC_DISPLACEMENT": 44.4,
+            "VIBRATIONAL_VELOCITY": 207.81,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_055.json",
+            "GEOMETRIC_DISPLACEMENT": 34.6,
+            "VIBRATIONAL_VELOCITY": 208.43,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_056.json",
+            "GEOMETRIC_DISPLACEMENT": 44.6,
+            "VIBRATIONAL_VELOCITY": 209.05,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_057.json",
+            "GEOMETRIC_DISPLACEMENT": 45.1,
+            "VIBRATIONAL_VELOCITY": 209.66,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_058.json",
+            "GEOMETRIC_DISPLACEMENT": 44.5,
+            "VIBRATIONAL_VELOCITY": 210.28,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_059.json",
+            "GEOMETRIC_DISPLACEMENT": 34.6,
+            "VIBRATIONAL_VELOCITY": 210.9,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_060.json",
+            "GEOMETRIC_DISPLACEMENT": 44.9,
+            "VIBRATIONAL_VELOCITY": 205.96,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_061.json",
+            "GEOMETRIC_DISPLACEMENT": 45.2,
+            "VIBRATIONAL_VELOCITY": 206.57,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_062.json",
+            "GEOMETRIC_DISPLACEMENT": 45.2,
+            "VIBRATIONAL_VELOCITY": 207.19,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_063.json",
+            "GEOMETRIC_DISPLACEMENT": 21.6,
+            "VIBRATIONAL_VELOCITY": 207.81,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_064.json",
+            "GEOMETRIC_DISPLACEMENT": 44.7,
+            "VIBRATIONAL_VELOCITY": 208.43,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_065.json",
+            "GEOMETRIC_DISPLACEMENT": 52.0,
+            "VIBRATIONAL_VELOCITY": 209.05,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_066.json",
+            "GEOMETRIC_DISPLACEMENT": 44.8,
+            "VIBRATIONAL_VELOCITY": 209.66,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_067.json",
+            "GEOMETRIC_DISPLACEMENT": 41.6,
+            "VIBRATIONAL_VELOCITY": 210.28,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_068.json",
+            "GEOMETRIC_DISPLACEMENT": 45.1,
+            "VIBRATIONAL_VELOCITY": 210.9,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_069.json",
+            "GEOMETRIC_DISPLACEMENT": 38.8,
+            "VIBRATIONAL_VELOCITY": 211.52,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_070.json",
+            "GEOMETRIC_DISPLACEMENT": 44.8,
+            "VIBRATIONAL_VELOCITY": 206.57,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_071.json",
+            "GEOMETRIC_DISPLACEMENT": 36.1,
+            "VIBRATIONAL_VELOCITY": 207.19,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_072.json",
+            "GEOMETRIC_DISPLACEMENT": 43.8,
+            "VIBRATIONAL_VELOCITY": 207.81,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_073.json",
+            "GEOMETRIC_DISPLACEMENT": 39.1,
+            "VIBRATIONAL_VELOCITY": 208.43,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_074.json",
+            "GEOMETRIC_DISPLACEMENT": 45.0,
+            "VIBRATIONAL_VELOCITY": 209.05,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_075.json",
+            "GEOMETRIC_DISPLACEMENT": 32.9,
+            "VIBRATIONAL_VELOCITY": 209.66,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_076.json",
+            "GEOMETRIC_DISPLACEMENT": 41.6,
+            "VIBRATIONAL_VELOCITY": 210.28,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_077.json",
+            "GEOMETRIC_DISPLACEMENT": 100.6,
+            "VIBRATIONAL_VELOCITY": 210.9,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_078.json",
+            "GEOMETRIC_DISPLACEMENT": 45.1,
+            "VIBRATIONAL_VELOCITY": 211.52,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_079.json",
+            "GEOMETRIC_DISPLACEMENT": 21.6,
+            "VIBRATIONAL_VELOCITY": 212.14,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_080.json",
+            "GEOMETRIC_DISPLACEMENT": 44.7,
+            "VIBRATIONAL_VELOCITY": 207.19,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_081.json",
+            "GEOMETRIC_DISPLACEMENT": 45.1,
+            "VIBRATIONAL_VELOCITY": 207.81,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_082.json",
+            "GEOMETRIC_DISPLACEMENT": 44.7,
+            "VIBRATIONAL_VELOCITY": 208.43,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_083.json",
+            "GEOMETRIC_DISPLACEMENT": 37.9,
+            "VIBRATIONAL_VELOCITY": 209.05,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_084.json",
+            "GEOMETRIC_DISPLACEMENT": 44.7,
+            "VIBRATIONAL_VELOCITY": 209.66,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_085.json",
+            "GEOMETRIC_DISPLACEMENT": 45.1,
+            "VIBRATIONAL_VELOCITY": 210.28,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_086.json",
+            "GEOMETRIC_DISPLACEMENT": 45.2,
+            "VIBRATIONAL_VELOCITY": 210.9,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_087.json",
+            "GEOMETRIC_DISPLACEMENT": 21.6,
+            "VIBRATIONAL_VELOCITY": 211.52,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_088.json",
+            "GEOMETRIC_DISPLACEMENT": 45.0,
+            "VIBRATIONAL_VELOCITY": 212.14,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_089.json",
+            "GEOMETRIC_DISPLACEMENT": 38.8,
+            "VIBRATIONAL_VELOCITY": 212.75,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_090.json",
+            "GEOMETRIC_DISPLACEMENT": 45.1,
+            "VIBRATIONAL_VELOCITY": 207.81,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_091.json",
+            "GEOMETRIC_DISPLACEMENT": 29.4,
+            "VIBRATIONAL_VELOCITY": 208.43,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_092.json",
+            "GEOMETRIC_DISPLACEMENT": 45.1,
+            "VIBRATIONAL_VELOCITY": 209.05,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_093.json",
+            "GEOMETRIC_DISPLACEMENT": 29.4,
+            "VIBRATIONAL_VELOCITY": 209.66,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_094.json",
+            "GEOMETRIC_DISPLACEMENT": 44.5,
+            "VIBRATIONAL_VELOCITY": 210.28,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_095.json",
+            "GEOMETRIC_DISPLACEMENT": 34.6,
+            "VIBRATIONAL_VELOCITY": 210.9,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_096.json",
+            "GEOMETRIC_DISPLACEMENT": 44.5,
+            "VIBRATIONAL_VELOCITY": 211.52,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_097.json",
+            "GEOMETRIC_DISPLACEMENT": 32.4,
+            "VIBRATIONAL_VELOCITY": 212.14,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_098.json",
+            "GEOMETRIC_DISPLACEMENT": 44.9,
+            "VIBRATIONAL_VELOCITY": 212.75,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_099.json",
+            "GEOMETRIC_DISPLACEMENT": 37.3,
+            "VIBRATIONAL_VELOCITY": 213.37,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_100.json",
+            "GEOMETRIC_DISPLACEMENT": 44.4,
+            "VIBRATIONAL_VELOCITY": 202.87,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_101.json",
+            "GEOMETRIC_DISPLACEMENT": 34.6,
+            "VIBRATIONAL_VELOCITY": 203.48,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_102.json",
+            "GEOMETRIC_DISPLACEMENT": 45.9,
+            "VIBRATIONAL_VELOCITY": 204.1,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_103.json",
+            "GEOMETRIC_DISPLACEMENT": 43.9,
+            "VIBRATIONAL_VELOCITY": 204.72,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_104.json",
+            "GEOMETRIC_DISPLACEMENT": 44.8,
+            "VIBRATIONAL_VELOCITY": 205.34,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_105.json",
+            "GEOMETRIC_DISPLACEMENT": 37.9,
+            "VIBRATIONAL_VELOCITY": 205.96,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_106.json",
+            "GEOMETRIC_DISPLACEMENT": 45.0,
+            "VIBRATIONAL_VELOCITY": 206.57,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_107.json",
+            "GEOMETRIC_DISPLACEMENT": 29.5,
+            "VIBRATIONAL_VELOCITY": 207.19,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_108.json",
+            "GEOMETRIC_DISPLACEMENT": 43.9,
+            "VIBRATIONAL_VELOCITY": 207.81,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_109.json",
+            "GEOMETRIC_DISPLACEMENT": 39.1,
+            "VIBRATIONAL_VELOCITY": 208.43,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_110.json",
+            "GEOMETRIC_DISPLACEMENT": 45.3,
+            "VIBRATIONAL_VELOCITY": 203.48,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_111.json",
+            "GEOMETRIC_DISPLACEMENT": 25.6,
+            "VIBRATIONAL_VELOCITY": 204.1,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_112.json",
+            "GEOMETRIC_DISPLACEMENT": 43.9,
+            "VIBRATIONAL_VELOCITY": 204.72,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_113.json",
+            "GEOMETRIC_DISPLACEMENT": 39.1,
+            "VIBRATIONAL_VELOCITY": 205.34,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_114.json",
+            "GEOMETRIC_DISPLACEMENT": 46.3,
+            "VIBRATIONAL_VELOCITY": 205.96,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_115.json",
+            "GEOMETRIC_DISPLACEMENT": 33.9,
+            "VIBRATIONAL_VELOCITY": 206.57,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_116.json",
+            "GEOMETRIC_DISPLACEMENT": 44.8,
+            "VIBRATIONAL_VELOCITY": 207.19,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_117.json",
+            "GEOMETRIC_DISPLACEMENT": 52.0,
+            "VIBRATIONAL_VELOCITY": 207.81,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_118.json",
+            "GEOMETRIC_DISPLACEMENT": 44.7,
+            "VIBRATIONAL_VELOCITY": 208.43,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_119.json",
+            "GEOMETRIC_DISPLACEMENT": 44.8,
+            "VIBRATIONAL_VELOCITY": 209.05,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_120.json",
+            "GEOMETRIC_DISPLACEMENT": 44.6,
+            "VIBRATIONAL_VELOCITY": 204.1,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_121.json",
+            "GEOMETRIC_DISPLACEMENT": 51.2,
+            "VIBRATIONAL_VELOCITY": 204.72,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_122.json",
+            "GEOMETRIC_DISPLACEMENT": 46.0,
+            "VIBRATIONAL_VELOCITY": 205.34,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_123.json",
+            "GEOMETRIC_DISPLACEMENT": 43.9,
+            "VIBRATIONAL_VELOCITY": 205.96,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_124.json",
+            "GEOMETRIC_DISPLACEMENT": 44.9,
+            "VIBRATIONAL_VELOCITY": 206.57,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_125.json",
+            "GEOMETRIC_DISPLACEMENT": 37.4,
+            "VIBRATIONAL_VELOCITY": 207.19,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_126.json",
+            "GEOMETRIC_DISPLACEMENT": 45.8,
+            "VIBRATIONAL_VELOCITY": 207.81,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_127.json",
+            "GEOMETRIC_DISPLACEMENT": 46.7,
+            "VIBRATIONAL_VELOCITY": 208.43,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_128.json",
+            "GEOMETRIC_DISPLACEMENT": 44.7,
+            "VIBRATIONAL_VELOCITY": 209.05,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_129.json",
+            "GEOMETRIC_DISPLACEMENT": 33.9,
+            "VIBRATIONAL_VELOCITY": 209.66,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_130.json",
+            "GEOMETRIC_DISPLACEMENT": 44.7,
+            "VIBRATIONAL_VELOCITY": 204.72,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_131.json",
+            "GEOMETRIC_DISPLACEMENT": 36.6,
+            "VIBRATIONAL_VELOCITY": 205.34,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_132.json",
+            "GEOMETRIC_DISPLACEMENT": 45.6,
+            "VIBRATIONAL_VELOCITY": 205.96,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_133.json",
+            "GEOMETRIC_DISPLACEMENT": 40.7,
+            "VIBRATIONAL_VELOCITY": 206.57,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_134.json",
+            "GEOMETRIC_DISPLACEMENT": 45.3,
+            "VIBRATIONAL_VELOCITY": 207.19,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_135.json",
+            "GEOMETRIC_DISPLACEMENT": 44.4,
+            "VIBRATIONAL_VELOCITY": 207.81,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_136.json",
+            "GEOMETRIC_DISPLACEMENT": 44.9,
+            "VIBRATIONAL_VELOCITY": 208.43,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_137.json",
+            "GEOMETRIC_DISPLACEMENT": 37.4,
+            "VIBRATIONAL_VELOCITY": 209.05,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_138.json",
+            "GEOMETRIC_DISPLACEMENT": 45.0,
+            "VIBRATIONAL_VELOCITY": 209.66,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_139.json",
+            "GEOMETRIC_DISPLACEMENT": 60.5,
+            "VIBRATIONAL_VELOCITY": 210.28,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_140.json",
+            "GEOMETRIC_DISPLACEMENT": 44.9,
+            "VIBRATIONAL_VELOCITY": 205.34,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_141.json",
+            "GEOMETRIC_DISPLACEMENT": 60.5,
+            "VIBRATIONAL_VELOCITY": 205.96,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_142.json",
+            "GEOMETRIC_DISPLACEMENT": 45.4,
+            "VIBRATIONAL_VELOCITY": 206.57,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_143.json",
+            "GEOMETRIC_DISPLACEMENT": 44.4,
+            "VIBRATIONAL_VELOCITY": 207.19,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_144.json",
+            "GEOMETRIC_DISPLACEMENT": 45.1,
+            "VIBRATIONAL_VELOCITY": 207.81,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_145.json",
+            "GEOMETRIC_DISPLACEMENT": 47.6,
+            "VIBRATIONAL_VELOCITY": 208.43,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_146.json",
+            "GEOMETRIC_DISPLACEMENT": 45.2,
+            "VIBRATIONAL_VELOCITY": 209.05,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_147.json",
+            "GEOMETRIC_DISPLACEMENT": 44.4,
+            "VIBRATIONAL_VELOCITY": 209.66,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_148.json",
+            "GEOMETRIC_DISPLACEMENT": 44.7,
+            "VIBRATIONAL_VELOCITY": 210.28,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_149.json",
+            "GEOMETRIC_DISPLACEMENT": 33.9,
+            "VIBRATIONAL_VELOCITY": 210.9,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_150.json",
+            "GEOMETRIC_DISPLACEMENT": 43.7,
+            "VIBRATIONAL_VELOCITY": 205.96,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_151.json",
+            "GEOMETRIC_DISPLACEMENT": 37.2,
+            "VIBRATIONAL_VELOCITY": 206.57,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_152.json",
+            "GEOMETRIC_DISPLACEMENT": 45.1,
+            "VIBRATIONAL_VELOCITY": 207.19,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_153.json",
+            "GEOMETRIC_DISPLACEMENT": 48.9,
+            "VIBRATIONAL_VELOCITY": 207.81,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_154.json",
+            "GEOMETRIC_DISPLACEMENT": 45.9,
+            "VIBRATIONAL_VELOCITY": 208.43,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_155.json",
+            "GEOMETRIC_DISPLACEMENT": 42.1,
+            "VIBRATIONAL_VELOCITY": 209.05,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_156.json",
+            "GEOMETRIC_DISPLACEMENT": 44.6,
+            "VIBRATIONAL_VELOCITY": 209.66,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_157.json",
+            "GEOMETRIC_DISPLACEMENT": 30.1,
+            "VIBRATIONAL_VELOCITY": 210.28,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_158.json",
+            "GEOMETRIC_DISPLACEMENT": 45.6,
+            "VIBRATIONAL_VELOCITY": 210.9,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_159.json",
+            "GEOMETRIC_DISPLACEMENT": 40.7,
+            "VIBRATIONAL_VELOCITY": 211.52,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_160.json",
+            "GEOMETRIC_DISPLACEMENT": 44.7,
+            "VIBRATIONAL_VELOCITY": 206.57,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_161.json",
+            "GEOMETRIC_DISPLACEMENT": 33.9,
+            "VIBRATIONAL_VELOCITY": 207.19,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_162.json",
+            "GEOMETRIC_DISPLACEMENT": 45.4,
+            "VIBRATIONAL_VELOCITY": 207.81,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_163.json",
+            "GEOMETRIC_DISPLACEMENT": 40.7,
+            "VIBRATIONAL_VELOCITY": 208.43,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_164.json",
+            "GEOMETRIC_DISPLACEMENT": 44.9,
+            "VIBRATIONAL_VELOCITY": 209.05,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_165.json",
+            "GEOMETRIC_DISPLACEMENT": 60.5,
+            "VIBRATIONAL_VELOCITY": 209.66,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_166.json",
+            "GEOMETRIC_DISPLACEMENT": 46.3,
+            "VIBRATIONAL_VELOCITY": 210.28,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_167.json",
+            "GEOMETRIC_DISPLACEMENT": 33.9,
+            "VIBRATIONAL_VELOCITY": 210.9,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_168.json",
+            "GEOMETRIC_DISPLACEMENT": 44.7,
+            "VIBRATIONAL_VELOCITY": 211.52,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_169.json",
+            "GEOMETRIC_DISPLACEMENT": 51.2,
+            "VIBRATIONAL_VELOCITY": 212.14,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_170.json",
+            "GEOMETRIC_DISPLACEMENT": 45.4,
+            "VIBRATIONAL_VELOCITY": 207.19,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_171.json",
+            "GEOMETRIC_DISPLACEMENT": 25.6,
+            "VIBRATIONAL_VELOCITY": 207.81,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_172.json",
+            "GEOMETRIC_DISPLACEMENT": 44.5,
+            "VIBRATIONAL_VELOCITY": 208.43,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_173.json",
+            "GEOMETRIC_DISPLACEMENT": 32.9,
+            "VIBRATIONAL_VELOCITY": 209.05,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_174.json",
+            "GEOMETRIC_DISPLACEMENT": 45.4,
+            "VIBRATIONAL_VELOCITY": 209.66,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_175.json",
+            "GEOMETRIC_DISPLACEMENT": 44.4,
+            "VIBRATIONAL_VELOCITY": 210.28,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_176.json",
+            "GEOMETRIC_DISPLACEMENT": 45.0,
+            "VIBRATIONAL_VELOCITY": 210.9,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_177.json",
+            "GEOMETRIC_DISPLACEMENT": 47.6,
+            "VIBRATIONAL_VELOCITY": 211.52,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_178.json",
+            "GEOMETRIC_DISPLACEMENT": 45.1,
+            "VIBRATIONAL_VELOCITY": 212.14,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_179.json",
+            "GEOMETRIC_DISPLACEMENT": 47.6,
+            "VIBRATIONAL_VELOCITY": 212.75,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_180.json",
+            "GEOMETRIC_DISPLACEMENT": 45.6,
+            "VIBRATIONAL_VELOCITY": 207.81,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_181.json",
+            "GEOMETRIC_DISPLACEMENT": 46.2,
+            "VIBRATIONAL_VELOCITY": 208.43,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_182.json",
+            "GEOMETRIC_DISPLACEMENT": 45.6,
+            "VIBRATIONAL_VELOCITY": 209.05,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_183.json",
+            "GEOMETRIC_DISPLACEMENT": 40.7,
+            "VIBRATIONAL_VELOCITY": 209.66,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_184.json",
+            "GEOMETRIC_DISPLACEMENT": 43.7,
+            "VIBRATIONAL_VELOCITY": 210.28,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_185.json",
+            "GEOMETRIC_DISPLACEMENT": 37.2,
+            "VIBRATIONAL_VELOCITY": 210.9,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_186.json",
+            "GEOMETRIC_DISPLACEMENT": 44.6,
+            "VIBRATIONAL_VELOCITY": 211.52,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_187.json",
+            "GEOMETRIC_DISPLACEMENT": 33.9,
+            "VIBRATIONAL_VELOCITY": 212.14,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_188.json",
+            "GEOMETRIC_DISPLACEMENT": 46.0,
+            "VIBRATIONAL_VELOCITY": 212.75,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_189.json",
+            "GEOMETRIC_DISPLACEMENT": 31.9,
+            "VIBRATIONAL_VELOCITY": 213.37,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_190.json",
+            "GEOMETRIC_DISPLACEMENT": 40.6,
+            "VIBRATIONAL_VELOCITY": 208.43,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_191.json",
+            "GEOMETRIC_DISPLACEMENT": 113.2,
+            "VIBRATIONAL_VELOCITY": 209.05,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_192.json",
+            "GEOMETRIC_DISPLACEMENT": 45.1,
+            "VIBRATIONAL_VELOCITY": 209.66,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_193.json",
+            "GEOMETRIC_DISPLACEMENT": 47.6,
+            "VIBRATIONAL_VELOCITY": 210.28,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_194.json",
+            "GEOMETRIC_DISPLACEMENT": 46.0,
+            "VIBRATIONAL_VELOCITY": 210.9,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_195.json",
+            "GEOMETRIC_DISPLACEMENT": 43.8,
+            "VIBRATIONAL_VELOCITY": 211.52,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_196.json",
+            "GEOMETRIC_DISPLACEMENT": 44.9,
+            "VIBRATIONAL_VELOCITY": 212.14,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_197.json",
+            "GEOMETRIC_DISPLACEMENT": 60.5,
+            "VIBRATIONAL_VELOCITY": 212.75,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_198.json",
+            "GEOMETRIC_DISPLACEMENT": 45.7,
+            "VIBRATIONAL_VELOCITY": 213.37,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_199.json",
+            "GEOMETRIC_DISPLACEMENT": 45.7,
+            "VIBRATIONAL_VELOCITY": 213.99,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_200.json",
+            "GEOMETRIC_DISPLACEMENT": 44.6,
+            "VIBRATIONAL_VELOCITY": 203.48,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_201.json",
+            "GEOMETRIC_DISPLACEMENT": 51.2,
+            "VIBRATIONAL_VELOCITY": 204.1,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_202.json",
+            "GEOMETRIC_DISPLACEMENT": 44.8,
+            "VIBRATIONAL_VELOCITY": 204.72,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_203.json",
+            "GEOMETRIC_DISPLACEMENT": 37.4,
+            "VIBRATIONAL_VELOCITY": 205.34,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_204.json",
+            "GEOMETRIC_DISPLACEMENT": 46.0,
+            "VIBRATIONAL_VELOCITY": 205.96,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_205.json",
+            "GEOMETRIC_DISPLACEMENT": 42.1,
+            "VIBRATIONAL_VELOCITY": 206.57,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_206.json",
+            "GEOMETRIC_DISPLACEMENT": 46.0,
+            "VIBRATIONAL_VELOCITY": 207.19,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_207.json",
+            "GEOMETRIC_DISPLACEMENT": 31.9,
+            "VIBRATIONAL_VELOCITY": 207.81,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_208.json",
+            "GEOMETRIC_DISPLACEMENT": 45.7,
+            "VIBRATIONAL_VELOCITY": 208.43,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_209.json",
+            "GEOMETRIC_DISPLACEMENT": 53.1,
+            "VIBRATIONAL_VELOCITY": 209.05,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_210.json",
+            "GEOMETRIC_DISPLACEMENT": 45.7,
+            "VIBRATIONAL_VELOCITY": 204.1,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_211.json",
+            "GEOMETRIC_DISPLACEMENT": 45.7,
+            "VIBRATIONAL_VELOCITY": 204.72,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_212.json",
+            "GEOMETRIC_DISPLACEMENT": 46.0,
+            "VIBRATIONAL_VELOCITY": 205.34,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_213.json",
+            "GEOMETRIC_DISPLACEMENT": 42.1,
+            "VIBRATIONAL_VELOCITY": 205.96,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_214.json",
+            "GEOMETRIC_DISPLACEMENT": 46.4,
+            "VIBRATIONAL_VELOCITY": 206.57,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_215.json",
+            "GEOMETRIC_DISPLACEMENT": 43.4,
+            "VIBRATIONAL_VELOCITY": 207.19,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_216.json",
+            "GEOMETRIC_DISPLACEMENT": 45.6,
+            "VIBRATIONAL_VELOCITY": 207.81,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_217.json",
+            "GEOMETRIC_DISPLACEMENT": 53.1,
+            "VIBRATIONAL_VELOCITY": 208.43,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_218.json",
+            "GEOMETRIC_DISPLACEMENT": 44.5,
+            "VIBRATIONAL_VELOCITY": 209.05,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_219.json",
+            "GEOMETRIC_DISPLACEMENT": 34.6,
+            "VIBRATIONAL_VELOCITY": 209.66,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_220.json",
+            "GEOMETRIC_DISPLACEMENT": 45.9,
+            "VIBRATIONAL_VELOCITY": 204.72,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_221.json",
+            "GEOMETRIC_DISPLACEMENT": 46.7,
+            "VIBRATIONAL_VELOCITY": 205.34,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_222.json",
+            "GEOMETRIC_DISPLACEMENT": 44.6,
+            "VIBRATIONAL_VELOCITY": 205.96,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_223.json",
+            "GEOMETRIC_DISPLACEMENT": 34.6,
+            "VIBRATIONAL_VELOCITY": 206.57,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_224.json",
+            "GEOMETRIC_DISPLACEMENT": 45.8,
+            "VIBRATIONAL_VELOCITY": 207.19,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_225.json",
+            "GEOMETRIC_DISPLACEMENT": 53.1,
+            "VIBRATIONAL_VELOCITY": 207.81,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_226.json",
+            "GEOMETRIC_DISPLACEMENT": 46.0,
+            "VIBRATIONAL_VELOCITY": 208.43,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_227.json",
+            "GEOMETRIC_DISPLACEMENT": 43.8,
+            "VIBRATIONAL_VELOCITY": 209.05,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_228.json",
+            "GEOMETRIC_DISPLACEMENT": 45.8,
+            "VIBRATIONAL_VELOCITY": 209.66,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_229.json",
+            "GEOMETRIC_DISPLACEMENT": 53.1,
+            "VIBRATIONAL_VELOCITY": 210.28,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_230.json",
+            "GEOMETRIC_DISPLACEMENT": 45.4,
+            "VIBRATIONAL_VELOCITY": 205.34,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_231.json",
+            "GEOMETRIC_DISPLACEMENT": 44.4,
+            "VIBRATIONAL_VELOCITY": 205.96,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_232.json",
+            "GEOMETRIC_DISPLACEMENT": 46.0,
+            "VIBRATIONAL_VELOCITY": 206.57,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_233.json",
+            "GEOMETRIC_DISPLACEMENT": 43.9,
+            "VIBRATIONAL_VELOCITY": 207.19,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_234.json",
+            "GEOMETRIC_DISPLACEMENT": 44.7,
+            "VIBRATIONAL_VELOCITY": 207.81,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_235.json",
+            "GEOMETRIC_DISPLACEMENT": 33.9,
+            "VIBRATIONAL_VELOCITY": 208.43,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_236.json",
+            "GEOMETRIC_DISPLACEMENT": 45.7,
+            "VIBRATIONAL_VELOCITY": 209.05,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_237.json",
+            "GEOMETRIC_DISPLACEMENT": 53.1,
+            "VIBRATIONAL_VELOCITY": 209.66,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_238.json",
+            "GEOMETRIC_DISPLACEMENT": 45.0,
+            "VIBRATIONAL_VELOCITY": 210.28,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_239.json",
+            "GEOMETRIC_DISPLACEMENT": 47.6,
+            "VIBRATIONAL_VELOCITY": 210.9,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_240.json",
+            "GEOMETRIC_DISPLACEMENT": 41.9,
+            "VIBRATIONAL_VELOCITY": 205.96,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_241.json",
+            "GEOMETRIC_DISPLACEMENT": 41.3,
+            "VIBRATIONAL_VELOCITY": 206.57,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_242.json",
+            "GEOMETRIC_DISPLACEMENT": 41.9,
+            "VIBRATIONAL_VELOCITY": 207.19,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_243.json",
+            "GEOMETRIC_DISPLACEMENT": 41.8,
+            "VIBRATIONAL_VELOCITY": 207.81,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_244.json",
+            "GEOMETRIC_DISPLACEMENT": 41.2,
+            "VIBRATIONAL_VELOCITY": 208.43,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_245.json",
+            "GEOMETRIC_DISPLACEMENT": 52.4,
+            "VIBRATIONAL_VELOCITY": 209.05,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_246.json",
+            "GEOMETRIC_DISPLACEMENT": 41.6,
+            "VIBRATIONAL_VELOCITY": 209.66,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_247.json",
+            "GEOMETRIC_DISPLACEMENT": 56.6,
+            "VIBRATIONAL_VELOCITY": 210.28,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_248.json",
+            "GEOMETRIC_DISPLACEMENT": 45.0,
+            "VIBRATIONAL_VELOCITY": 210.9,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_249.json",
+            "GEOMETRIC_DISPLACEMENT": 32.9,
+            "VIBRATIONAL_VELOCITY": 211.52,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_250.json",
+            "GEOMETRIC_DISPLACEMENT": 41.5,
+            "VIBRATIONAL_VELOCITY": 206.57,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_251.json",
+            "GEOMETRIC_DISPLACEMENT": 0.3,
+            "VIBRATIONAL_VELOCITY": 207.19,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_252.json",
+            "GEOMETRIC_DISPLACEMENT": 39.9,
+            "VIBRATIONAL_VELOCITY": 207.81,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_253.json",
+            "GEOMETRIC_DISPLACEMENT": 51.0,
+            "VIBRATIONAL_VELOCITY": 208.43,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_254.json",
+            "GEOMETRIC_DISPLACEMENT": 44.6,
+            "VIBRATIONAL_VELOCITY": 209.05,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_255.json",
+            "GEOMETRIC_DISPLACEMENT": 30.1,
+            "VIBRATIONAL_VELOCITY": 209.66,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_256.json",
+            "GEOMETRIC_DISPLACEMENT": 46.4,
+            "VIBRATIONAL_VELOCITY": 210.28,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_257.json",
+            "GEOMETRIC_DISPLACEMENT": 38.2,
+            "VIBRATIONAL_VELOCITY": 210.9,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_258.json",
+            "GEOMETRIC_DISPLACEMENT": 39.6,
+            "VIBRATIONAL_VELOCITY": 211.52,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_259.json",
+            "GEOMETRIC_DISPLACEMENT": 2.4,
+            "VIBRATIONAL_VELOCITY": 212.14,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_260.json",
+            "GEOMETRIC_DISPLACEMENT": 43.0,
+            "VIBRATIONAL_VELOCITY": 207.19,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_261.json",
+            "GEOMETRIC_DISPLACEMENT": 50.4,
+            "VIBRATIONAL_VELOCITY": 207.81,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_262.json",
+            "GEOMETRIC_DISPLACEMENT": 45.6,
+            "VIBRATIONAL_VELOCITY": 208.43,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_263.json",
+            "GEOMETRIC_DISPLACEMENT": 40.7,
+            "VIBRATIONAL_VELOCITY": 209.05,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_264.json",
+            "GEOMETRIC_DISPLACEMENT": 46.3,
+            "VIBRATIONAL_VELOCITY": 209.66,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_265.json",
+            "GEOMETRIC_DISPLACEMENT": 38.2,
+            "VIBRATIONAL_VELOCITY": 210.28,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_266.json",
+            "GEOMETRIC_DISPLACEMENT": 46.0,
+            "VIBRATIONAL_VELOCITY": 210.9,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_267.json",
+            "GEOMETRIC_DISPLACEMENT": 45.3,
+            "VIBRATIONAL_VELOCITY": 211.52,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_268.json",
+            "GEOMETRIC_DISPLACEMENT": 45.2,
+            "VIBRATIONAL_VELOCITY": 212.14,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_269.json",
+            "GEOMETRIC_DISPLACEMENT": 37.3,
+            "VIBRATIONAL_VELOCITY": 212.75,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_270.json",
+            "GEOMETRIC_DISPLACEMENT": 44.6,
+            "VIBRATIONAL_VELOCITY": 207.81,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_271.json",
+            "GEOMETRIC_DISPLACEMENT": 34.6,
+            "VIBRATIONAL_VELOCITY": 208.43,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_272.json",
+            "GEOMETRIC_DISPLACEMENT": 45.1,
+            "VIBRATIONAL_VELOCITY": 209.05,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_273.json",
+            "GEOMETRIC_DISPLACEMENT": 32.9,
+            "VIBRATIONAL_VELOCITY": 209.66,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_274.json",
+            "GEOMETRIC_DISPLACEMENT": 44.6,
+            "VIBRATIONAL_VELOCITY": 210.28,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_275.json",
+            "GEOMETRIC_DISPLACEMENT": 44.2,
+            "VIBRATIONAL_VELOCITY": 210.9,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_276.json",
+            "GEOMETRIC_DISPLACEMENT": 45.0,
+            "VIBRATIONAL_VELOCITY": 211.52,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_277.json",
+            "GEOMETRIC_DISPLACEMENT": 29.5,
+            "VIBRATIONAL_VELOCITY": 212.14,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_278.json",
+            "GEOMETRIC_DISPLACEMENT": 45.0,
+            "VIBRATIONAL_VELOCITY": 212.75,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_279.json",
+            "GEOMETRIC_DISPLACEMENT": 49.8,
+            "VIBRATIONAL_VELOCITY": 213.37,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_280.json",
+            "GEOMETRIC_DISPLACEMENT": 45.0,
+            "VIBRATIONAL_VELOCITY": 208.43,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_281.json",
+            "GEOMETRIC_DISPLACEMENT": 32.9,
+            "VIBRATIONAL_VELOCITY": 209.05,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_282.json",
+            "GEOMETRIC_DISPLACEMENT": 44.6,
+            "VIBRATIONAL_VELOCITY": 209.66,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_283.json",
+            "GEOMETRIC_DISPLACEMENT": 44.2,
+            "VIBRATIONAL_VELOCITY": 210.28,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_284.json",
+            "GEOMETRIC_DISPLACEMENT": 45.0,
+            "VIBRATIONAL_VELOCITY": 210.9,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_285.json",
+            "GEOMETRIC_DISPLACEMENT": 32.9,
+            "VIBRATIONAL_VELOCITY": 211.52,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_286.json",
+            "GEOMETRIC_DISPLACEMENT": 46.0,
+            "VIBRATIONAL_VELOCITY": 212.14,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_287.json",
+            "GEOMETRIC_DISPLACEMENT": 38.6,
+            "VIBRATIONAL_VELOCITY": 212.75,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_288.json",
+            "GEOMETRIC_DISPLACEMENT": 44.8,
+            "VIBRATIONAL_VELOCITY": 213.37,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_289.json",
+            "GEOMETRIC_DISPLACEMENT": 44.8,
+            "VIBRATIONAL_VELOCITY": 213.99,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_290.json",
+            "GEOMETRIC_DISPLACEMENT": 45.9,
+            "VIBRATIONAL_VELOCITY": 209.05,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_291.json",
+            "GEOMETRIC_DISPLACEMENT": 50.3,
+            "VIBRATIONAL_VELOCITY": 209.66,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_292.json",
+            "GEOMETRIC_DISPLACEMENT": 44.8,
+            "VIBRATIONAL_VELOCITY": 210.28,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_293.json",
+            "GEOMETRIC_DISPLACEMENT": 36.1,
+            "VIBRATIONAL_VELOCITY": 210.9,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_294.json",
+            "GEOMETRIC_DISPLACEMENT": 46.3,
+            "VIBRATIONAL_VELOCITY": 211.52,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_295.json",
+            "GEOMETRIC_DISPLACEMENT": 46.8,
+            "VIBRATIONAL_VELOCITY": 212.14,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_296.json",
+            "GEOMETRIC_DISPLACEMENT": 46.3,
+            "VIBRATIONAL_VELOCITY": 212.75,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_297.json",
+            "GEOMETRIC_DISPLACEMENT": 38.2,
+            "VIBRATIONAL_VELOCITY": 213.37,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_298.json",
+            "GEOMETRIC_DISPLACEMENT": 46.2,
+            "VIBRATIONAL_VELOCITY": 213.99,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_299.json",
+            "GEOMETRIC_DISPLACEMENT": 36.8,
+            "VIBRATIONAL_VELOCITY": 214.61,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_300.json",
+            "GEOMETRIC_DISPLACEMENT": 45.4,
+            "VIBRATIONAL_VELOCITY": 204.1,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_301.json",
+            "GEOMETRIC_DISPLACEMENT": 25.6,
+            "VIBRATIONAL_VELOCITY": 204.72,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_302.json",
+            "GEOMETRIC_DISPLACEMENT": 46.3,
+            "VIBRATIONAL_VELOCITY": 205.34,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_303.json",
+            "GEOMETRIC_DISPLACEMENT": 46.8,
+            "VIBRATIONAL_VELOCITY": 205.96,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_304.json",
+            "GEOMETRIC_DISPLACEMENT": 45.3,
+            "VIBRATIONAL_VELOCITY": 206.57,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_305.json",
+            "GEOMETRIC_DISPLACEMENT": 21.6,
+            "VIBRATIONAL_VELOCITY": 207.19,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_306.json",
+            "GEOMETRIC_DISPLACEMENT": 45.1,
+            "VIBRATIONAL_VELOCITY": 207.81,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_307.json",
+            "GEOMETRIC_DISPLACEMENT": 34.1,
+            "VIBRATIONAL_VELOCITY": 208.43,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_308.json",
+            "GEOMETRIC_DISPLACEMENT": 44.5,
+            "VIBRATIONAL_VELOCITY": 209.05,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_309.json",
+            "GEOMETRIC_DISPLACEMENT": 34.6,
+            "VIBRATIONAL_VELOCITY": 209.66,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_310.json",
+            "GEOMETRIC_DISPLACEMENT": 44.3,
+            "VIBRATIONAL_VELOCITY": 204.72,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_311.json",
+            "GEOMETRIC_DISPLACEMENT": 3.6,
+            "VIBRATIONAL_VELOCITY": 205.34,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_312.json",
+            "GEOMETRIC_DISPLACEMENT": 41.9,
+            "VIBRATIONAL_VELOCITY": 205.96,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_313.json",
+            "GEOMETRIC_DISPLACEMENT": 41.8,
+            "VIBRATIONAL_VELOCITY": 206.57,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_314.json",
+            "GEOMETRIC_DISPLACEMENT": 40.4,
+            "VIBRATIONAL_VELOCITY": 207.19,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_315.json",
+            "GEOMETRIC_DISPLACEMENT": 52.3,
+            "VIBRATIONAL_VELOCITY": 207.81,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_316.json",
+            "GEOMETRIC_DISPLACEMENT": 44.4,
+            "VIBRATIONAL_VELOCITY": 208.43,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_317.json",
+            "GEOMETRIC_DISPLACEMENT": 34.6,
+            "VIBRATIONAL_VELOCITY": 209.05,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_318.json",
+            "GEOMETRIC_DISPLACEMENT": 44.8,
+            "VIBRATIONAL_VELOCITY": 209.66,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_319.json",
+            "GEOMETRIC_DISPLACEMENT": 55.4,
+            "VIBRATIONAL_VELOCITY": 210.28,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_320.json",
+            "GEOMETRIC_DISPLACEMENT": 44.9,
+            "VIBRATIONAL_VELOCITY": 205.34,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_321.json",
+            "GEOMETRIC_DISPLACEMENT": 46.4,
+            "VIBRATIONAL_VELOCITY": 205.96,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_322.json",
+            "GEOMETRIC_DISPLACEMENT": 43.1,
+            "VIBRATIONAL_VELOCITY": 206.57,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_323.json",
+            "GEOMETRIC_DISPLACEMENT": 158.2,
+            "VIBRATIONAL_VELOCITY": 207.19,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_324.json",
+            "GEOMETRIC_DISPLACEMENT": 42.9,
+            "VIBRATIONAL_VELOCITY": 207.81,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_325.json",
+            "GEOMETRIC_DISPLACEMENT": 50.4,
+            "VIBRATIONAL_VELOCITY": 208.43,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_326.json",
+            "GEOMETRIC_DISPLACEMENT": 42.9,
+            "VIBRATIONAL_VELOCITY": 209.05,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_327.json",
+            "GEOMETRIC_DISPLACEMENT": 6.2,
+            "VIBRATIONAL_VELOCITY": 209.66,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_328.json",
+            "GEOMETRIC_DISPLACEMENT": 45.1,
+            "VIBRATIONAL_VELOCITY": 210.28,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_329.json",
+            "GEOMETRIC_DISPLACEMENT": 52.5,
+            "VIBRATIONAL_VELOCITY": 210.9,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_330.json",
+            "GEOMETRIC_DISPLACEMENT": 45.7,
+            "VIBRATIONAL_VELOCITY": 205.96,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_331.json",
+            "GEOMETRIC_DISPLACEMENT": 52.8,
+            "VIBRATIONAL_VELOCITY": 206.57,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_332.json",
+            "GEOMETRIC_DISPLACEMENT": 44.2,
+            "VIBRATIONAL_VELOCITY": 207.19,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_333.json",
+            "GEOMETRIC_DISPLACEMENT": 47.0,
+            "VIBRATIONAL_VELOCITY": 207.81,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_334.json",
+            "GEOMETRIC_DISPLACEMENT": 46.4,
+            "VIBRATIONAL_VELOCITY": 208.43,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_335.json",
+            "GEOMETRIC_DISPLACEMENT": 29.9,
+            "VIBRATIONAL_VELOCITY": 209.05,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_336.json",
+            "GEOMETRIC_DISPLACEMENT": 43.7,
+            "VIBRATIONAL_VELOCITY": 209.66,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_337.json",
+            "GEOMETRIC_DISPLACEMENT": 41.0,
+            "VIBRATIONAL_VELOCITY": 210.28,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_338.json",
+            "GEOMETRIC_DISPLACEMENT": 41.2,
+            "VIBRATIONAL_VELOCITY": 210.9,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_339.json",
+            "GEOMETRIC_DISPLACEMENT": 10.3,
+            "VIBRATIONAL_VELOCITY": 211.52,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_340.json",
+            "GEOMETRIC_DISPLACEMENT": 44.4,
+            "VIBRATIONAL_VELOCITY": 206.57,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_341.json",
+            "GEOMETRIC_DISPLACEMENT": 36.0,
+            "VIBRATIONAL_VELOCITY": 207.19,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_342.json",
+            "GEOMETRIC_DISPLACEMENT": 45.6,
+            "VIBRATIONAL_VELOCITY": 207.81,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_343.json",
+            "GEOMETRIC_DISPLACEMENT": 52.8,
+            "VIBRATIONAL_VELOCITY": 208.43,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_344.json",
+            "GEOMETRIC_DISPLACEMENT": 44.5,
+            "VIBRATIONAL_VELOCITY": 209.05,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_345.json",
+            "GEOMETRIC_DISPLACEMENT": 36.0,
+            "VIBRATIONAL_VELOCITY": 209.66,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_346.json",
+            "GEOMETRIC_DISPLACEMENT": 45.2,
+            "VIBRATIONAL_VELOCITY": 210.28,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_347.json",
+            "GEOMETRIC_DISPLACEMENT": 50.2,
+            "VIBRATIONAL_VELOCITY": 210.9,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_348.json",
+            "GEOMETRIC_DISPLACEMENT": 44.5,
+            "VIBRATIONAL_VELOCITY": 211.52,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_349.json",
+            "GEOMETRIC_DISPLACEMENT": 36.0,
+            "VIBRATIONAL_VELOCITY": 212.14,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_350.json",
+            "GEOMETRIC_DISPLACEMENT": 44.7,
+            "VIBRATIONAL_VELOCITY": 207.19,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_351.json",
+            "GEOMETRIC_DISPLACEMENT": 40.5,
+            "VIBRATIONAL_VELOCITY": 207.81,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_352.json",
+            "GEOMETRIC_DISPLACEMENT": 44.2,
+            "VIBRATIONAL_VELOCITY": 208.43,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_353.json",
+            "GEOMETRIC_DISPLACEMENT": 47.0,
+            "VIBRATIONAL_VELOCITY": 209.05,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_354.json",
+            "GEOMETRIC_DISPLACEMENT": 42.7,
+            "VIBRATIONAL_VELOCITY": 209.66,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_355.json",
+            "GEOMETRIC_DISPLACEMENT": 16.2,
+            "VIBRATIONAL_VELOCITY": 210.28,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_356.json",
+            "GEOMETRIC_DISPLACEMENT": 44.8,
+            "VIBRATIONAL_VELOCITY": 210.9,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_357.json",
+            "GEOMETRIC_DISPLACEMENT": 47.3,
+            "VIBRATIONAL_VELOCITY": 211.52,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_358.json",
+            "GEOMETRIC_DISPLACEMENT": 41.0,
+            "VIBRATIONAL_VELOCITY": 212.14,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_359.json",
+            "GEOMETRIC_DISPLACEMENT": 5.5,
+            "VIBRATIONAL_VELOCITY": 212.75,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_360.json",
+            "GEOMETRIC_DISPLACEMENT": 46.1,
+            "VIBRATIONAL_VELOCITY": 207.81,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_361.json",
+            "GEOMETRIC_DISPLACEMENT": 36.8,
+            "VIBRATIONAL_VELOCITY": 208.43,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_362.json",
+            "GEOMETRIC_DISPLACEMENT": 46.0,
+            "VIBRATIONAL_VELOCITY": 209.05,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_363.json",
+            "GEOMETRIC_DISPLACEMENT": 45.3,
+            "VIBRATIONAL_VELOCITY": 209.66,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_364.json",
+            "GEOMETRIC_DISPLACEMENT": 44.9,
+            "VIBRATIONAL_VELOCITY": 210.28,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_365.json",
+            "GEOMETRIC_DISPLACEMENT": 47.3,
+            "VIBRATIONAL_VELOCITY": 210.9,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_366.json",
+            "GEOMETRIC_DISPLACEMENT": 46.2,
+            "VIBRATIONAL_VELOCITY": 211.52,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_367.json",
+            "GEOMETRIC_DISPLACEMENT": 43.2,
+            "VIBRATIONAL_VELOCITY": 212.14,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_368.json",
+            "GEOMETRIC_DISPLACEMENT": 41.7,
+            "VIBRATIONAL_VELOCITY": 212.75,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_369.json",
+            "GEOMETRIC_DISPLACEMENT": 118.4,
+            "VIBRATIONAL_VELOCITY": 213.37,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_370.json",
+            "GEOMETRIC_DISPLACEMENT": 46.0,
+            "VIBRATIONAL_VELOCITY": 208.43,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_371.json",
+            "GEOMETRIC_DISPLACEMENT": 74.6,
+            "VIBRATIONAL_VELOCITY": 209.05,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_372.json",
+            "GEOMETRIC_DISPLACEMENT": 45.1,
+            "VIBRATIONAL_VELOCITY": 209.66,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_373.json",
+            "GEOMETRIC_DISPLACEMENT": 37.4,
+            "VIBRATIONAL_VELOCITY": 210.28,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_374.json",
+            "GEOMETRIC_DISPLACEMENT": 46.2,
+            "VIBRATIONAL_VELOCITY": 210.9,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_375.json",
+            "GEOMETRIC_DISPLACEMENT": 42.4,
+            "VIBRATIONAL_VELOCITY": 211.52,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_376.json",
+            "GEOMETRIC_DISPLACEMENT": 43.3,
+            "VIBRATIONAL_VELOCITY": 212.14,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_377.json",
+            "GEOMETRIC_DISPLACEMENT": 49.5,
+            "VIBRATIONAL_VELOCITY": 212.75,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_378.json",
+            "GEOMETRIC_DISPLACEMENT": 45.2,
+            "VIBRATIONAL_VELOCITY": 213.37,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_379.json",
+            "GEOMETRIC_DISPLACEMENT": 41.1,
+            "VIBRATIONAL_VELOCITY": 213.99,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_380.json",
+            "GEOMETRIC_DISPLACEMENT": 46.4,
+            "VIBRATIONAL_VELOCITY": 209.05,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_381.json",
+            "GEOMETRIC_DISPLACEMENT": 29.2,
+            "VIBRATIONAL_VELOCITY": 209.66,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_382.json",
+            "GEOMETRIC_DISPLACEMENT": 46.3,
+            "VIBRATIONAL_VELOCITY": 210.28,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_383.json",
+            "GEOMETRIC_DISPLACEMENT": 43.2,
+            "VIBRATIONAL_VELOCITY": 210.9,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_384.json",
+            "GEOMETRIC_DISPLACEMENT": 44.8,
+            "VIBRATIONAL_VELOCITY": 211.52,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_385.json",
+            "GEOMETRIC_DISPLACEMENT": 44.7,
+            "VIBRATIONAL_VELOCITY": 212.14,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_386.json",
+            "GEOMETRIC_DISPLACEMENT": 45.2,
+            "VIBRATIONAL_VELOCITY": 212.75,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_387.json",
+            "GEOMETRIC_DISPLACEMENT": 50.2,
+            "VIBRATIONAL_VELOCITY": 213.37,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_388.json",
+            "GEOMETRIC_DISPLACEMENT": 46.4,
+            "VIBRATIONAL_VELOCITY": 213.99,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_389.json",
+            "GEOMETRIC_DISPLACEMENT": 29.2,
+            "VIBRATIONAL_VELOCITY": 214.61,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_390.json",
+            "GEOMETRIC_DISPLACEMENT": 44.5,
+            "VIBRATIONAL_VELOCITY": 209.66,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_391.json",
+            "GEOMETRIC_DISPLACEMENT": 34.6,
+            "VIBRATIONAL_VELOCITY": 210.28,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_392.json",
+            "GEOMETRIC_DISPLACEMENT": 43.2,
+            "VIBRATIONAL_VELOCITY": 210.9,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_393.json",
+            "GEOMETRIC_DISPLACEMENT": 37.4,
+            "VIBRATIONAL_VELOCITY": 211.52,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_394.json",
+            "GEOMETRIC_DISPLACEMENT": 44.8,
+            "VIBRATIONAL_VELOCITY": 212.14,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_395.json",
+            "GEOMETRIC_DISPLACEMENT": 36.1,
+            "VIBRATIONAL_VELOCITY": 212.75,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_396.json",
+            "GEOMETRIC_DISPLACEMENT": 46.4,
+            "VIBRATIONAL_VELOCITY": 213.37,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_397.json",
+            "GEOMETRIC_DISPLACEMENT": 31.8,
+            "VIBRATIONAL_VELOCITY": 213.99,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_398.json",
+            "GEOMETRIC_DISPLACEMENT": 44.8,
+            "VIBRATIONAL_VELOCITY": 214.61,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_399.json",
+            "GEOMETRIC_DISPLACEMENT": 36.1,
+            "VIBRATIONAL_VELOCITY": 215.23,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_400.json",
+            "GEOMETRIC_DISPLACEMENT": 46.3,
+            "VIBRATIONAL_VELOCITY": 204.72,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_401.json",
+            "GEOMETRIC_DISPLACEMENT": 29.2,
+            "VIBRATIONAL_VELOCITY": 205.34,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_402.json",
+            "GEOMETRIC_DISPLACEMENT": 45.2,
+            "VIBRATIONAL_VELOCITY": 205.96,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_403.json",
+            "GEOMETRIC_DISPLACEMENT": 41.8,
+            "VIBRATIONAL_VELOCITY": 206.57,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_404.json",
+            "GEOMETRIC_DISPLACEMENT": 46.4,
+            "VIBRATIONAL_VELOCITY": 207.19,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_405.json",
+            "GEOMETRIC_DISPLACEMENT": 31.8,
+            "VIBRATIONAL_VELOCITY": 207.81,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_406.json",
+            "GEOMETRIC_DISPLACEMENT": 44.8,
+            "VIBRATIONAL_VELOCITY": 208.43,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_407.json",
+            "GEOMETRIC_DISPLACEMENT": 37.9,
+            "VIBRATIONAL_VELOCITY": 209.05,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_408.json",
+            "GEOMETRIC_DISPLACEMENT": 45.8,
+            "VIBRATIONAL_VELOCITY": 209.66,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_409.json",
+            "GEOMETRIC_DISPLACEMENT": 37.8,
+            "VIBRATIONAL_VELOCITY": 210.28,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_410.json",
+            "GEOMETRIC_DISPLACEMENT": 45.0,
+            "VIBRATIONAL_VELOCITY": 205.34,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_411.json",
+            "GEOMETRIC_DISPLACEMENT": 32.9,
+            "VIBRATIONAL_VELOCITY": 205.96,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_412.json",
+            "GEOMETRIC_DISPLACEMENT": 46.1,
+            "VIBRATIONAL_VELOCITY": 206.57,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_413.json",
+            "GEOMETRIC_DISPLACEMENT": 33.9,
+            "VIBRATIONAL_VELOCITY": 207.19,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_414.json",
+            "GEOMETRIC_DISPLACEMENT": 41.2,
+            "VIBRATIONAL_VELOCITY": 207.81,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_415.json",
+            "GEOMETRIC_DISPLACEMENT": 40.3,
+            "VIBRATIONAL_VELOCITY": 208.43,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_416.json",
+            "GEOMETRIC_DISPLACEMENT": 44.8,
+            "VIBRATIONAL_VELOCITY": 209.05,
+            "SYMMETRY_LOCK": "97%+"
+        },
+        {
+            "vector": "voynich_stream_level7_page_417.json",
+            "GEOMETRIC_DISPLACEMENT": 37.9,
+            "VIBRATIONAL_VELOCITY": 209.66,
+            "SYMMETRY_LOCK": "97%+"
+        }
+    ]
+}

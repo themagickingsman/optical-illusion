@@ -48,8 +48,7 @@ export class FlockEngine {
            transparent: true, 
            alphaTest: 0.1, 
            side: THREE.DoubleSide,
-           roughness: 0.8,
-           emissive: new THREE.Color(0x666666) // Prevents the backside from going pitch black
+           roughness: 0.8
         });
 
         this.mesh = new THREE.InstancedMesh(geo, mat, config.count);
@@ -475,9 +474,11 @@ export class FlockEngine {
                 this.dummy.rotateZ(currentTumble * 0.5); 
             }
             
-            // Face velocity direction via X-scale flip instead of rotation (preserves Billboard perspective)
-            const flip = vel.x > 0 ? 1 : -1;
-            this.dummy.scale.set(flip * scale, scale, scale);
+            // Face velocity direction via local Y rotation (preserves Billboard perspective and normal lighting!)
+            this.dummy.scale.set(scale, scale, scale);
+            if (vel.x < 0) {
+                this.dummy.rotateY(Math.PI);
+            }
             
             this.dummy.updateMatrix();
             this.mesh.setMatrixAt(i, this.dummy.matrix);

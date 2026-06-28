@@ -19,6 +19,15 @@ import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import { FlockEngine } from '@/lib/FlockEngine';
 import { lcg, buildNoise } from '@/lib/TerrainMath';
+import { getWaveParams, Difficulty, WeaponType, WEAPONS_IN_ORDER } from '../../data/progression';
+import { IParticleSystem } from '../../lib/particles/IParticleSystem';
+import { MultiMeshParticleSystem } from '../../lib/particles/MultiMeshParticleSystem';
+import { GlobalInstancedParticleSystem } from '../../lib/particles/GlobalInstancedParticleSystem';
+import { GPUParticleSystem } from '../../lib/particles/GPUParticleSystem';
+import { useWeaponSystem, WEAPON_COOLDOWNS } from './weapons/useWeaponSystem';
+import { WeaponEngine } from './weapons/WeaponEngine';
+
+export type RenderEngine = 'multimesh' | 'global' | 'gpu';
 
 // ── Radial DOF shader — isometric-friendly: blurs edges radially from center ──
 // 8 circular samples + quadratic falloff so grid edges blur while terrain centre
@@ -256,8 +265,8 @@ const APPLE_UI_STYLES = `
 `;
 
 // ── Apple-Style Config slider ──────────────────────────────────────────────────
-function CfgSlider({ label, min, max, step, value, onChange, accent = '#0A84FF' }: {
-  label: string; min: number; max: number; step: number; value: number;
+function CfgSlider({ label, min, max, step, value, baseline, onChange, accent = '#0A84FF' }: {
+  label: string; min: number; max: number; step: number; value: number; baseline?: number;
   onChange: (v: number) => void; accent?: string;
 }) {
   return (
@@ -277,9 +286,37 @@ function CfgSlider({ label, min, max, step, value, onChange, accent = '#0A84FF' 
           fontFamily: 'system-ui, -apple-system, monospace'
         }}>{value}</span>
       </div>
-      <input type="range" className="apple-slider" min={min} max={max} step={step} value={value}
-        onChange={e => onChange(Number(e.target.value))}
-        style={{ '--slider-accent': accent } as React.CSSProperties} />
+      <div style={{ position: 'relative', display: 'flex', alignItems: 'center', width: '100%', height: 20 }}>
+        {baseline !== undefined && (
+          <div style={{
+            position: 'absolute',
+            left: `calc(${((baseline - min) / (max - min)) * 100}% + ${9 - (((baseline - min) / (max - min)) * 100) / 100 * 20}px)`,
+            top: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: 8,
+            height: 8,
+            borderRadius: '50%',
+            backgroundColor: '#000000',
+            border: '1.5px solid rgba(255, 255, 255, 0.8)',
+            zIndex: 10,
+            pointerEvents: 'none',
+            boxShadow: '0 0 6px rgba(0, 0, 0, 0.6)'
+          }} />
+        )}
+        <input type="range" className="apple-slider" min={min} max={max} step={step} value={value}
+          onChange={e => {
+            let v = Number(e.target.value);
+            if (baseline !== undefined) {
+              const range = max - min;
+              const snapDist = range * 0.04; // 4% snap
+              if (Math.abs(v - baseline) <= snapDist) {
+                v = baseline;
+              }
+            }
+            onChange(v);
+          }}
+          style={{ '--slider-accent': accent, position: 'relative', zIndex: 2, width: '100%' } as React.CSSProperties} />
+      </div>
     </div>
   );
 }
@@ -295,14 +332,53 @@ const IconBlackhole = () => <svg width="24" height="24" viewBox="0 0 24 24" fill
 function WeaponButton({ active, onClick, onSecondaryClick, icon, label, weaponId }: { active: boolean, onClick: () => void, onSecondaryClick: () => void, icon: React.ReactNode, label: string, weaponId: string }) {
   const [isHovered, setIsHovered] = useState(false);
   const [isPressed, setIsPressed] = useState(false);
-  
+  const pressTimer = useRef<NodeJS.Timeout | null>(null);
+  const didLongPress = useRef(false);
+
+  const clearTimer = () => {
+    if (pressTimer.current) {
+      clearTimeout(pressTimer.current);
+      pressTimer.current = null;
+    }
+  };
+
+  const handlePointerDown = (e: React.PointerEvent) => {
+    if (e.button === 0) {
+      setIsPressed(true);
+      didLongPress.current = false;
+      pressTimer.current = setTimeout(() => {
+        didLongPress.current = true;
+        onSecondaryClick();
+        setIsPressed(false);
+      }, 1000);
+    }
+  };
+
+  const handlePointerUp = () => {
+    setIsPressed(false);
+    clearTimer();
+  };
+
+  const handlePointerLeave = () => {
+    setIsHovered(false);
+    setIsPressed(false);
+    clearTimer();
+  };
+
+  const handleClick = (e: React.MouseEvent) => {
+    clearTimer();
+    if (!didLongPress.current) {
+      onClick();
+    }
+  };
+
   return (
     <button
-      onClick={onClick}
-      onContextMenu={(e) => { e.preventDefault(); onSecondaryClick(); }}
-      onPointerDown={(e) => { if (e.button === 0) setIsPressed(true); }}
-      onPointerUp={() => setIsPressed(false)}
-      onPointerLeave={() => { setIsHovered(false); setIsPressed(false); }}
+      onClick={handleClick}
+      onContextMenu={(e) => { e.preventDefault(); }}
+      onPointerDown={handlePointerDown}
+      onPointerUp={handlePointerUp}
+      onPointerLeave={handlePointerLeave}
       onMouseEnter={() => setIsHovered(true)}
       style={{
         position: 'relative', overflow: 'hidden',
@@ -327,20 +403,12 @@ function WeaponButton({ active, onClick, onSecondaryClick, icon, label, weaponId
   );
 }
 
-const WEAPON_COOLDOWNS: Record<string, number> = {
-  scatter: 560,
-  artillery: 900,
-  flyover: 1460,
-  laser: 2360,
-  seismic: 3820,
-  carpet: 6180,
-  blackhole: 10000
-};
+
 
 // ── Default presets for each map slot ───────────────────────────────────────
 const DEFAULT_CITY_PRESET = {
   gridW: 32, gridH: 32, octaves: 1, seed: 905, maxElev: 5, roughness: 1.54,
-  bevel: 0.03, bloomStr: 0, bloomThresh: 0, glowInt: 0.55, opacity: 1,
+  bevel: 0.03, bloomStr: 0.5, bloomThresh: 0.9, glowInt: 0.55, opacity: 1, shellEmissive: 2.75, shellHalo: 0.72, damageEmissive: 5.0, damageHalo: 0.72,
   tiltBlur: 0.3, tiltSpread: 0.02, tiltVignette: 0, vigColor: '#1a001a', shadowColor: '#0a0e2a',
   layerColors: ["#00b3ff", "#e7b883", "#ff00ae", "#ae00ff", "#ffffff"],
   matTransmit: 0, matThickness: 0, matIor: 1, matRoughness: 0.14, cubeJitter: 0.5,
@@ -352,7 +420,7 @@ const DEFAULT_CITY_PRESET = {
 };
 const DEFAULT_REGIONAL_PRESET = {
   gridW: 64, gridH: 64, octaves: 5, seed: 42, maxElev: 6, roughness: 1.5,
-  bevel: 0.06, bloomStr: 0.4, bloomThresh: 0.3, glowInt: 0.15, opacity: 0.92,
+  bevel: 0.06, bloomStr: 0.5, bloomThresh: 0.9, glowInt: 0.15, opacity: 0.92, shellEmissive: 2.75, shellHalo: 0.72, damageEmissive: 5.0, damageHalo: 0.72,
   tiltBlur: 1.8, tiltSpread: 0.032, tiltVignette: 0.45, vigColor: '#000000', shadowColor: '#020814',
   layerColors: ['#0a1a0d','#0d4a1a','#1a7a3a','#2dd46a','#9ef5c0'],
   matTransmit: 0.0, matThickness: 0.5, matIor: 1.5, matRoughness: 0.88, cubeJitter: 0.12,
@@ -363,32 +431,8 @@ const DEFAULT_REGIONAL_PRESET = {
   beaconLight: 0.9, beaconBury: 3, beaconSeed: 13, renderMode: 'glass',
 };
 
-// ── Weapons System Types ──────────────────────────────────────────────────
-interface WeaponProjectile {
-  id: string;
-  type: 'scatter' | 'artillery' | 'flyover' | 'laser' | 'seismic' | 'carpet' | 'blackhole';
-  mesh: THREE.Object3D;
-  startX: number; startY: number; startZ: number;
-  targetX: number; targetY: number; targetZ: number;
-  progress: number;
-  speed: number;
-  radius: number;
-  depth: number;
-  delayMs?: number;
-  startTime?: number;
-  curvePt1?: THREE.Vector3;
-  curvePt2?: THREE.Vector3;
-}
 
-// ── Asteroid-style particle pool for the terrain hover system ────────────────
-interface TerrainParticle {
-  alive:  boolean;
-  px: number; py: number; pz: number;  // world position
-  vx: number; vy: number; vz: number;  // velocity
-  age: number; maxAge: number;          // lifetime in frames
-  r:   number; g: number; b: number;   // emissive color
-}
-const TERRAIN_MAX_PARTICLES = 30000;
+// ── Particle System Imports are above ──
 
 // ── Main component ────────────────────────────────────────────────────────────
 const createGoldenRatioShadowTexture = () => {
@@ -645,7 +689,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
   
   // Wave System
   const waveNumberRef = useRef(1);
-  const shotsFiredRef = useRef(0);
+
   const sheepScoreRef = useRef(0);
   const totalKillsRef = useRef(0);
   const totalTimeRef = useRef(0);
@@ -666,8 +710,8 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
   const spotLightRef  = useRef<THREE.SpotLight | null>(null);
   
   // ── Weapons System refs ───────────────────────────────────────────────────
-  const weaponProjectilesRef  = useRef<WeaponProjectile[]>([]);
-  const weaponCooldownsRef    = useRef<Record<string, number>>({});
+
+
 
   // ── Hover glow system refs (Mesh Pool for trailing fades) ──────────────
   interface HoverPoolItem {
@@ -688,15 +732,14 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
   const shadowsDirtyRef = useRef(true);
   const vigColorRef     = useRef(new THREE.Color('#000000'));
   // ── Hover glow system refs (Mesh Pool for trailing fades) ──────────────
-  // ── Asteroid particle system refs ─────────────────────────────────────────
-  const particlesRef      = useRef<THREE.Points | null>(null);          // THREE.Points object
-  const particleDataRef   = useRef<TerrainParticle[]>([]);              // CPU particle pool
+  // ── Particle System Architecture Ref ───────────────────────────────────────
+  const particleSystemRef = useRef<IParticleSystem | null>(null);
+  const weaponEngineRef = useRef<WeaponEngine | null>(null);
   const mouseWorld3DRef   = useRef(new THREE.Vector3());                // 3D world pos of mouse
-  const particleFrameRef  = useRef(0);                                  // frame counter for particle loop
-  // Per-block cooldown: Date.now() of last particle yield (key = `meshIdx_instIdx`)
+  const particleFrameRef  = useRef(0);                                  // frame counter for UI
   const particleCooldownRef = useRef<Map<string, number>>(new Map());
   const presetExplodeBlocksRef = useRef<Set<string>>(new Set());
-  const dynamicGlowBlocksRef = useRef<Map<string, THREE.Mesh>>(new Map());
+
   // ── Energon placement system refs ─────────────────────────────────────
   const slotMeshesRef   = useRef<Map<string, THREE.Mesh>>(new Map());   // key: `${altarIdx}_${slotIdx}`
   const beamMeshesRef   = useRef<Map<number, THREE.Mesh>>(new Map());   // key altarIdx
@@ -711,7 +754,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
     LS_KEY === 'arn_terrain_regional_v1' ? DEFAULT_REGIONAL_PRESET :
     LS_KEY === 'arn_terrain_city_v1'     ? DEFAULT_CITY_PRESET     : {
       gridW: 32, gridH: 32, octaves: 1, seed: 905, maxElev: 5, roughness: 1.54,
-      bevel: 0.03, bloomStr: 0, bloomThresh: 0, glowInt: 0.55, opacity: 1,
+      bevel: 0.03, bloomStr: 0, bloomThresh: 0, glowInt: 0.55, opacity: 1, damageEmissive: 5.0, damageHalo: 0.72,
       tiltBlur: 0.3, tiltSpread: 0.02, tiltVignette: 0, vigColor: '#1a001a', shadowColor: '#0a0e2a',
       layerColors: ["#00b3ff", "#e7b883", "#ff00ae", "#ae00ff", "#ffffff"],
       matTransmit: 0, matThickness: 0, matIor: 1, matRoughness: 0.14, cubeJitter: 0.5,
@@ -775,7 +818,12 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
   const [bloomStr,    setBloomStr]    = useState<number>(_defaultPreset.bloomStr      ?? 0.5);
   const [bloomThresh, setBloomThresh] = useState<number>(_defaultPreset.bloomThresh   ?? 0.85);
   const [glowInt,     setGlowInt]     = useState<number>(_defaultPreset.glowInt       ?? 0.2);
+  const [shellEmissive, setShellEmissive] = useState<number>(_defaultPreset.shellEmissive ?? 2.75);
+  const [shellHalo,     setShellHalo]     = useState<number>(_defaultPreset.shellHalo     ?? 0.72);
+  const [damageEmissive,setDamageEmissive]= useState<number>(_defaultPreset.damageEmissive?? 5.0);
+  const [damageHalo,    setDamageHalo]    = useState<number>(_defaultPreset.damageHalo    ?? 0.72);
   const [baseGlow,    setBaseGlow]    = useState<number>(_defaultPreset.baseGlow      ?? 0.1);
+
   const [hoverFade,   _setHoverFade]  = useState<number>(_defaultPreset.hoverFade     ?? 0.07);
   const hoverFadeRef = useRef(hoverFade);
   const setHoverFade = (v: number) => { _setHoverFade(v); hoverFadeRef.current = v; };
@@ -869,6 +917,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
   const partDecayRef = useRef(partDecay);   useEffect(() => { partDecayRef.current = partDecay; }, [partDecay]);
   const partFalloffRef = useRef(partFalloff); useEffect(() => { partFalloffRef.current = partFalloff; }, [partFalloff]);
   const partLifeRef = useRef(partLife);     useEffect(() => { partLifeRef.current = partLife; }, [partLife]);
+  const partSizeRef = useRef(partSize);     useEffect(() => { partSizeRef.current = partSize; }, [partSize]);
 
   const [regenSpeed, setRegenSpeed] = useState<number>(0);
   const [regenFadeSpeed, setRegenFadeSpeed] = useState<number>(0.08);
@@ -876,10 +925,65 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
   const regenFadeSpeedRef = useRef(regenFadeSpeed); useEffect(() => { regenFadeSpeedRef.current = regenFadeSpeed; }, [regenFadeSpeed]);
   const regeneratingBlocksRef = useRef<Map<string, { scale: number, fast?: boolean }>>(new Map());
 
-  type WeaponType = 'scatter' | 'artillery' | 'flyover' | 'laser' | 'seismic' | 'carpet' | 'blackhole' | null;
-  const [selectedWeapon, setSelectedWeapon] = useState<WeaponType>('scatter');
-  const [settingsWeapon, setSettingsWeapon] = useState<WeaponType>(null);
-  const selectedWeaponRef = useRef<WeaponType>(null);
+  const ws = useWeaponSystem();
+  
+  // Expose these so that the rest of TerrainGenerator can use them directly without ws. prefixes
+  const {
+    selectedWeapon, setSelectedWeapon, selectedWeaponRef,
+    settingsWeapon, setSettingsWeapon,
+    unlockedWeapons, setUnlockedWeapons, unlockedWeaponsRef,
+
+    scatterPartSpeed, setScatterPartSpeed, scatterPartSpeedRef,
+    artilleryPartSpeed, setArtilleryPartSpeed, artilleryPartSpeedRef,
+    flyoverPartSpeed, setFlyoverPartSpeed, flyoverPartSpeedRef,
+    seismicPartSpeed, setSeismicPartSpeed, seismicPartSpeedRef,
+    carpetPartSpeed, setCarpetPartSpeed, carpetPartSpeedRef,
+    laserPartSpeed, setLaserPartSpeed, laserPartSpeedRef,
+    blackholePartSpeed, setBlackholePartSpeed, blackholePartSpeedRef,
+    
+    scatterCount, setScatterCount, scatterCountRef,
+    scatterRadius, setScatterRadius, scatterRadiusRef,
+    scatterDepth, setScatterDepth, scatterDepthRef,
+    scatterDelay, setScatterDelay, scatterDelayRef,
+    scatterProjectiles, setScatterProjectiles,
+    scatterSpread, setScatterSpread,
+
+    artilleryRadius, setArtilleryRadius, artilleryRadiusRef,
+    artilleryDepth, setArtilleryDepth, artilleryDepthRef,
+    artilleryDelay, setArtilleryDelay, artilleryDelayRef,
+
+    flyoverRadius, setFlyoverRadius, flyoverRadiusRef,
+    flyoverDepth, setFlyoverDepth, flyoverDepthRef,
+    flyoverDelay, setFlyoverDelay, flyoverDelayRef,
+    flyoverLength, setFlyoverLength,
+    flyoverSpacing, setFlyoverSpacing,
+
+    laserRadius, setLaserRadius, laserRadiusRef,
+    laserDepth, setLaserDepth, laserDepthRef,
+    laserDuration, setLaserDuration, laserDurationRef,
+    laserDelay, setLaserDelay, laserDelayRef,
+
+    seismicRadius, setSeismicRadius, seismicRadiusRef,
+    seismicDepth, setSeismicDepth, seismicDepthRef,
+    seismicSpeed, setSeismicSpeed, seismicSpeedRef,
+    seismicDelay, setSeismicDelay, seismicDelayRef,
+    seismicCount, setSeismicCount,
+
+    carpetRadius, setCarpetRadius, carpetRadiusRef,
+    carpetDepth, setCarpetDepth, carpetDepthRef,
+    carpetCount, setCarpetCount, carpetCountRef,
+    carpetDelay, setCarpetDelay, carpetDelayRef,
+    carpetRows, setCarpetRows,
+    carpetCols, setCarpetCols,
+    carpetSpacing, setCarpetSpacing,
+
+    blackholeRadius, setBlackholeRadius, blackholeRadiusRef,
+    blackholeDepth, setBlackholeDepth, blackholeDepthRef,
+    blackholeDuration, setBlackholeDuration, blackholeDurationRef,
+    blackholeDelay, setBlackholeDelay, blackholeDelayRef,
+    weaponCooldownsRef, shotsFiredRef
+  } = ws;
+
   const [altarGlow,       setAltarGlow]       = useState<number[]>(Array(7).fill(1.0));
   const [altarOcclude,    setAltarOcclude]    = useState<boolean[]>(Array(7).fill(false));
   // ── Energon placement UI state ────────────────────────────────────────
@@ -903,124 +1007,14 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
   const isRaidModeRef = useRef(false);
   useEffect(() => { isRaidModeRef.current = isRaidMode; }, [isRaidMode]);
   
+  const [difficulty, setDifficulty] = useState<Difficulty>('medium');
+  const difficultyRef = useRef<Difficulty>('medium');
+  useEffect(() => { difficultyRef.current = difficulty; }, [difficulty]);
 
-  useEffect(() => { selectedWeaponRef.current = selectedWeapon; }, [selectedWeapon]);
+  const [renderEngine, setRenderEngine] = useState<RenderEngine>('multimesh');
+  const renderEngineRef = useRef<RenderEngine>('multimesh');
+  useEffect(() => { renderEngineRef.current = renderEngine; }, [renderEngine]);
 
-  // Weapon parameters
-  const [scatterCount, setScatterCount] = useState(8);
-  const scatterCountRef = useRef(scatterCount);
-  useEffect(() => { scatterCountRef.current = scatterCount; }, [scatterCount]);
-
-  const [scatterRadius, setScatterRadius] = useState(3);
-  const scatterRadiusRef = useRef(scatterRadius);
-  useEffect(() => { scatterRadiusRef.current = scatterRadius; }, [scatterRadius]);
-
-  const [scatterDepth, setScatterDepth] = useState(3);
-  const scatterDepthRef = useRef(scatterDepth);
-  useEffect(() => { scatterDepthRef.current = scatterDepth; }, [scatterDepth]);
-
-  const [scatterDelay, setScatterDelay] = useState(0);
-  const scatterDelayRef = useRef(scatterDelay);
-  useEffect(() => { scatterDelayRef.current = scatterDelay; }, [scatterDelay]);
-
-  const [artilleryRadius, setArtilleryRadius] = useState(3);
-  const artilleryRadiusRef = useRef(artilleryRadius);
-  useEffect(() => { artilleryRadiusRef.current = artilleryRadius; }, [artilleryRadius]);
-
-  const [artilleryDepth, setArtilleryDepth] = useState(4);
-  const artilleryDepthRef = useRef(artilleryDepth);
-  useEffect(() => { artilleryDepthRef.current = artilleryDepth; }, [artilleryDepth]);
-
-  const [artilleryDelay, setArtilleryDelay] = useState(0);
-  const artilleryDelayRef = useRef(artilleryDelay);
-  useEffect(() => { artilleryDelayRef.current = artilleryDelay; }, [artilleryDelay]);
-
-  const [flyoverRadius, setFlyoverRadius] = useState(5);
-  const flyoverRadiusRef = useRef(flyoverRadius);
-  useEffect(() => { flyoverRadiusRef.current = flyoverRadius; }, [flyoverRadius]);
-
-  const [flyoverDepth, setFlyoverDepth] = useState(5);
-  const flyoverDepthRef = useRef(flyoverDepth);
-  useEffect(() => { flyoverDepthRef.current = flyoverDepth; }, [flyoverDepth]);
-
-  const [flyoverDelay, setFlyoverDelay] = useState(2500);
-  const flyoverDelayRef = useRef(flyoverDelay);
-  useEffect(() => { flyoverDelayRef.current = flyoverDelay; }, [flyoverDelay]);
-
-  // New Weapons state
-  const [laserRadius, setLaserRadius] = useState(4);
-  const laserRadiusRef = useRef(laserRadius);
-  useEffect(() => { laserRadiusRef.current = laserRadius; }, [laserRadius]);
-
-  const [laserDepth, setLaserDepth] = useState(10);
-  const laserDepthRef = useRef(laserDepth);
-  useEffect(() => { laserDepthRef.current = laserDepth; }, [laserDepth]);
-
-  const [laserDuration, setLaserDuration] = useState(1500);
-  const laserDurationRef = useRef(laserDuration);
-  useEffect(() => { laserDurationRef.current = laserDuration; }, [laserDuration]);
-
-  const [laserDelay, setLaserDelay] = useState(0);
-  const laserDelayRef = useRef(laserDelay);
-  useEffect(() => { laserDelayRef.current = laserDelay; }, [laserDelay]);
-
-  const [seismicRadius, setSeismicRadius] = useState(8);
-  const seismicRadiusRef = useRef(seismicRadius);
-  useEffect(() => { seismicRadiusRef.current = seismicRadius; }, [seismicRadius]);
-
-  const [seismicSpeed, setSeismicSpeed] = useState(40);
-  const seismicSpeedRef = useRef(seismicSpeed);
-  useEffect(() => { seismicSpeedRef.current = seismicSpeed; }, [seismicSpeed]);
-
-  const [seismicDelay, setSeismicDelay] = useState(0);
-  const seismicDelayRef = useRef(seismicDelay);
-  useEffect(() => { seismicDelayRef.current = seismicDelay; }, [seismicDelay]);
-
-  const [carpetCount, setCarpetCount] = useState(12);
-  const carpetCountRef = useRef(carpetCount);
-  useEffect(() => { carpetCountRef.current = carpetCount; }, [carpetCount]);
-
-  const [carpetDelay, setCarpetDelay] = useState(150);
-  const carpetDelayRef = useRef(carpetDelay);
-  useEffect(() => { carpetDelayRef.current = carpetDelay; }, [carpetDelay]);
-
-  const [seismicDepth, setSeismicDepth] = useState(3);
-  const seismicDepthRef = useRef(seismicDepth);
-  useEffect(() => { seismicDepthRef.current = seismicDepth; }, [seismicDepth]);
-
-  const [carpetRadius, setCarpetRadius] = useState(4);
-  const carpetRadiusRef = useRef(carpetRadius);
-  useEffect(() => { carpetRadiusRef.current = carpetRadius; }, [carpetRadius]);
-
-  const [carpetDepth, setCarpetDepth] = useState(4);
-  const carpetDepthRef = useRef(carpetDepth);
-  useEffect(() => { carpetDepthRef.current = carpetDepth; }, [carpetDepth]);
-
-  const [blackholeDepth, setBlackholeDepth] = useState(10);
-  const blackholeDepthRef = useRef(blackholeDepth);
-  useEffect(() => { blackholeDepthRef.current = blackholeDepth; }, [blackholeDepth]);
-
-  const [blackholeRadius, setBlackholeRadius] = useState(8);
-  const blackholeRadiusRef = useRef(blackholeRadius);
-  useEffect(() => { blackholeRadiusRef.current = blackholeRadius; }, [blackholeRadius]);
-
-  const [blackholeDuration, setBlackholeDuration] = useState(3000);
-  const blackholeDurationRef = useRef(blackholeDuration);
-  useEffect(() => { blackholeDurationRef.current = blackholeDuration; }, [blackholeDuration]);
-
-  const [blackholeDelay, setBlackholeDelay] = useState(0);
-
-  // Missing Payload configs
-  const [scatterProjectiles, setScatterProjectiles] = useState(8);
-  const [scatterSpread, setScatterSpread] = useState(2);
-  const [flyoverLength, setFlyoverLength] = useState(10);
-  const [flyoverSpacing, setFlyoverSpacing] = useState(1.5);
-  const [seismicCount, setSeismicCount] = useState(5);
-  const [carpetRows, setCarpetRows] = useState(3);
-  const [carpetCols, setCarpetCols] = useState(3);
-  const [carpetSpacing, setCarpetSpacing] = useState(2);
-  const blackholeDelayRef = useRef(blackholeDelay);
-  useEffect(() => { blackholeDelayRef.current = blackholeDelay; }, [blackholeDelay]);
 
   const [brokenBlocks, setBrokenBlocks]       = useState<Set<string>>(new Set());
   const brokenBlocksRef = useRef<Set<string>>(brokenBlocks);
@@ -1032,7 +1026,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
   useEffect(() => { brokenBlocksRef.current = brokenBlocks; }, [brokenBlocks]);
 
   // Cinematic Wave Announcer
-  const announceWave = useCallback((wave: number, count: number) => {
+  const announceWave = useCallback((wave: number, count: number, weaponUnlock?: string) => {
       isTransitioningWaveRef.current = true;
       const el = announcerElRef.current;
       if (el) {
@@ -1054,7 +1048,12 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
               });
           };
           (async () => {
-              await showText(`WAVE ${wave}`, 600);
+              if (weaponUnlock) {
+                  await showText(`WAVE ${wave}`, 600);
+                  await showText(`${weaponUnlock}\nUNLOCKED`, 1200);
+              } else {
+                  await showText(`WAVE ${wave}`, 600);
+              }
               await showText(`2`, 250);
               await showText(`1`, 250);
               if (flockEngineRef.current) flockEngineRef.current.spawnWave(count);
@@ -1086,7 +1085,12 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
           if (s.bloomStr !== undefined) setBloomStr(s.bloomStr);
           if (s.bloomThresh !== undefined) setBloomThresh(s.bloomThresh);
           if (s.glowInt !== undefined) setGlowInt(s.glowInt);
+          if (s.shellEmissive !== undefined) setShellEmissive(s.shellEmissive);
+          if (s.shellHalo !== undefined) setShellHalo(s.shellHalo);
+          if (s.damageEmissive !== undefined) setDamageEmissive(s.damageEmissive);
+          if (s.damageHalo !== undefined) setDamageHalo(s.damageHalo);
           if (s.baseGlow !== undefined) setBaseGlow(s.baseGlow);
+
           if (s.hoverFade !== undefined) setHoverFade(s.hoverFade);
           if (s.opacity !== undefined) setOpacity(s.opacity);
           if (s.tiltBlur !== undefined) setTiltBlur(s.tiltBlur);
@@ -1193,7 +1197,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
           key: LS_KEY,
           data: {
             gridW, gridH, octaves, seed, maxElev, roughness,
-            bevel, bloomStr, bloomThresh, glowInt, baseGlow, hoverFade, opacity,
+            bevel, bloomStr, bloomThresh, glowInt, shellEmissive, shellHalo, damageEmissive, damageHalo, baseGlow, hoverFade, opacity,
             tiltBlur, tiltSpread, tiltVignette, vigColor, shadowColor,
             layerColors, matTransmit, matThickness, matIor, matRoughness, cubeJitter, shadowIntensity, shadowBias, shadowNormalBias, hemIntensity,
             shadowRadius, shadowMapSize, keyLightInt, ambientInt, keyLightColor, lightElev, lightAzimuth,
@@ -1218,7 +1222,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
       }).catch(e => console.error(e));
     } catch (e) {}
   }, [gridW, gridH, octaves, seed, maxElev, roughness,
-      bevel, bloomStr, bloomThresh, glowInt, baseGlow, hoverFade, opacity,
+      bevel, bloomStr, bloomThresh, glowInt, shellEmissive, shellHalo, damageEmissive, damageHalo, baseGlow, hoverFade, opacity,
       tiltBlur, tiltSpread, tiltVignette, vigColor, shadowColor,
       layerColors, matTransmit, matThickness, matIor, matRoughness, cubeJitter, shadowIntensity, shadowBias, shadowNormalBias, hemIntensity,
       shadowRadius, shadowMapSize, keyLightInt, ambientInt, keyLightColor, lightElev, lightAzimuth,
@@ -1249,21 +1253,29 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
         if (cellH > 0) allKeys.push(`${gx}_${gy}_${cellH - 1}`);
       }
     }
-    const localRand = lcg(currentSeed * 7);
-    const shuffled = [...allKeys].sort(() => localRand() - 0.5);
+    const shuffled = [...allKeys];
+    // Proper Fisher-Yates shuffle for true random distribution
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
     presetExplodeBlocksRef.current = new Set(shuffled.slice(0, 5));
   }, []);
 
-  const getFreeParticle = () => {
-    const limit = Math.min(partLimitRef.current, TERRAIN_MAX_PARTICLES);
-    const pd = particleDataRef.current;
-    for (let i = 0; i < limit; i++) {
-       if (!pd[i].alive) return pd[i];
+  const spawnBlockExplosion = (px: number, py: number, pz: number, color: THREE.Color, count: number, speedMult: number, lifeMult: number, forceVel?: THREE.Vector3[], forcePos?: THREE.Vector3[], weaponRadius: number = 1) => {
+    if (particleSystemRef.current) {
+        // Calculate force based on weapon AOE radius
+        // Radius 1 (Scatter) -> ~3.8 force. Radius 27 (Blackhole) -> ~50 force.
+        const force = 2.0 + (weaponRadius * 1.8);
+        // Cap visual shard count to prevent "shit is all over the place"
+        // Scale it cleanly between ~5 to 150 shards per block based on radius
+        const calculatedShards = Math.min(150, Math.max(5, Math.floor(weaponRadius * 5.5)));
+        
+        particleSystemRef.current.explode(px, py, pz, force, 5.0, color, isTreasureModeRef.current);
     }
-    return undefined;
   };
 
-  const triggerWeaponImpact = useCallback((hx: number, hy: number, hz: number, radius: number, depth: number) => {
+  const triggerWeaponImpact = useCallback((hx: number, hy: number, hz: number, radius: number, depth: number, partSpeedOverride?: number) => {
     // 1. Sheep physical blast wave response
     if (flockEngineRef.current) {
          const conf = flockEngineRef.current.config;
@@ -1271,6 +1283,8 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
          const blastRadius = Math.max(radius * 2.0, conf.explodeRadius);
          flockEngineRef.current.explode(hx, hz, conf.explodeForce, blastRadius);
     }
+
+
     
     // 2. Gather keys
     const toBreak = new Set<string>();
@@ -1330,15 +1344,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
       }
     }
     
-    // Short-circuit optimization: if nothing here is new, skip full O(N) lookup.
-    let hasNewBreaks = false;
-    for (const k of toBreak) {
-      if (!brokenBlocksRef.current.has(k)) {
-        hasNewBreaks = true;
-        break;
-      }
-    }
-    if (!hasNewBreaks) return;
+
 
     setBrokenBlocks(prev => {
       const next = new Set(prev);
@@ -1382,6 +1388,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
                if (brokenBlocksRef.current.has(k)) continue;
                const i = indexMap.get(k);
                if (i !== undefined) {
+                  brokenBlocksRef.current.add(k); // Synchronize instantly so useFrame doesn't spam this block
                   // Isolate destruction purely to the global offset instance
                   const _dummyMat = new THREE.Matrix4();
                   c.getMatrixAt(i, _dummyMat);
@@ -1389,10 +1396,9 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
                   c.setMatrixAt(i, _dummyMat);
                   c.instanceMatrix.needsUpdate = true;
                   
-                  if (renderModeRef.current === 'glass') {
+                  if (targetGroup) {
                     const ci = c.userData.colorIndex;
-                    const gMesh = (sceneRef.current?.children.find(child => child === meshGroupRef.current)?.children ?? [])
-                       .find((child): child is THREE.InstancedMesh => child instanceof THREE.InstancedMesh && child.userData.isJitterGlow && child.userData.colorIndex === ci);
+                    const gMesh = targetGroup.children.find((child): child is THREE.InstancedMesh => child instanceof THREE.InstancedMesh && child.userData.isJitterGlow && child.userData.colorIndex === ci);
                     if (gMesh) {
                        const _gDummy = new THREE.Matrix4();
                        gMesh.getMatrixAt(i, _gDummy);
@@ -1408,6 +1414,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
                        p.targetAlpha = 0; p.currentAlpha = 0; p.mesh.visible = false; p.active = false;
                     }
                   });
+
 
                   // Destroy any beacon sitting on or near this block
                   if (beaconGrpRef.current) {
@@ -1433,130 +1440,18 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
                   const px = offsetX + parseInt(k.split('_')[0]);
                   const py = parseInt(k.split('_')[2]) + 0.5;
                   const pz = offsetZ + parseInt(k.split('_')[1]);
-                  const numParts = partCountRef.current; // Tied to global UI slider
-                  for (let p = 0; p < numParts; p++) {
-                    const slot = getFreeParticle();
-                    if (!slot) break;
-                    const speed = (0.2 + Math.random() * 0.4) * partSpeedRef.current;
-                    const theta  = Math.random() * Math.PI * 2;
-                    const phi    = Math.random() * Math.PI;
-                    slot.alive  = true;
-                    slot.px = px; slot.py = py; slot.pz = pz;
-                    slot.vx = Math.sin(phi) * Math.cos(theta) * speed; slot.vy = Math.cos(phi) * speed + 0.1; slot.vz = Math.sin(phi) * Math.sin(theta) * speed;
-                    slot.age    = 0; slot.maxAge = partLifeRef.current + Math.random() * (partLifeRef.current * 0.5);
-                    slot.r = layerCol.r; slot.g = layerCol.g; slot.b = layerCol.b;
-                  }
+                  const numParts = partCountRef.current; // Authentic 1:1 explosion size
+                  spawnBlockExplosion(px, py, pz, layerCol, numParts, partSpeedOverride ?? partSpeedRef.current, partLifeRef.current, undefined, undefined, radius);
                }
             }
          }
         }
      }
+     
+     needsRenderRef.current = true;
+     shadowsDirtyRef.current = true;
 
-     // Helper function: dynamically instantiate a glowing brick if it became an edge
-     const checkAndSpawnDynamicGlow = (gx: number, gy: number, gz: number, cx: number, cy: number, w: number, h: number, heights: any[]) => {
-       const isLargeMap = layoutTabRef.current === 'large_map';
-       const blockKey = isLargeMap ? `${gx}_${gy}_${gz}` : `${gx}_${gy}_${gz}`;
-       if (brokenBlocksRef.current.has(blockKey) || toBreak.has(blockKey)) return;
 
-       // Recalculate isEdge
-       const isInteriorHole = (nx: number, ny: number) => {
-         if (nx < 0 || nx >= w || ny < 0 || ny >= h) return false;
-         const nH = heights[ny][nx] ?? 1;
-         if (nH <= 0) return true;
-         const gX = nx + cx * w;
-         const gY = ny + cy * h;
-         const testKey = isLargeMap ? `${gX}_${gY}_0` : `${nx}_${ny}_0`;
-         return brokenBlocksRef.current.has(testKey) || toBreak.has(testKey);
-       };
-
-       const localX = gx - cx * w;
-       const localY = gy - cy * h;
-
-       const isEdge = isInteriorHole(localX, localY - 1) ||
-                      isInteriorHole(localX, localY + 1) ||
-                      isInteriorHole(localX - 1, localY) ||
-                      isInteriorHole(localX + 1, localY);
-
-       if (isEdge && !dynamicGlowBlocksRef.current.has(blockKey)) {
-         let foundMesh: THREE.InstancedMesh | null = null;
-         let foundIndex: number = -1;
-         for (const c of targetGroup.children) {
-           if (c instanceof THREE.InstancedMesh && c.userData.coordIndexMap) {
-             const i = c.userData.coordIndexMap.get(blockKey);
-             if (i !== undefined) {
-               foundMesh = c;
-               foundIndex = i;
-               break;
-             }
-           }
-         }
-         
-         if (foundMesh) {
-           const _dummyMat = new THREE.Matrix4();
-           foundMesh.getMatrixAt(foundIndex, _dummyMat);
-           const originalPos = new THREE.Vector3().setFromMatrixPosition(_dummyMat);
-           
-           // DO NOT hide the original block! Leave it perfectly intact.
-           // Just spawn the translucent JitterGlow shell over it, exactly matching the preset 'rando blocks' feature.
-           const geo = isLargeMap ? new THREE.BoxGeometry(1.04, 1.04, 1.04) : new THREE.BoxGeometry(1.04, 1.04, 1.04);
-           
-           // Read color from instance or material
-           let baseColor = new THREE.Color(0xffffff);
-           if (foundMesh.instanceColor) {
-             foundMesh.getColorAt(foundIndex, baseColor);
-           } else if (foundMesh.material) {
-             const origMat = Array.isArray(foundMesh.material) ? foundMesh.material[0] : foundMesh.material;
-             if ('emissive' in origMat) {
-               baseColor = new THREE.Color((origMat as any).emissive);
-             } else if ('color' in origMat) {
-               baseColor = new THREE.Color((origMat as any).color);
-             }
-           }
-
-           const mat = new THREE.MeshStandardMaterial({
-             color: new THREE.Color(0, 0, 0),
-             emissive: baseColor,
-             emissiveIntensity: 5.0, // Matches full hover shell intensity (1.0 * 5.0)
-             transparent: true,
-             opacity: 0.72, // Matches full hover shell opacity (1.0 * 0.72)
-             depthWrite: false,
-             side: THREE.FrontSide,
-           });
-           
-           const newMesh = new THREE.Mesh(geo, mat);
-           newMesh.position.copy(originalPos);
-           
-           targetGroup.add(newMesh);
-           dynamicGlowBlocksRef.current.set(blockKey, newMesh);
-         }
-       }
-     };
-
-     // Dynamically update neighbors of broken blocks
-     const hData = terrainRef.current;
-     if (hData.length > 0) {
-       const w = hData[0].length;
-       const h = hData.length;
-       for (const k of toBreak) {
-         // Cleanup: if the block being destroyed was a glowing edge, remove the dynamic mesh so it doesn't float!
-         if (dynamicGlowBlocksRef.current.has(k)) {
-           const floatMesh = dynamicGlowBlocksRef.current.get(k);
-           if (floatMesh && floatMesh.parent) floatMesh.parent.remove(floatMesh);
-           dynamicGlowBlocksRef.current.delete(k);
-         }
-
-         const [xs, ys, zs] = k.split('_');
-         const gx = parseInt(xs), gy = parseInt(ys), gz = parseInt(zs);
-         const cx = Math.floor(gx / w), cy = Math.floor(gy / h);
-         
-         checkAndSpawnDynamicGlow(gx, gy - 1, gz, cx, cy, w, h, hData);
-         checkAndSpawnDynamicGlow(gx, gy + 1, gz, cx, cy, w, h, hData);
-         checkAndSpawnDynamicGlow(gx - 1, gy, gz, cx, cy, w, h, hData);
-         checkAndSpawnDynamicGlow(gx + 1, gy, gz, cx, cy, w, h, hData);
-         checkAndSpawnDynamicGlow(gx, gy, gz + 1, cx, cy, w, h, hData);
-         checkAndSpawnDynamicGlow(gx, gy, Math.max(0, gz - 1), cx, cy, w, h, hData);
-       }
-     }
 
     needsRenderRef.current = true;
   }, []);
@@ -1665,9 +1560,9 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
       const glowMat = new THREE.MeshStandardMaterial({
         color: new THREE.Color(0,0,0),
         emissive: levelCol,
-        emissiveIntensity: glow * 5.0,
+        emissiveIntensity: shellEmissive,
         transparent: true,
-        opacity: 0.72,
+        opacity: shellHalo,
         depthWrite: false,
         side: THREE.FrontSide,
       });
@@ -2139,6 +2034,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
             lighting: {
               keyLightColor, lightElev, lightAzimuth,
               keyLightInt, ambientInt,
+              bloomStr, bloomThresh, damageEmissive, damageHalo, baseGlow, opacity
             },
             // Beacon blocks
             beacons: {
@@ -2214,6 +2110,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
     rendererRef.current = renderer;
 
     const scene = new THREE.Scene();
+    weaponEngineRef.current = new WeaponEngine(scene, triggerWeaponImpact);
     scene.fog = new THREE.Fog(0x16003b, 80, 220);
     sceneRef.current = scene;
 
@@ -2243,13 +2140,13 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableRotate  = false; // Locked to isometric angle
     controls.enableZoom    = true;
-    controls.enablePan     = true; // Re-enabled per user request
+    controls.enablePan     = false; // Disabled panning per user request
     controls.minZoom       = 0.5;   // Constrain zoom out
     controls.maxZoom       = 3.0;   // Constrain zoom in
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
-    controls.mouseButtons  = { LEFT: THREE.MOUSE.PAN, MIDDLE: THREE.MOUSE.DOLLY, RIGHT: THREE.MOUSE.PAN };
-    controls.touches       = { ONE: THREE.TOUCH.PAN, TWO: THREE.TOUCH.DOLLY_PAN };
+    controls.mouseButtons  = { LEFT: THREE.MOUSE.DOLLY, MIDDLE: THREE.MOUSE.DOLLY, RIGHT: THREE.MOUSE.DOLLY };
+    controls.touches       = { ONE: THREE.TOUCH.DOLLY, TWO: THREE.TOUCH.DOLLY_PAN };
     // Mark scene dirty whenever camera changes so we re-render exactly once
     controls.addEventListener('change', () => { needsRenderRef.current = true; });
     controlsRef.current = controls;
@@ -2354,35 +2251,13 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
     scene.add(hexGrp);
     hexWorldGrpRef.current = hexGrp;
 
-    // ── Asteroid particle system ────────────────────────────────────────────────
-    const pPosArr = new Float32Array(TERRAIN_MAX_PARTICLES * 3);
-    const pColArr = new Float32Array(TERRAIN_MAX_PARTICLES * 3);
-    const pGeo   = new THREE.BufferGeometry();
-    pGeo.setAttribute('position', new THREE.BufferAttribute(pPosArr, 3));
-    pGeo.setAttribute('color',    new THREE.BufferAttribute(pColArr, 3));
-    pGeo.setDrawRange(0, 0); // start with nothing visible
-    const pMat = new THREE.PointsMaterial({
-      size:            1.5,
-      vertexColors:    true,
-      transparent:     true,
-      opacity:         0.92,
-      depthWrite:      false,
-      blending:        THREE.AdditiveBlending, // additive = glowing dots, boosted by Bloom
-      sizeAttenuation: true,
-    });
-    const pts = new THREE.Points(pGeo, pMat);
-    pts.renderOrder = 3; // in front of terrain + hover overlay
-    // Force the bounding sphere to exactly encompass the massive 3x3 array layout explicitly,
-    // thereby keeping WebGL hardware culling active for performance without prematurely clipping edges!
-    pGeo.boundingSphere = new THREE.Sphere(new THREE.Vector3(0, 0, 0), 220);
-    scene.add(pts);
-    particlesRef.current = pts;
-    // Pre-allocate pool (all dead)
-    particleDataRef.current = Array.from({ length: TERRAIN_MAX_PARTICLES }, () => ({
-      alive: false,
-      px: 0, py: 0, pz: 0, vx: 0, vy: 0, vz: 0,
-      age: 0, maxAge: 300, r: 1, g: 1, b: 1,
-    }));
+    // ── Thermodynamic Particle System Initialization ──────────────────────────────
+    if (particleSystemRef.current) {
+        particleSystemRef.current.dispose();
+        scene.remove(particleSystemRef.current.group);
+    }
+    particleSystemRef.current = new MultiMeshParticleSystem();
+    scene.add(particleSystemRef.current.group);
 
     // Plane at Y=0 used to project mouse ray to 3D world pos (for magnet target)
     const _magnetPlane  = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
@@ -2464,137 +2339,11 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
       if (anyFading) needsRenderRef.current = true;
 
       // ── Weapons Logic ────────────────────────────────────────────────────────
-      const now = Date.now();
-      const wPrjs = weaponProjectilesRef.current;
-      for (let i = wPrjs.length - 1; i >= 0; i--) {
-        const wp = wPrjs[i];
-        
-        if (wp.startTime && wp.delayMs && now - wp.startTime < wp.delayMs) {
-           wp.mesh.visible = false;
-           continue; // waiting for delay
-        }
-        wp.mesh.visible = true;
-
-        if (wp.type === 'laser') {
-           if (wp.startTime && wp.durationMs) {
-             const elapsed = now - wp.startTime;
-             wp.progress = Math.min(1.0, elapsed / wp.durationMs);
-             const pulse = 0.8 + Math.random() * 0.4;
-             wp.mesh.scale.set(pulse, 1, pulse);
-             const currentDepth = Math.max(1, Math.floor(wp.progress * wp.depth));
-             triggerWeaponImpact(wp.targetX, wp.targetY, wp.targetZ, wp.radius, currentDepth);
-
-             if (wp.progress >= 1.0) {
-               scene.remove(wp.mesh);
-               (wp.mesh as THREE.Mesh).geometry?.dispose();
-               if (Array.isArray((wp.mesh as THREE.Mesh).material)) ((wp.mesh as THREE.Mesh).material as any).forEach((m: any) => m.dispose());
-               else ((wp.mesh as THREE.Mesh).material as THREE.Material)?.dispose();
-               wPrjs.splice(i, 1);
-             }
-             needsRenderRef.current = true;
-             continue;
-           }
-        } else if (wp.type === 'seismic') {
-           wp.progress += wp.speed;
-           const currentRad = wp.progress * wp.radius;
-           wp.mesh.scale.set(currentRad, currentRad, 1);
-           
-           if (wp.mesh instanceof THREE.Mesh && wp.mesh.material instanceof THREE.Material) {
-              (wp.mesh.material as any).opacity = Math.max(0, 1.0 - wp.progress);
-           }
-
-           triggerWeaponImpact(wp.targetX, wp.targetY, wp.targetZ, currentRad, wp.depth);
-
-           if (wp.progress >= 1.0) {
-             scene.remove(wp.mesh);
-             (wp.mesh as THREE.Mesh).geometry?.dispose();
-             if (Array.isArray((wp.mesh as THREE.Mesh).material)) ((wp.mesh as THREE.Mesh).material as any).forEach((m: any) => m.dispose());
-             else ((wp.mesh as THREE.Mesh).material as THREE.Material)?.dispose();
-             wPrjs.splice(i, 1);
-           }
-           needsRenderRef.current = true;
-           continue;
-        } else if (wp.type === 'blackhole') {
-           if (wp.startTime && wp.durationMs) {
-             const elapsed = now - wp.startTime;
-             wp.progress = Math.min(1.0, elapsed / wp.durationMs);
-
-             const s = 1.0 + wp.progress * 0.5;
-             wp.mesh.scale.set(s, s, s);
-
-             if (Math.random() < 0.4) {
-                 const numParts = 3;
-                 for (let p = 0; p < numParts; p++) {
-                    const slot = getFreeParticle();
-                    if (!slot) break;
-                    
-                    const theta = Math.random() * Math.PI * 2;
-                    const rad = wp.radius * (0.5 + Math.random() * 0.5);
-                    const spawnX = wp.targetX + Math.cos(theta) * rad;
-                    const spawnZ = wp.targetZ + Math.sin(theta) * rad;
-                    
-                    slot.alive  = true;
-                    slot.px = spawnX; slot.py = wp.targetY + 2; slot.pz = spawnZ;
-                    
-                    const dx = wp.targetX - spawnX;
-                    const dy = (wp.targetY + 5) - slot.py;
-                    const dz = wp.targetZ - spawnZ;
-                    const dist = Math.sqrt(dx*dx + dy*dy + dz*dz) || 1;
-                    
-                    const pSpeed = 0.5 + Math.random() * 0.5;
-                    slot.vx = (dx/dist) * pSpeed; slot.vy = (dy/dist) * pSpeed; slot.vz = (dz/dist) * pSpeed;
-                    slot.age = 0; slot.maxAge = 40 + Math.random() * 20;
-                    slot.r = 0.6; slot.g = 0.1; slot.b = 0.8;
-                 }
-             }
-
-             if (wp.progress >= 1.0) {
-               triggerWeaponImpact(wp.targetX, wp.targetY, wp.targetZ, wp.radius, wp.depth);
-               scene.remove(wp.mesh);
-               (wp.mesh as THREE.Mesh).geometry?.dispose();
-               if (Array.isArray((wp.mesh as THREE.Mesh).material)) ((wp.mesh as THREE.Mesh).material as any).forEach((m: any) => m.dispose());
-               else ((wp.mesh as THREE.Mesh).material as THREE.Material)?.dispose();
-               wPrjs.splice(i, 1);
-             }
-             needsRenderRef.current = true;
-             continue;
-           }
-        }
-
-        wp.progress += wp.speed;
-        if (wp.progress >= 1.0) {
-           wp.progress = 1.0;
-           // Trigger hit
-           triggerWeaponImpact(wp.targetX, wp.targetY, wp.targetZ, wp.radius, wp.depth);
-           scene.remove(wp.mesh);
-           (wp.mesh as THREE.Mesh).geometry?.dispose();
-           if (Array.isArray((wp.mesh as THREE.Mesh).material)) ((wp.mesh as THREE.Mesh).material as any).forEach((m: any) => m.dispose());
-           else ((wp.mesh as THREE.Mesh).material as THREE.Material)?.dispose();
-           wPrjs.splice(i, 1);
-           needsRenderRef.current = true;
-           continue;
-        }
-
-        // Animate
-        if (wp.type === 'scatter' || wp.type === 'flyover' || wp.type === 'carpet') {
-           wp.mesh.position.lerpVectors(
-              new THREE.Vector3(wp.startX, wp.startY, wp.startZ),
-              new THREE.Vector3(wp.targetX, wp.targetY, wp.targetZ),
-              wp.progress
-           );
-        } else if (wp.type === 'artillery') {
-           if (wp.curvePt1 && wp.curvePt2) {
-             const t = wp.progress;
-             const p0 = new THREE.Vector3(wp.startX, wp.startY, wp.startZ);
-             const p3 = new THREE.Vector3(wp.targetX, wp.targetY, wp.targetZ);
-             const p1 = wp.curvePt1; const p2 = wp.curvePt2;
-             const invT = 1 - t;
-             wp.mesh.position.x = invT * invT * invT * p0.x + 3 * invT * invT * t * p1.x + 3 * invT * t * t * p2.x + t * t * t * p3.x;
-             wp.mesh.position.y = invT * invT * invT * p0.y + 3 * invT * invT * t * p1.y + 3 * invT * t * t * p2.y + t * t * t * p3.y;
-             wp.mesh.position.z = invT * invT * invT * p0.z + 3 * invT * invT * t * p1.z + 3 * invT * t * t * p2.z + t * t * t * p3.z;
-           }
-        }
-        needsRenderRef.current = true;
+      if (weaponEngineRef.current) {
+         weaponEngineRef.current.update();
+         if (weaponEngineRef.current.getProjectiles().length > 0) {
+            needsRenderRef.current = true;
+         }
       }
       // ── Treasure Hunters FX: Shuffle Animation & Vignette ──────────────────────
       const isTM = isTreasureModeRef.current;
@@ -2652,86 +2401,46 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
          hoverPoolRef.current.forEach(p => p.targetAlpha = 0);
       }
 
-      // ── Particle system: frame counter + update alive particles ─────────────
+      // ── Particle system: frame counter + update active explosions ───────────
       ++particleFrameRef.current;
-      const pData  = particleDataRef.current;
-      const particlePts = particlesRef.current;
-      const mouseW = mouseWorld3DRef.current;
       let anyParticleAlive = false;
-      // (Particle spawning happens in onCanvasMouseMove on hover — see below)
-
-      // Update all alive particles
-      if (particlePts) {
-        const posAttr = particlePts.geometry.attributes.position as THREE.BufferAttribute;
-        const colAttr = particlePts.geometry.attributes.color    as THREE.BufferAttribute;
-        let drawCount = 0;
-        const limit = Math.min(partLimitRef.current, TERRAIN_MAX_PARTICLES);
-        for (let i = 0; i < limit; i++) {
-          const p = pData[i];
-          if (!p.alive) continue;
-          p.age++;
-          if (p.age >= p.maxAge) { p.alive = false; continue; }
-
-          // Magnet phase ramps in after the first 40 frames (explosion phase)
-          const magnetPhase = Math.min(1, Math.max(0, (p.age - 40) / 70));
-          if (magnetPhase > 0) {
-            const dx = mouseW.x - p.px;
-            const dy = mouseW.y - p.py;
-            const dz = mouseW.z - p.pz;
-            const dist = Math.sqrt(dx * dx + dy * dy + dz * dz) + 0.8;
-            // Force: stronger when close (like asteroid command gravity well)
-            const force = magnetPhase * 0.006 / (dist * 0.4 + 0.5);
-            p.vx += (dx / dist) * force;
-            p.vy += (dy / dist) * force;
-            p.vz += (dz / dist) * force;
-          }
-
-          // Damping + subtle micro-gravity
-          p.vx *= partDecayRef.current;
-          p.vy  = p.vy * partDecayRef.current - partFalloffRef.current;
-          p.vz *= partDecayRef.current;
-          p.px += p.vx;
-          p.py += p.vy;
-          p.pz += p.vz;
-
-          // Fade out by lifetime
-          const life = 1 - p.age / p.maxAge;
-          const i3 = drawCount * 3;
-          posAttr.array[i3    ] = p.px;
-          posAttr.array[i3 + 1] = p.py;
-          posAttr.array[i3 + 2] = p.pz;
-          colAttr.array[i3    ] = p.r * life * 2.5; // overbright for additive glow
-          colAttr.array[i3 + 1] = p.g * life * 2.5;
-          colAttr.array[i3 + 2] = p.b * life * 2.5;
-          drawCount++;
-          anyParticleAlive = true;
-        }
-        particlePts.geometry.setDrawRange(0, drawCount);
-        (posAttr as THREE.BufferAttribute).needsUpdate = true;
-        (colAttr  as THREE.BufferAttribute).needsUpdate = true;
-        // ── UI Cooldown Progress Bar Update (pure DOM, no React re-render) ──
-        if (document.getElementsByClassName) {
-           const bars = document.getElementsByClassName('wpn-cooldown-bar');
-           if (bars.length > 0) {
-              let pendingParts = 0;
-              for (let p = 0; p < weaponProjectilesRef.current.length; p++) {
-                 const wpt = weaponProjectilesRef.current[p].type;
-                 if (wpt === 'scatter') pendingParts += scatterCountRef.current * partCountRef.current;
-                 else if (wpt === 'artillery') pendingParts += partCountRef.current;
-                 else if (wpt === 'flyover') pendingParts += 8 * partCountRef.current;
-                 else if (wpt === 'laser') pendingParts += 20 * partCountRef.current;
-                 else if (wpt === 'seismic') pendingParts += 15 * partCountRef.current;
-                 else if (wpt === 'carpet') pendingParts += 25 * partCountRef.current;
-                 else if (wpt === 'blackhole') pendingParts += 12 * partCountRef.current;
-              }
-              const ratio = Math.min(1.0, (drawCount + pendingParts) / partLimitRef.current);
-              const wStr = `${(ratio * 100).toFixed(1)}%`;
-              for (let i = 0; i < bars.length; i++) {
-                 (bars[i] as HTMLElement).style.width = wStr;
-              }
-           }
-        }
+      const mouseW = mouseWorld3DRef.current;
+      const _dummy = new THREE.Object3D();
+      let activeExplosionCount = 0;
+      if (particleSystemRef.current) {
+         activeExplosionCount = particleSystemRef.current.update(
+            mouseW, 
+            partDecayRef.current, 
+            partFalloffRef.current, 
+            partSizeRef.current
+         );
+         if (activeExplosionCount > 0) anyParticleAlive = true;
       }
+      
+      // ── UI Cooldown Progress Bar Update ──
+      if (document.getElementsByClassName) {
+         const bars = document.getElementsByClassName('wpn-cooldown-bar');
+         if (bars.length > 0) {
+            let pendingExplosions = 0;
+            const wPrjs = weaponEngineRef.current ? weaponEngineRef.current.getProjectiles() : [];
+            for (let p = 0; p < wPrjs.length; p++) {
+               const wpt = wPrjs[p].type;
+               if (wpt === 'scatter') pendingExplosions += scatterCountRef.current;
+               else if (wpt === 'artillery') pendingExplosions += 1;
+               else if (wpt === 'flyover') pendingExplosions += 8;
+               else if (wpt === 'laser') pendingExplosions += 20;
+               else if (wpt === 'seismic') pendingExplosions += 15;
+               else if (wpt === 'carpet') pendingExplosions += 25;
+               else if (wpt === 'blackhole') pendingExplosions += 12;
+            }
+            const ratio = Math.min(1.0, (activeExplosionCount + pendingExplosions) / 150);
+            const wStr = `${(ratio * 100).toFixed(1)}%`;
+            for (let idx = 0; idx < bars.length; idx++) {
+               (bars[idx] as HTMLElement).style.width = wStr;
+            }
+         }
+      }
+
       if (anyParticleAlive) needsRenderRef.current = true;
 
       // ── Block Regeneration Logic ──
@@ -2794,7 +2503,10 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
                regeneratingBlocksRef.current.delete(key);
             }
          }
-         if (didUpdateMeshes) needsRenderRef.current = true;
+          if (didUpdateMeshes) {
+             needsRenderRef.current = true;
+             shadowsDirtyRef.current = true;
+          }
       }
 
       // ── Beam animation: face camera + scale up when altar complete ──
@@ -2860,18 +2572,19 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
           const timeStr = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
 
           if (waveUIRef.current) {
+              const fmt = new Intl.NumberFormat().format;
               waveUIRef.current.innerHTML = `
-                <div style="font-size: 11px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-bottom: 4px;">Wave ${waveNumberRef.current}</div>
-                <div style="font-size: 24px; font-weight: 600; color: #ff3b30; letter-spacing: -0.5px;">${aliveCount} Remaining</div>
+                <div style="font-size: 10px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-bottom: 2px;">Wave ${waveNumberRef.current}</div>
+                <div style="font-size: 20px; font-weight: 700; color: #ff3b30; letter-spacing: -0.5px;">${fmt(aliveCount)}</div>
                 
-                <div style="font-size: 11px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-top: 12px; margin-bottom: 4px;">Time</div>
-                <div style="font-size: 24px; font-weight: 600; color: #0a84ff; letter-spacing: -0.5px;">${timeStr}</div>
+                <div style="font-size: 10px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-top: 8px; margin-bottom: 2px;">Time</div>
+                <div style="font-size: 20px; font-weight: 700; color: #0a84ff; letter-spacing: -0.5px;">${timeStr}</div>
 
-                <div style="font-size: 11px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-top: 12px; margin-bottom: 4px;">Score</div>
-                <div style="font-size: 24px; font-weight: 600; color: #ffd60a; letter-spacing: -0.5px;">${sheepScoreRef.current}</div>
+                <div style="font-size: 10px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-top: 8px; margin-bottom: 2px;">Score</div>
+                <div style="font-size: 20px; font-weight: 700; color: #ffd60a; letter-spacing: -0.5px;">${fmt(sheepScoreRef.current)}</div>
 
-                <div style="font-size: 11px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-top: 12px; margin-bottom: 4px;">Shots Fired</div>
-                <div style="font-size: 24px; font-weight: 600; color: #34c759; letter-spacing: -0.5px;">${shotsFiredRef.current}</div>
+                <div style="font-size: 10px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-top: 8px; margin-bottom: 2px;">Shots</div>
+                <div style="font-size: 20px; font-weight: 700; color: #34c759; letter-spacing: -0.5px;">${fmt(shotsFiredRef.current)}</div>
               `;
           }
 
@@ -2914,10 +2627,40 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
 
               let nextWave = waveNumberRef.current + 1;
               waveNumberRef.current = nextWave;
-              const nextCount = nextWave === 1 ? 1 : Math.round(3 * Math.pow(1.618, nextWave - 1));
+              const { sheepCount: nextCount, unlockedWeapons: nextUnlocked, params } = getWaveParams(nextWave, difficultyRef.current);
               
+              // Mutate weapon parameters dynamically via refs
+              scatterRadiusRef.current = params.scatter.radius;
+              scatterDepthRef.current = params.scatter.depth;
+              scatterCountRef.current = params.scatter.count;
+              
+              artilleryRadiusRef.current = params.artillery.radius;
+              artilleryDepthRef.current = params.artillery.depth;
+              
+              flyoverRadiusRef.current = params.flyover.radius;
+              flyoverDepthRef.current = params.flyover.depth;
+              
+              seismicRadiusRef.current = params.seismic.radius;
+              seismicDepthRef.current = params.seismic.depth;
+              
+              carpetRadiusRef.current = params.carpet.radius;
+              carpetDepthRef.current = params.carpet.depth;
+              
+              laserRadiusRef.current = params.laser.radius;
+              laserDepthRef.current = params.laser.depth;
+              
+              blackholeRadiusRef.current = params.blackhole.radius;
+              blackholeDepthRef.current = params.blackhole.depth;
+              
+              WEAPON_COOLDOWNS.scatter = params.scatter.cooldown;
+              WEAPON_COOLDOWNS.artillery = params.artillery.cooldown;
+              WEAPON_COOLDOWNS.flyover = params.flyover.cooldown;
+              WEAPON_COOLDOWNS.seismic = params.seismic.cooldown;
+              WEAPON_COOLDOWNS.carpet = params.carpet.cooldown;
+              WEAPON_COOLDOWNS.laser = params.laser.cooldown;
+              WEAPON_COOLDOWNS.blackhole = params.blackhole.cooldown;
+
               // We DO NOT change the seed anymore, keep the same board!
-              // Healing will continue independently in the background based on the slider speed.
               if (presetExplodeBlocksRef.current) presetExplodeBlocksRef.current.clear();
               if (energonPlacedRef.current) energonPlacedRef.current.clear();
               
@@ -2928,7 +2671,16 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
                   }, 500);
               }
 
-              announceWave(nextWave, nextCount);
+              if (nextUnlocked.length > unlockedWeaponsRef.current.length) {
+                  const newlyUnlocked = nextUnlocked[nextUnlocked.length - 1];
+                  setTimeout(() => {
+                      setUnlockedWeapons(nextUnlocked);
+                      setSelectedWeapon(newlyUnlocked);
+                  }, 0);
+                  announceWave(nextWave, nextCount, newlyUnlocked.toUpperCase());
+              } else {
+                  announceWave(nextWave, nextCount);
+              }
           }
       }
 
@@ -3125,12 +2877,8 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
     let _pointerDownPos = { x: 0, y: 0 };
     const onCanvasPointerDown = (e: PointerEvent) => {
       _pointerDownPos = { x: e.clientX, y: e.clientY };
-    };
-
-    const onCanvasPointerUp_Action = (e: PointerEvent) => {
-      // Ignore click if it was actually a camera drag
-      if (Math.abs(e.clientX - _pointerDownPos.x) > 5 || Math.abs(e.clientY - _pointerDownPos.y) > 5) return;
-
+      
+      // Weapon systems now activate on press (pointerdown) rather than release!
       if (isTreasureModeRef.current && Date.now() - shuffleStartTimeRef.current < 3000) return; // ignore clicks during shuffle
 
       const rect = renderer.domElement.getBoundingClientRect();
@@ -3182,244 +2930,21 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
         if (isRaidModeRef.current && selectedWeaponRef.current) {
            const wpType = selectedWeaponRef.current;
 
-           // ── SPAM PREVENTION & COOLDOWN ─────────────────────────────────────
-           const now = Date.now();
-           const lastFired = weaponCooldownsRef.current[wpType] || 0;
-           const cd = WEAPON_COOLDOWNS[wpType];
-           if (now - lastFired < cd) {
-              return; // Weapon is on cooldown
-           }
-
-           let activeParts = 0;
-           const pd = particleDataRef.current;
-           const lim = partLimitRef.current;
-           for (let i = 0; i < lim; i++) if (pd[i].alive) activeParts++;
-           
-           let pendingParts = 0;
-           for (let i = 0; i < weaponProjectilesRef.current.length; i++) {
-              const wpt = weaponProjectilesRef.current[i].type;
-              if (wpt === 'scatter') pendingParts += scatterCountRef.current * partCountRef.current;
-              else if (wpt === 'artillery') pendingParts += partCountRef.current;
-              else if (wpt === 'flyover') pendingParts += 8 * partCountRef.current;
-              else if (wpt === 'laser') pendingParts += 20 * partCountRef.current;
-              else if (wpt === 'seismic') pendingParts += 15 * partCountRef.current;
-              else if (wpt === 'carpet') pendingParts += 25 * partCountRef.current;
-              else if (wpt === 'blackhole') pendingParts += 12 * partCountRef.current;
-           }
-
-           let requestedParts = 200;
-           if (wpType === 'scatter') requestedParts = scatterCountRef.current * partCountRef.current;
-           else if (wpType === 'artillery') requestedParts = partCountRef.current;
-           else if (wpType === 'flyover') requestedParts = 8 * partCountRef.current;
-           else if (wpType === 'laser') requestedParts = 20 * partCountRef.current;
-           else if (wpType === 'seismic') requestedParts = 15 * partCountRef.current;
-           else if (wpType === 'carpet') requestedParts = 25 * partCountRef.current;
-           else if (wpType === 'blackhole') requestedParts = 12 * partCountRef.current;
-
-           // If firing this munition would exceed our active engine limits, block the click!
-           if (activeParts + pendingParts + requestedParts > lim) {
-              console.warn(`[Spam Prevention] Cooldown active! Waiting for ${activeParts + pendingParts}/${lim} particles to decay...`);
-              return; 
-           }
-
-           // Valid shot fired!
-           weaponCooldownsRef.current[wpType] = Date.now();
-           shotsFiredRef.current += 1;
-           if (waveUIRef.current && flockEngineRef.current) {
-               waveUIRef.current.innerHTML = `
-                <div style="font-size: 11px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-bottom: 4px;">Wave ${waveNumberRef.current}</div>
-                <div style="font-size: 24px; font-weight: 600; color: #ff3b30; letter-spacing: -0.5px;">${flockEngineRef.current.getLivingCount()} Remaining</div>
-                <div style="font-size: 11px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-top: 12px; margin-bottom: 4px;">Shots Fired</div>
-                <div style="font-size: 24px; font-weight: 600; color: #34c759; letter-spacing: -0.5px;">${shotsFiredRef.current}</div>
-               `;
-           }
+           if (!ws.canFire(wpType)) return;
 
            const targetPos = new THREE.Vector3(hit.point.x, hit.point.y, hit.point.z);
 
-           if (wpType === 'scatter') {
-              for (let b = 0; b < scatterCountRef.current; b++) {
-                 // Randomize target
-                 const rd = scatterRadiusRef.current;
-                 const ox = (Math.random() - 0.5) * rd;
-                 const oz = (Math.random() - 0.5) * rd;
-                 const finalX = targetPos.x + ox;
-                 const finalZ = targetPos.z + oz;
-                 
-                 const pGeo = new THREE.SphereGeometry(0.3, 8, 8);
-                 const pMat = new THREE.MeshBasicMaterial({ color: 0xff3333 });
-                 const pMesh = new THREE.Mesh(pGeo, pMat);
-                 pMesh.visible = false;
-                 scene.add(pMesh);
-                 
-                 weaponProjectilesRef.current.push({
-                   id: Math.random().toString(),
-                   type: 'scatter', mesh: pMesh,
-                   startX: finalX, startY: targetPos.y + 40 + Math.random() * 20, startZ: finalZ,
-                   targetX: finalX, targetY: targetPos.y, targetZ: finalZ,
-                   progress: 0, speed: 0.015 + Math.random() * 0.01,
-                   radius: scatterRadiusRef.current, depth: scatterDepthRef.current,
-                   delayMs: scatterDelayRef.current, startTime: Date.now()
-                 });
-              }
-           } else if (wpType === 'artillery') {
-              const pGeo = new THREE.SphereGeometry(0.6, 12, 12);
-              const pMat = new THREE.MeshBasicMaterial({ color: 0xff8833 });
-              const pMesh = new THREE.Mesh(pGeo, pMat);
-              pMesh.visible = false;
-              scene.add(pMesh);
-              
-              const startX = targetPos.x - 30;
-              const startZ = targetPos.z - 30;
-              const startY = targetPos.y + 40;
-              
-              // Simple cubic bezier curve logic handled in loop via P1/P2
-              weaponProjectilesRef.current.push({
-                   id: Math.random().toString(),
-                   type: 'artillery', mesh: pMesh,
-                   startX, startY, startZ,
-                   targetX: targetPos.x, targetY: targetPos.y, targetZ: targetPos.z,
-                   curvePt1: new THREE.Vector3(startX + 10, startY + 10, startZ + 10),
-                   curvePt2: new THREE.Vector3(targetPos.x - 5, targetPos.y + 20, targetPos.z - 5),
-                   progress: 0, speed: 0.015,
-                   radius: artilleryRadiusRef.current, depth: artilleryDepthRef.current,
-                   delayMs: artilleryDelayRef.current, startTime: Date.now()
-              });
-           } else if (wpType === 'flyover') {
-              // Highlight selected block immediately using hover glow
-              const iMesh = hit.object as THREE.InstancedMesh;
-              const instIdx = hit.instanceId ?? 0;
-              if (iMesh.userData.coordMap) {
-                 const blockKey = iMesh.userData.coordMap[instIdx];
-                 if (blockKey) {
-                    const poolItem = hoverPoolRef.current.find(p => !p.active);
-                    if (poolItem) {
-                       poolItem.active = true;
-                       poolItem.blockKey = blockKey;
-                       poolItem.targetAlpha = 0.9;
-                       
-                       const _dummyMat = new THREE.Matrix4();
-                       iMesh.getMatrixAt(instIdx, _dummyMat);
-                       poolItem.mesh.position.setFromMatrixPosition(_dummyMat);
-                       poolItem.mesh.visible = true;
-                       (poolItem.mesh.material as THREE.MeshStandardMaterial).emissive.setHex(0x3388ff);
-                    }
-                 }
-              }
-              
-              const pGeo = new THREE.BoxGeometry(0.5, 0.5, 1.5);
-              const pMat = new THREE.MeshBasicMaterial({ color: 0x3388ff });
-              const pMesh = new THREE.Mesh(pGeo, pMat);
-              
-              const delay = flyoverDelayRef.current;
-              
-              const startX = targetPos.x + 20;
-              const startY = targetPos.y + 60;
-              const startZ = targetPos.z + 20;
-              
-              pMesh.position.set(startX, startY, startZ);
-              pMesh.lookAt(targetPos);
-              pMesh.visible = false;
-              scene.add(pMesh);
-              
-              weaponProjectilesRef.current.push({
-                   id: Math.random().toString(),
-                   type: 'flyover', mesh: pMesh,
-                   startX, startY, startZ,
-                   targetX: targetPos.x, targetY: targetPos.y, targetZ: targetPos.z,
-                   progress: 0, speed: 0.025,
-                   radius: flyoverRadiusRef.current, depth: flyoverDepthRef.current,
-                   delayMs: delay, startTime: Date.now()
-              });
-           } else if (wpType === 'laser') {
-              // Massive 2000 unit height so it extends infinitely past the top and bottom of the screen
-              const pGeo = new THREE.CylinderGeometry(laserRadiusRef.current * 0.8, laserRadiusRef.current * 0.4, 2000, 16);
-              const pMat = new THREE.MeshBasicMaterial({ color: 0xff1111, transparent: true, opacity: 0.8 });
-              const pMesh = new THREE.Mesh(pGeo, pMat);
-              // Center it higher up so it extends 500 units BELOW the impact point, and 1500 units ABOVE.
-              pMesh.position.set(targetPos.x, targetPos.y + 500, targetPos.z);
-              scene.add(pMesh);
-              
-              weaponProjectilesRef.current.push({
-                   id: Math.random().toString(),
-                   type: 'laser', mesh: pMesh,
-                   startX: targetPos.x, startY: targetPos.y + 500, startZ: targetPos.z,
-                   targetX: targetPos.x, targetY: targetPos.y, targetZ: targetPos.z,
-                   progress: 0, speed: 0,
-                   radius: laserRadiusRef.current, depth: laserDepthRef.current,
-                   delayMs: laserDelayRef.current, startTime: Date.now(),
-                   durationMs: laserDurationRef.current
-              });
-           } else if (wpType === 'seismic') {
-              const pGeo = new THREE.RingGeometry(0.1, 0.4, 32);
-              const pMat = new THREE.MeshBasicMaterial({ color: 0xffaa00, transparent: true, opacity: 1, side: THREE.DoubleSide });
-              const pMesh = new THREE.Mesh(pGeo, pMat);
-              pMesh.rotation.x = -Math.PI / 2;
-              pMesh.position.set(targetPos.x, targetPos.y + 1, targetPos.z);
-              scene.add(pMesh);
-              
-              weaponProjectilesRef.current.push({
-                   id: Math.random().toString(),
-                   type: 'seismic', mesh: pMesh,
-                   startX: targetPos.x, startY: targetPos.y + 1, startZ: targetPos.z,
-                   targetX: targetPos.x, targetY: targetPos.y, targetZ: targetPos.z,
-                   progress: 0, speed: seismicSpeedRef.current / 1000,
-                   radius: seismicRadiusRef.current, depth: seismicDepthRef.current,
-                   delayMs: seismicDelayRef.current, startTime: Date.now()
-              });
-           } else if (wpType === 'carpet') {
-              const count = carpetCountRef.current;
-              const angle = Math.random() * Math.PI * 2;
-              const spacing = 3;
-              const dx = Math.cos(angle) * spacing;
-              const dz = Math.sin(angle) * spacing;
-              
-              const startOffsetX = targetPos.x - (count / 2) * dx;
-              const startOffsetZ = targetPos.z - (count / 2) * dz;
-              
-              for (let j = 0; j < count; j++) {
-                const bx = startOffsetX + j * dx;
-                const bz = startOffsetZ + j * dz;
-              
-                const pGeo = new THREE.BoxGeometry(0.5, 0.5, 1.5);
-                const pMat = new THREE.MeshBasicMaterial({ color: 0x66dd66 });
-                const pMesh = new THREE.Mesh(pGeo, pMat);
-                
-                const startX = bx + 20;
-                const startY = targetPos.y + 60;
-                const startZ = bz + 20;
-                
-                pMesh.position.set(startX, startY, startZ);
-                pMesh.lookAt(new THREE.Vector3(bx, targetPos.y, bz));
-                pMesh.visible = false;
-                scene.add(pMesh);
-                
-                weaponProjectilesRef.current.push({
-                   id: Math.random().toString(),
-                   type: 'carpet', mesh: pMesh,
-                   startX, startY, startZ,
-                   targetX: bx, targetY: targetPos.y, targetZ: bz,
-                   progress: 0, speed: 0.05,
-                   radius: carpetRadiusRef.current, depth: carpetDepthRef.current,
-                   delayMs: j * carpetDelayRef.current, startTime: Date.now()
-                });
-              }
-           } else if (wpType === 'blackhole') {
-              const pGeo = new THREE.SphereGeometry(1.5, 32, 32);
-              const pMat = new THREE.MeshBasicMaterial({ color: 0x050111 });
-              const pMesh = new THREE.Mesh(pGeo, pMat);
-              pMesh.position.set(targetPos.x, targetPos.y + 5, targetPos.z);
-              scene.add(pMesh);
-              
-              weaponProjectilesRef.current.push({
-                   id: Math.random().toString(),
-                   type: 'blackhole', mesh: pMesh,
-                   startX: targetPos.x, startY: targetPos.y + 5, startZ: targetPos.z,
-                   targetX: targetPos.x, targetY: targetPos.y, targetZ: targetPos.z,
-                   progress: 0, speed: 0,
-                   radius: blackholeRadiusRef.current, depth: blackholeDepthRef.current,
-                   delayMs: blackholeDelayRef.current, startTime: Date.now(),
-                   durationMs: blackholeDurationRef.current
-              });
+           if (weaponEngineRef.current) {
+               let params: any = {};
+               if (wpType === 'scatter') params = { count: scatterCountRef.current, radius: scatterRadiusRef.current, depth: scatterDepthRef.current, delay: scatterDelayRef.current, partSpeed: scatterPartSpeedRef.current };
+               else if (wpType === 'artillery') params = { radius: artilleryRadiusRef.current, depth: artilleryDepthRef.current, delay: artilleryDelayRef.current, partSpeed: artilleryPartSpeedRef.current };
+               else if (wpType === 'flyover') params = { radius: flyoverRadiusRef.current, depth: flyoverDepthRef.current, delay: flyoverDelayRef.current, hitObject: hit.object, instanceId: hit.instanceId, hoverPoolRef: hoverPoolRef.current, partSpeed: flyoverPartSpeedRef.current };
+               else if (wpType === 'laser') params = { radius: laserRadiusRef.current, depth: laserDepthRef.current, delay: laserDelayRef.current, duration: laserDurationRef.current, partSpeed: laserPartSpeedRef.current };
+               else if (wpType === 'seismic') params = { radius: seismicRadiusRef.current, depth: seismicDepthRef.current, delay: seismicDelayRef.current, speed: seismicSpeedRef.current, partSpeed: seismicPartSpeedRef.current };
+               else if (wpType === 'carpet') params = { count: carpetCountRef.current, radius: carpetRadiusRef.current, depth: carpetDepthRef.current, delay: carpetDelayRef.current, partSpeed: carpetPartSpeedRef.current };
+               else if (wpType === 'blackhole') params = { radius: blackholeRadiusRef.current, depth: blackholeDepthRef.current, delay: blackholeDelayRef.current, duration: blackholeDurationRef.current, partSpeed: blackholePartSpeedRef.current };
+
+               weaponEngineRef.current.fire(wpType, targetPos, params);
            }
            
            return; // End early.
@@ -3446,6 +2971,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
             _clickMatrix.elements[10] = 0;
             iMesh.setMatrixAt(instIdx, _clickMatrix);
             iMesh.instanceMatrix.needsUpdate = true;
+            shadowsDirtyRef.current = true;
 
             // Also hide the glow mesh if running
             const ci = iMesh.userData.colorIndex;
@@ -3473,25 +2999,11 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
                 flockEngineRef.current.explode(breakPos.x, breakPos.z, conf.explodeForce, conf.explodeRadius);
             }
 
-            // 3. Huge Particle Burst!
+            // 3. Modular Particle Burst!
             const layerCol = (iMesh.material as THREE.MeshStandardMaterial | THREE.MeshPhysicalMaterial).emissive;
-            const numParts = 200; // Force huge party!
-            for (let p = 0; p < numParts; p++) {
-              const slot = getFreeParticle();
-              if (!slot) break;
-              const speed = 0.2 + Math.random() * 0.4;
-              const theta  = Math.random() * Math.PI * 2;
-              const phi    = Math.random() * Math.PI;
-              slot.alive  = true;
-              slot.px = hit.point.x;
-              slot.py = hit.point.y + 0.5;
-              slot.pz = hit.point.z;
-              slot.vx = Math.sin(phi) * Math.cos(theta) * speed;
-              slot.vy = Math.cos(phi) * speed + 0.1;
-              slot.vz = Math.sin(phi) * Math.sin(theta) * speed;
-              slot.age    = 0;
-              slot.maxAge = 180 + Math.random() * 80;
-              slot.r = layerCol.r; slot.g = layerCol.g; slot.b = layerCol.b;
+            if (particleSystemRef.current) {
+                // Approximate 200 particles with high force
+                particleSystemRef.current.explode(hit.point.x, hit.point.y + 0.5, hit.point.z, 25.0, 5.0, layerCol, isTreasureModeRef.current);
             }
             needsRenderRef.current = true;
           }
@@ -3502,13 +3014,11 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
     renderer.domElement.addEventListener('mousemove', onCanvasMouseMove);
     renderer.domElement.addEventListener('mouseleave', onCanvasMouseLeave);
     renderer.domElement.addEventListener('pointerdown', onCanvasPointerDown);
-    renderer.domElement.addEventListener('pointerup', onCanvasPointerUp_Action);
 
     return () => {
       cancelAnimationFrame(rafRef.current);
       renderer.domElement.removeEventListener('click', onCanvasClick_Energon);
       renderer.domElement.removeEventListener('pointerdown', onCanvasPointerDown);
-      renderer.domElement.removeEventListener('pointerup', onCanvasPointerUp_Action);
       renderer.domElement.removeEventListener('mousemove', onCanvasMouseMove);
       renderer.domElement.removeEventListener('mouseleave', onCanvasMouseLeave);
       controls.dispose();
@@ -3535,7 +3045,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
     }
   }, [tiltBlur, tiltSpread, tiltVignette, vigColor]);
 
-  // Live layer-colour + terrainTint — zero rebuild, just swap material colours
+  // Live layer-colour + terrainTint + Shell glow updates
   // Layer color is primary (90%), terrainTint is a subtle 10% overlay
   useEffect(() => {
     const grp = meshGroupRef.current;
@@ -3543,7 +3053,6 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
     const tintCol = new THREE.Color(terrainTint);
     for (const child of grp.children) {
       if (!(child instanceof THREE.InstancedMesh)) continue;
-      const mat = child.material as THREE.MeshPhysicalMaterial;
       const ci  = (child.userData.colorIndex as number) ?? 0;
       const levelCol = new THREE.Color(layerColors[ci] ?? DEFAULT_LAYER_COLORS[ci]);
       const blended  = levelCol.clone().lerp(tintCol, 0.1);
@@ -3551,15 +3060,18 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
       if (child.userData.isJitterGlow) {
          const mat = child.material as THREE.MeshStandardMaterial;
          mat.emissive.copy(levelCol);
+         mat.emissiveIntensity = shellEmissive;
+         mat.opacity = shellHalo;
          mat.needsUpdate = true;
       } else {
-         const mat = child.material as THREE.MeshPhysicalMaterial;
-         mat.color.copy(blended);
+         const mat = child.material as THREE.MeshPhysicalMaterial | THREE.MeshStandardMaterial;
+         if ('color' in mat) mat.color.copy(blended);
+         if ('emissiveIntensity' in mat) mat.emissiveIntensity = baseGlow;
          mat.needsUpdate = true;
       }
     }
     needsRenderRef.current = true;
-  }, [layerColors, terrainTint]);
+  }, [layerColors, terrainTint, shellEmissive, shellHalo, baseGlow]);
 
   // Live transmission material update
   useEffect(() => {
@@ -3577,6 +3089,8 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
     }
     needsRenderRef.current = true;
   }, [matTransmit, matThickness, matIor]);
+
+
 
   // Live bloom update — strength and threshold both need a re-render
   useEffect(() => {
@@ -3596,8 +3110,8 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
 
       if (child.userData.isJitterGlow) {
          const mat = child.material as THREE.MeshStandardMaterial;
-         mat.emissiveIntensity = glowInt * 5.0; // matched to jitter glow
-         mat.opacity = 0.72;
+         mat.emissiveIntensity = shellEmissive; // controlled by Shell Emissive
+         mat.opacity = shellHalo;               // controlled by Shell Halo
          mat.needsUpdate = true;
       } else {
          const mat = child.material as THREE.MeshPhysicalMaterial;
@@ -3609,15 +3123,12 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
       }
     }
     needsRenderRef.current = true;
-  }, [glowInt, baseGlow, opacity]);
+  }, [glowInt, baseGlow, opacity, shellEmissive, shellHalo]);
+
+
 
   // Adjust particle settings dynamically
-  useEffect(() => {
-    if (particlesRef.current) {
-        (particlesRef.current.material as THREE.PointsMaterial).size = partSize * 5.0;
-        needsRenderRef.current = true;
-    }
-  }, [partSize]);
+  // partSize is handled in useFrame loop via partSizeRef
 
   // ── Sync group visibility when render mode changes ──────────────────────────
   useEffect(() => {
@@ -4278,36 +3789,166 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
 
 
 
-        <div 
-          ref={waveUIRef}
-          style={{ 
-            position: 'absolute', 
-            top: '50%', 
-            left: 40, 
-            transform: 'translateY(-50%)',
-            background: 'rgba(18, 18, 22, 0.65)',
-            backdropFilter: 'blur(24px) saturate(150%)',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
-            borderRadius: 20,
-            padding: '24px',
-            color: '#fff', 
-            fontFamily: 'system-ui, -apple-system, sans-serif', 
-            zIndex: 1000, 
-            pointerEvents: 'none',
-            boxShadow: '0 20px 40px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1)',
-            transition: 'border-color 0.3s ease'
-          }}
-        >
+        <div style={{ 
+          position: 'absolute', 
+          top: '50%', 
+          left: 40, 
+          transform: 'translateY(-50%)', 
+          display: 'flex', 
+          flexDirection: 'column', 
+          background: 'rgba(18, 18, 22, 0.65)',
+          backdropFilter: 'blur(24px) saturate(150%)',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          borderRadius: 24,
+          padding: '24px 20px',
+          width: 140, // Lock width so the container doesn't jiggle when text length changes
+          zIndex: 1000, 
+          pointerEvents: 'none',
+          boxShadow: '0 20px 40px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1)',
+          transition: 'border-color 0.3s ease'
+        }}>
+          <div 
+            ref={waveUIRef}
+            style={{ 
+              color: '#fff', 
+              fontFamily: 'system-ui, -apple-system, sans-serif', 
+              pointerEvents: 'none',
+              textAlign: 'center'
+            }}
+          >
+          </div>
+          
+          <div style={{ width: '100%', height: 1, background: 'rgba(255,255,255,0.1)', margin: '16px 0' }} />
+          
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', pointerEvents: 'auto' }}>
+            {/* Difficulty Reset Panel */}
+            <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: 1, fontWeight: 700, textAlign: 'center', marginBottom: 2 }}>Difficulty</div>
+            <button 
+               onClick={() => {
+                  setDifficulty('easy');
+                  waveNumberRef.current = 1;
+                  sheepScoreRef.current = 0;
+                  shotsFiredRef.current = 0;
+                  totalKillsRef.current = 0;
+                  totalTimeRef.current = 0;
+                  if (flockEngineRef.current) flockEngineRef.current.reset();
+                  const { sheepCount, unlockedWeapons } = getWaveParams(1, 'easy');
+                  setUnlockedWeapons(unlockedWeapons);
+                  announceWave(1, sheepCount);
+                  
+                  // Force a complete board heal!
+                  const emptySet = new Set<string>();
+                  setBrokenBlocks(emptySet);
+                  brokenBlocksRef.current = emptySet;
+                  regeneratingBlocksRef.current.clear();
+                  if (renderMode === 'glass') {
+                    rebuildMeshes(terrainRef.current, bevel, glowInt, opacity, terrainTint, layerColors, matTransmit, matThickness, matIor, matRoughness, cubeJitter, emptySet);
+                  } else {
+                    rebuildMixedMeshes(terrainRef.current, layerColors, terrainTint, enabledShapes, emptySet);
+                  }
+               }}
+               style={{ background: difficulty === 'easy' ? 'rgba(52, 199, 89, 0.3)' : 'rgba(255,255,255,0.05)', color: difficulty === 'easy' ? '#34c759' : 'rgba(255,255,255,0.6)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 9999, padding: '8px', cursor: 'pointer', fontFamily: 'system-ui', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', transition: 'all 0.2s', backdropFilter: 'blur(10px)' }}>Easy</button>
+            <button 
+               onClick={() => {
+                  setDifficulty('medium');
+                  waveNumberRef.current = 1;
+                  sheepScoreRef.current = 0;
+                  shotsFiredRef.current = 0;
+                  totalKillsRef.current = 0;
+                  totalTimeRef.current = 0;
+                  if (flockEngineRef.current) flockEngineRef.current.reset();
+                  const { sheepCount, unlockedWeapons } = getWaveParams(1, 'medium');
+                  setUnlockedWeapons(unlockedWeapons);
+                  announceWave(1, sheepCount);
+                  
+                  // Force a complete board heal!
+                  const emptySet = new Set<string>();
+                  setBrokenBlocks(emptySet);
+                  brokenBlocksRef.current = emptySet;
+                  regeneratingBlocksRef.current.clear();
+                  if (renderMode === 'glass') {
+                    rebuildMeshes(terrainRef.current, bevel, glowInt, opacity, terrainTint, layerColors, matTransmit, matThickness, matIor, matRoughness, cubeJitter, emptySet);
+                  } else {
+                    rebuildMixedMeshes(terrainRef.current, layerColors, terrainTint, enabledShapes, emptySet);
+                  }
+               }}
+               style={{ background: difficulty === 'medium' ? 'rgba(255, 214, 10, 0.3)' : 'rgba(255,255,255,0.05)', color: difficulty === 'medium' ? '#ffd60a' : 'rgba(255,255,255,0.6)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 9999, padding: '8px', cursor: 'pointer', fontFamily: 'system-ui', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', transition: 'all 0.2s', backdropFilter: 'blur(10px)' }}>Medium</button>
+            <button 
+               onClick={() => {
+                  setDifficulty('hard');
+                  waveNumberRef.current = 1;
+                  sheepScoreRef.current = 0;
+                  shotsFiredRef.current = 0;
+                  totalKillsRef.current = 0;
+                  totalTimeRef.current = 0;
+                  if (flockEngineRef.current) flockEngineRef.current.reset();
+                  const { sheepCount, unlockedWeapons } = getWaveParams(1, 'hard');
+                  setUnlockedWeapons(unlockedWeapons);
+                  announceWave(1, sheepCount);
+                  
+                  // Force a complete board heal!
+                  const emptySet = new Set<string>();
+                  setBrokenBlocks(emptySet);
+                  brokenBlocksRef.current = emptySet;
+                  regeneratingBlocksRef.current.clear();
+                  if (renderMode === 'glass') {
+                    rebuildMeshes(terrainRef.current, bevel, glowInt, opacity, terrainTint, layerColors, matTransmit, matThickness, matIor, matRoughness, cubeJitter, emptySet);
+                  } else {
+                    rebuildMixedMeshes(terrainRef.current, layerColors, terrainTint, enabledShapes, emptySet);
+                  }
+               }}
+               style={{ background: difficulty === 'hard' ? 'rgba(255, 59, 48, 0.3)' : 'rgba(255,255,255,0.05)', color: difficulty === 'hard' ? '#ff3b30' : 'rgba(255,255,255,0.6)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 9999, padding: '8px', cursor: 'pointer', fontFamily: 'system-ui', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', transition: 'all 0.2s', backdropFilter: 'blur(10px)' }}>Hard</button>
+          </div>
+          
+          <div style={{ width: '100%', height: 1, background: 'rgba(255,255,255,0.1)', margin: '16px 0' }} />
+          
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', pointerEvents: 'auto' }}>
+            {/* Render Engine Panel */}
+            <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: 1, fontWeight: 700, textAlign: 'center', marginBottom: 2 }}>Particle Rendering Engine</div>
+            <button 
+               onClick={() => {
+                  setRenderEngine('multimesh');
+                  if (particleSystemRef.current && sceneRef.current) {
+                      particleSystemRef.current.dispose();
+                      sceneRef.current.remove(particleSystemRef.current.group);
+                  }
+                  particleSystemRef.current = new MultiMeshParticleSystem();
+                  if (sceneRef.current) sceneRef.current.add(particleSystemRef.current.group);
+               }}
+               style={{ background: renderEngine === 'multimesh' ? 'rgba(10, 132, 255, 0.3)' : 'rgba(255,255,255,0.05)', color: renderEngine === 'multimesh' ? '#0a84ff' : 'rgba(255,255,255,0.6)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 9999, padding: '8px', cursor: 'pointer', fontFamily: 'system-ui', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', transition: 'all 0.2s', backdropFilter: 'blur(10px)' }}>Multi-Mesh</button>
+            <button 
+               onClick={() => {
+                  setRenderEngine('global');
+                  if (particleSystemRef.current && sceneRef.current) {
+                      particleSystemRef.current.dispose();
+                      sceneRef.current.remove(particleSystemRef.current.group);
+                  }
+                  particleSystemRef.current = new GlobalInstancedParticleSystem();
+                  if (sceneRef.current) sceneRef.current.add(particleSystemRef.current.group);
+               }}
+               style={{ background: renderEngine === 'global' ? 'rgba(10, 132, 255, 0.3)' : 'rgba(255,255,255,0.05)', color: renderEngine === 'global' ? '#0a84ff' : 'rgba(255,255,255,0.6)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 9999, padding: '8px', cursor: 'pointer', fontFamily: 'system-ui', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', transition: 'all 0.2s', backdropFilter: 'blur(10px)' }}>Global Mesh</button>
+            <button 
+               onClick={() => {
+                  setRenderEngine('gpu');
+                  if (particleSystemRef.current && sceneRef.current) {
+                      particleSystemRef.current.dispose();
+                      sceneRef.current.remove(particleSystemRef.current.group);
+                  }
+                  particleSystemRef.current = new GPUParticleSystem();
+                  if (sceneRef.current) sceneRef.current.add(particleSystemRef.current.group);
+               }}
+               style={{ background: renderEngine === 'gpu' ? 'rgba(10, 132, 255, 0.3)' : 'rgba(255,255,255,0.05)', color: renderEngine === 'gpu' ? '#0a84ff' : 'rgba(255,255,255,0.6)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 9999, padding: '8px', cursor: 'pointer', fontFamily: 'system-ui', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', transition: 'all 0.2s', backdropFilter: 'blur(10px)' }}>OP Optimized</button>
+          </div>
         </div>
 
         {/* ── Wave Announcer ── */}
         <div 
           ref={announcerElRef}
           style={{
-            position: 'absolute', top: '40%', left: '50%', transform: 'translate(-50%, -50%) scale(0.8)',
+            position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%) scale(0.8)',
             fontSize: '10vw', fontWeight: 800, color: '#fff', 
             fontFamily: 'system-ui, -apple-system, sans-serif', letterSpacing: '-4px',
-            textShadow: '0 20px 60px rgba(0,0,0,0.8)',
+            textAlign: 'center', lineHeight: '0.85', whiteSpace: 'pre-wrap',
             opacity: 0, transition: 'all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1)',
             pointerEvents: 'none', zIndex: 3000,
           }}
@@ -4345,66 +3986,84 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
 
               {settingsWeapon === 'scatter' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                  <CfgSlider label="Blast Radius" min={1} max={10} step={1} value={scatterRadius} onChange={setScatterRadius} accent="#ff3b30" />
-                  <CfgSlider label="Projectile Count" min={1} max={30} step={1} value={scatterCount} onChange={setScatterCount} accent="#ff3b30" />
-                  <CfgSlider label="Scatter Depth" min={1} max={8} step={1} value={scatterDepth} onChange={setScatterDepth} accent="#ff3b30" />
-                  <CfgSlider label="Delay (ms)" min={0} max={1000} step={50} value={scatterDelay} onChange={setScatterDelay} accent="#ff3b30" />
+                  <CfgSlider label="Blast Radius" min={1} max={10} step={1} value={scatterRadius} baseline={3} onChange={setScatterRadius} accent="#ff3b30" />
+                  <CfgSlider label="Projectile Count" min={1} max={30} step={1} value={scatterCount} baseline={8} onChange={setScatterCount} accent="#ff3b30" />
+                  <CfgSlider label="Scatter Depth" min={1} max={8} step={1} value={scatterDepth} baseline={3} onChange={setScatterDepth} accent="#ff3b30" />
+                  <CfgSlider label="Delay (ms)" min={0} max={1000} step={50} value={scatterDelay} baseline={0} onChange={setScatterDelay} accent="#ff3b30" />
+                  <CfgSlider label="Particle Speed" min={0.5} max={10} step={0.5} value={scatterPartSpeed} baseline={2} onChange={setScatterPartSpeed} accent="#ff3b30" />
+                  <div style={{
+                    fontSize: 11,
+                    color: 'rgba(255,255,255,0.4)',
+                    textAlign: 'center',
+                    textTransform: 'uppercase',
+                    letterSpacing: 1,
+                    marginTop: 12
+                  }}>
+                    Hold weapon for balance adjustments
+                  </div>
                 </div>
               )}
 
               {settingsWeapon === 'artillery' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                  <CfgSlider label="Impact Radius" min={2} max={12} step={1} value={artilleryRadius} onChange={setArtilleryRadius} accent="#ff9500" />
-                  <CfgSlider label="Crater Depth" min={1} max={10} step={1} value={artilleryDepth} onChange={setArtilleryDepth} accent="#ff9500" />
-                  <CfgSlider label="Launch Delay (ms)" min={0} max={2000} step={50} value={artilleryDelay} onChange={setArtilleryDelay} accent="#ff9500" />
+                  <CfgSlider label="Impact Radius" min={2} max={12} step={1} value={artilleryRadius} baseline={3} onChange={setArtilleryRadius} accent="#ff9500" />
+                  <CfgSlider label="Crater Depth" min={1} max={10} step={1} value={artilleryDepth} baseline={4} onChange={setArtilleryDepth} accent="#ff9500" />
+                  <CfgSlider label="Launch Delay (ms)" min={0} max={2000} step={50} value={artilleryDelay} baseline={0} onChange={setArtilleryDelay} accent="#ff9500" />
+                  <CfgSlider label="Particle Speed" min={0.5} max={10} step={0.5} value={artilleryPartSpeed} baseline={2} onChange={setArtilleryPartSpeed} accent="#ff9500" />
                 </div>
               )}
 
               {settingsWeapon === 'flyover' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                  <CfgSlider label="Bomb Radius" min={1} max={8} step={1} value={flyoverRadius} onChange={setFlyoverRadius} accent="#007aff" />
-                  <CfgSlider label="Bomb Depth" min={1} max={8} step={1} value={flyoverDepth} onChange={setFlyoverDepth} accent="#007aff" />
-                  <CfgSlider label="Run Length" min={2} max={20} step={1} value={flyoverLength} onChange={setFlyoverLength} accent="#007aff" />
-                  <CfgSlider label="Spacing" min={1} max={5} step={0.5} value={flyoverSpacing} onChange={setFlyoverSpacing} accent="#007aff" />
+                  <CfgSlider label="Bomb Radius" min={1} max={8} step={1} value={flyoverRadius} baseline={5} onChange={setFlyoverRadius} accent="#007aff" />
+                  <CfgSlider label="Bomb Depth" min={1} max={8} step={1} value={flyoverDepth} baseline={5} onChange={setFlyoverDepth} accent="#007aff" />
+                  <CfgSlider label="Run Length" min={2} max={20} step={1} value={flyoverLength} baseline={10} onChange={setFlyoverLength} accent="#007aff" />
+                  <CfgSlider label="Spacing" min={1} max={5} step={0.5} value={flyoverSpacing} baseline={1.5} onChange={setFlyoverSpacing} accent="#007aff" />
+                  <CfgSlider label="Particle Speed" min={0.5} max={10} step={0.5} value={flyoverPartSpeed} baseline={2} onChange={setFlyoverPartSpeed} accent="#007aff" />
                 </div>
               )}
 
               {settingsWeapon === 'laser' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                  <CfgSlider label="Beam Radius" min={1} max={10} step={1} value={laserRadius} onChange={setLaserRadius} accent="#ff2d55" />
-                  <CfgSlider label="Penetration Depth" min={1} max={20} step={1} value={laserDepth} onChange={setLaserDepth} accent="#ff2d55" />
-                  <CfgSlider label="Burn Duration (ms)" min={500} max={5000} step={100} value={laserDuration} onChange={setLaserDuration} accent="#ff2d55" />
-                  <CfgSlider label="Activation Delay" min={0} max={2000} step={50} value={laserDelay} onChange={setLaserDelay} accent="#ff2d55" />
+                  <CfgSlider label="Beam Radius" min={1} max={10} step={1} value={laserRadius} baseline={4} onChange={setLaserRadius} accent="#ff2d55" />
+                  <CfgSlider label="Penetration Depth" min={1} max={20} step={1} value={laserDepth} baseline={10} onChange={setLaserDepth} accent="#ff2d55" />
+                  <CfgSlider label="Burn Duration (ms)" min={500} max={5000} step={100} value={laserDuration} baseline={1500} onChange={setLaserDuration} accent="#ff2d55" />
+                  <CfgSlider label="Activation Delay" min={0} max={2000} step={50} value={laserDelay} baseline={0} onChange={setLaserDelay} accent="#ff2d55" />
+                  <CfgSlider label="Particle Speed" min={0.5} max={10} step={0.5} value={laserPartSpeed} baseline={6} onChange={setLaserPartSpeed} accent="#ff2d55" />
                 </div>
               )}
 
               {settingsWeapon === 'seismic' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                  <CfgSlider label="Shockwave Radius" min={2} max={16} step={1} value={seismicRadius} onChange={setSeismicRadius} accent="#ffcc00" />
-                  <CfgSlider label="Fissure Depth" min={1} max={10} step={1} value={seismicDepth} onChange={setSeismicDepth} accent="#ffcc00" />
-                  <CfgSlider label="Wave Speed" min={10} max={100} step={5} value={seismicSpeed} onChange={setSeismicSpeed} accent="#ffcc00" />
-                  <CfgSlider label="Aftershocks" min={1} max={10} step={1} value={seismicCount} onChange={setSeismicCount} accent="#ffcc00" />
+                  <CfgSlider label="Shockwave Radius" min={2} max={16} step={1} value={seismicRadius} baseline={8} onChange={setSeismicRadius} accent="#ffcc00" />
+                  <CfgSlider label="Fissure Depth" min={1} max={10} step={1} value={seismicDepth} baseline={3} onChange={setSeismicDepth} accent="#ffcc00" />
+                  <CfgSlider label="Wave Speed" min={10} max={100} step={5} value={seismicSpeed} baseline={40} onChange={setSeismicSpeed} accent="#ffcc00" />
+                  <CfgSlider label="Aftershocks" min={0} max={10} step={1} value={seismicCount} baseline={5} onChange={setSeismicCount} accent="#ffcc00" />
+                  <CfgSlider label="Particle Speed" min={0.1} max={10} step={0.1} value={seismicPartSpeed} baseline={1} onChange={setSeismicPartSpeed} accent="#ffcc00" />
                 </div>
               )}
 
               {settingsWeapon === 'carpet' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                  <CfgSlider label="Bomb Radius" min={1} max={8} step={1} value={carpetRadius} onChange={setCarpetRadius} accent="#5856d6" />
-                  <CfgSlider label="Crater Depth" min={1} max={10} step={1} value={carpetDepth} onChange={setCarpetDepth} accent="#5856d6" />
-                  <CfgSlider label="Grid Rows" min={1} max={10} step={1} value={carpetRows} onChange={setCarpetRows} accent="#5856d6" />
-                  <CfgSlider label="Grid Cols" min={1} max={10} step={1} value={carpetCols} onChange={setCarpetCols} accent="#5856d6" />
-                  <CfgSlider label="Drop Delay (ms)" min={50} max={1000} step={10} value={carpetDelay} onChange={setCarpetDelay} accent="#5856d6" />
+                  <CfgSlider label="Bomb Radius" min={1} max={8} step={1} value={carpetRadius} baseline={4} onChange={setCarpetRadius} accent="#5856d6" />
+                  <CfgSlider label="Crater Depth" min={1} max={10} step={1} value={carpetDepth} baseline={4} onChange={setCarpetDepth} accent="#5856d6" />
+                  <CfgSlider label="Grid Rows" min={1} max={10} step={1} value={carpetRows} baseline={3} onChange={setCarpetRows} accent="#5856d6" />
+                  <CfgSlider label="Grid Cols" min={1} max={10} step={1} value={carpetCols} baseline={3} onChange={setCarpetCols} accent="#5856d6" />
+                  <CfgSlider label="Drop Delay (ms)" min={50} max={1000} step={10} value={carpetDelay} baseline={150} onChange={setCarpetDelay} accent="#5856d6" />
+                  <CfgSlider label="Particle Speed" min={0.5} max={10} step={0.5} value={carpetPartSpeed} baseline={2} onChange={setCarpetPartSpeed} accent="#5856d6" />
                 </div>
               )}
 
               {settingsWeapon === 'blackhole' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                  <CfgSlider label="Event Horizon Radius" min={2} max={20} step={1} value={blackholeRadius} onChange={setBlackholeRadius} accent="#af52de" />
-                  <CfgSlider label="Singularity Depth" min={5} max={30} step={1} value={blackholeDepth} onChange={setBlackholeDepth} accent="#af52de" />
-                  <CfgSlider label="Collapse Duration" min={1000} max={10000} step={500} value={blackholeDuration} onChange={setBlackholeDuration} accent="#af52de" />
-                  <CfgSlider label="Spawn Delay (ms)" min={0} max={3000} step={100} value={blackholeDelay} onChange={setBlackholeDelay} accent="#af52de" />
+                  <CfgSlider label="Event Horizon Radius" min={2} max={20} step={1} value={blackholeRadius} baseline={8} onChange={setBlackholeRadius} accent="#af52de" />
+                  <CfgSlider label="Singularity Depth" min={5} max={30} step={1} value={blackholeDepth} baseline={10} onChange={setBlackholeDepth} accent="#af52de" />
+                  <CfgSlider label="Collapse Duration" min={1000} max={10000} step={500} value={blackholeDuration} baseline={3000} onChange={setBlackholeDuration} accent="#af52de" />
+                  <CfgSlider label="Spawn Delay (ms)" min={0} max={3000} step={100} value={blackholeDelay} baseline={0} onChange={setBlackholeDelay} accent="#af52de" />
+                  <CfgSlider label="Particle Speed" min={0.1} max={10} step={0.1} value={blackholePartSpeed} baseline={1} onChange={setBlackholePartSpeed} accent="#af52de" />
                 </div>
               )}
+              {/* Global Weapon Post-Processing removed by user request */}
             </div>
 
             {/* Helper Text */}
@@ -4419,26 +4078,62 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
               transition: 'opacity 0.3s',
               opacity: settingsWeapon ? 0 : 1 // Hide when drawer is open so it doesn't clutter
             }}>
-              Right mouse on weapon to change preferences
+              Press and hold weapon for 1 sec to balance system
             </div>
 
             {/* Dock */}
             <div style={{
               display: 'flex', gap: 6, padding: '8px',
-              background: 'rgba(18, 18, 22, 0.85)',
-              backdropFilter: 'blur(40px) saturate(150%)',
-              border: '1px solid rgba(255,255,255,0.12)',
+              background: 'rgba(18, 18, 22, 0.65)',
+              backdropFilter: 'blur(24px) saturate(150%)',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
               borderRadius: 999,
-              boxShadow: '0 24px 48px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05)',
+              boxShadow: '0 20px 40px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1)',
               pointerEvents: 'auto' // Re-enable clicks for the dock
             }}>
-              <WeaponButton weaponId="scatter" active={selectedWeapon === 'scatter'} onClick={() => setSelectedWeapon(selectedWeapon === 'scatter' ? null : 'scatter')} onSecondaryClick={() => setSettingsWeapon(settingsWeapon === 'scatter' ? null : 'scatter')} icon={<IconScatter />} label="SCATTER" />
-              <WeaponButton weaponId="artillery" active={selectedWeapon === 'artillery'} onClick={() => setSelectedWeapon(selectedWeapon === 'artillery' ? null : 'artillery')} onSecondaryClick={() => setSettingsWeapon(settingsWeapon === 'artillery' ? null : 'artillery')} icon={<IconArtillery />} label="ARTILLERY" />
-              <WeaponButton weaponId="flyover" active={selectedWeapon === 'flyover'} onClick={() => setSelectedWeapon(selectedWeapon === 'flyover' ? null : 'flyover')} onSecondaryClick={() => setSettingsWeapon(settingsWeapon === 'flyover' ? null : 'flyover')} icon={<IconFlyover />} label="FLYOVER" />
-              <WeaponButton weaponId="laser" active={selectedWeapon === 'laser'} onClick={() => setSelectedWeapon(selectedWeapon === 'laser' ? null : 'laser')} onSecondaryClick={() => setSettingsWeapon(settingsWeapon === 'laser' ? null : 'laser')} icon={<IconLaser />} label="LASER" />
-              <WeaponButton weaponId="seismic" active={selectedWeapon === 'seismic'} onClick={() => setSelectedWeapon(selectedWeapon === 'seismic' ? null : 'seismic')} onSecondaryClick={() => setSettingsWeapon(settingsWeapon === 'seismic' ? null : 'seismic')} icon={<IconSeismic />} label="SEISMIC" />
-              <WeaponButton weaponId="carpet" active={selectedWeapon === 'carpet'} onClick={() => setSelectedWeapon(selectedWeapon === 'carpet' ? null : 'carpet')} onSecondaryClick={() => setSettingsWeapon(settingsWeapon === 'carpet' ? null : 'carpet')} icon={<IconCarpet />} label="CARPET" />
-              <WeaponButton weaponId="blackhole" active={selectedWeapon === 'blackhole'} onClick={() => setSelectedWeapon(selectedWeapon === 'blackhole' ? null : 'blackhole')} onSecondaryClick={() => setSettingsWeapon(settingsWeapon === 'blackhole' ? null : 'blackhole')} icon={<IconBlackhole />} label="BLACKHOLE" />
+              <div style={{ opacity: unlockedWeapons.includes('scatter') ? 1 : 0.3, pointerEvents: unlockedWeapons.includes('scatter') ? 'auto' : 'none' }}>
+                <WeaponButton weaponId="scatter" active={selectedWeapon === 'scatter'} onClick={() => { if (settingsWeapon !== 'scatter') setSelectedWeapon(selectedWeapon === 'scatter' ? null : 'scatter'); }} onSecondaryClick={() => { const open = settingsWeapon !== 'scatter'; setSettingsWeapon(open ? 'scatter' : null); if (open) setSelectedWeapon('scatter'); }} icon={<IconScatter />} label="SCATTER" />
+              </div>
+              <div style={{ opacity: unlockedWeapons.includes('artillery') ? 1 : 0.3, pointerEvents: unlockedWeapons.includes('artillery') ? 'auto' : 'none' }}>
+                <WeaponButton weaponId="artillery" active={selectedWeapon === 'artillery'} onClick={() => { if (settingsWeapon !== 'artillery') setSelectedWeapon(selectedWeapon === 'artillery' ? null : 'artillery'); }} onSecondaryClick={() => { const open = settingsWeapon !== 'artillery'; setSettingsWeapon(open ? 'artillery' : null); if (open) setSelectedWeapon('artillery'); }} icon={<IconArtillery />} label="ARTILLERY" />
+              </div>
+              <div style={{ opacity: unlockedWeapons.includes('flyover') ? 1 : 0.3, pointerEvents: unlockedWeapons.includes('flyover') ? 'auto' : 'none' }}>
+                <WeaponButton weaponId="flyover" active={selectedWeapon === 'flyover'} onClick={() => { if (settingsWeapon !== 'flyover') setSelectedWeapon(selectedWeapon === 'flyover' ? null : 'flyover'); }} onSecondaryClick={() => { const open = settingsWeapon !== 'flyover'; setSettingsWeapon(open ? 'flyover' : null); if (open) setSelectedWeapon('flyover'); }} icon={<IconFlyover />} label="FLYOVER" />
+              </div>
+              <div style={{ opacity: unlockedWeapons.includes('seismic') ? 1 : 0.3, pointerEvents: unlockedWeapons.includes('seismic') ? 'auto' : 'none' }}>
+                <WeaponButton weaponId="seismic" active={selectedWeapon === 'seismic'} onClick={() => { if (settingsWeapon !== 'seismic') setSelectedWeapon(selectedWeapon === 'seismic' ? null : 'seismic'); }} onSecondaryClick={() => { const open = settingsWeapon !== 'seismic'; setSettingsWeapon(open ? 'seismic' : null); if (open) setSelectedWeapon('seismic'); }} icon={<IconSeismic />} label="SEISMIC" />
+              </div>
+              <div style={{ opacity: unlockedWeapons.includes('carpet') ? 1 : 0.3, pointerEvents: unlockedWeapons.includes('carpet') ? 'auto' : 'none' }}>
+                <WeaponButton weaponId="carpet" active={selectedWeapon === 'carpet'} onClick={() => { if (settingsWeapon !== 'carpet') setSelectedWeapon(selectedWeapon === 'carpet' ? null : 'carpet'); }} onSecondaryClick={() => { const open = settingsWeapon !== 'carpet'; setSettingsWeapon(open ? 'carpet' : null); if (open) setSelectedWeapon('carpet'); }} icon={<IconCarpet />} label="CARPET" />
+              </div>
+              <div style={{ opacity: unlockedWeapons.includes('laser') ? 1 : 0.3, pointerEvents: unlockedWeapons.includes('laser') ? 'auto' : 'none' }}>
+                <WeaponButton weaponId="laser" active={selectedWeapon === 'laser'} onClick={() => { if (settingsWeapon !== 'laser') setSelectedWeapon(selectedWeapon === 'laser' ? null : 'laser'); }} onSecondaryClick={() => { const open = settingsWeapon !== 'laser'; setSettingsWeapon(open ? 'laser' : null); if (open) setSelectedWeapon('laser'); }} icon={<IconLaser />} label="LASER" />
+              </div>
+              <div style={{ opacity: unlockedWeapons.includes('blackhole') ? 1 : 0.3, pointerEvents: unlockedWeapons.includes('blackhole') ? 'auto' : 'none' }}>
+                <WeaponButton weaponId="blackhole" active={selectedWeapon === 'blackhole'} onClick={() => { if (settingsWeapon !== 'blackhole') setSelectedWeapon(selectedWeapon === 'blackhole' ? null : 'blackhole'); }} onSecondaryClick={() => { const open = settingsWeapon !== 'blackhole'; setSettingsWeapon(open ? 'blackhole' : null); if (open) setSelectedWeapon('blackhole'); }} icon={<IconBlackhole />} label="BLACKHOLE" />
+              </div>
+
+              <div style={{ width: 1, background: 'rgba(255,255,255,0.1)', margin: '4px 6px' }} />
+              <button
+                onClick={() => {
+                  if (unlockedWeapons.length > 1) {
+                    setUnlockedWeapons(['scatter']);
+                    if (selectedWeapon !== 'scatter') setSelectedWeapon('scatter');
+                  } else {
+                    setUnlockedWeapons(['scatter', 'artillery', 'flyover', 'seismic', 'carpet', 'laser', 'blackhole']);
+                  }
+                }}
+                style={{
+                  background: 'rgba(255,255,255,0.1)', border: 'none', color: 'white',
+                  borderRadius: 999, padding: '0 16px', cursor: 'pointer',
+                  fontFamily: 'system-ui', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5,
+                  transition: 'background 0.2s'
+                }}
+                onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}
+                onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
+              >
+                {unlockedWeapons.length > 1 ? 'Lock' : 'Unlock'}
+              </button>
             </div>
           </div>
         )}
@@ -4452,7 +4147,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
         pointerEvents: 'none', fontFamily: 'system-ui, -apple-system, sans-serif', lineHeight: 1.6,
         textAlign: 'right', zIndex: 100
       }}>
-        <div>🖱 Drag to pan · Scroll to zoom</div>
+        <div>🖱 Scroll to zoom</div>
         <div style={{ color: saved ? '#4af' : '#9ca3af' }}>{status}</div>
       </div>
 
@@ -4659,6 +4354,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
                 <CfgSlider label="Max Height" min={2} max={8}   step={1}   value={maxElev}    onChange={setMaxElev}    />
                 <CfgSlider label="Roughness"  min={0.3} max={4} step={0.1} value={roughness}  onChange={setRoughness}  accent="#f97316" />
                 <CfgSlider label="Heal Speed" min={10} max={1000} step={10} value={regenSpeed} onChange={setRegenSpeed} accent="#10b981" />
+                <CfgSlider label="Fade Speed" min={0.01} max={0.5} step={0.01} value={regenFadeSpeed} onChange={setRegenFadeSpeed} accent="#10b981" />
               </div>
             </div>
 
@@ -4670,8 +4366,10 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
                 <CfgSlider label="Roughness"   min={0}    max={1.0}  step={0.01} value={matRoughness} onChange={setMatRoughness} accent="#7df" />
                 <CfgSlider label="Opacity"     min={0.4}  max={1.0}  step={0.01} value={opacity}     onChange={setOpacity}     />
                 <CfgSlider label="Cube Jitter" min={0}    max={1.0}  step={0.01} value={cubeJitter}  onChange={setCubeJitter}  accent="#7df" />
-                <CfgSlider label="Jitter Glow" min={0}    max={2}    step={0.05} value={glowInt}     onChange={setGlowInt}     />
+                <CfgSlider label="Damage Emissive" min={0} max={20} step={0.1} value={damageEmissive} onChange={setDamageEmissive} accent="#ef4444" />
+                <CfgSlider label="Damage Opacity" min={0} max={1} step={0.01} value={damageHalo} onChange={setDamageHalo} accent="#ef4444" />
                 <CfgSlider label="Base Glow"   min={0}    max={2}    step={0.01} value={baseGlow}    onChange={setBaseGlow}    />
+
                 <CfgSlider label="Glow Fade"   min={0.01} max={0.5}  step={0.01} value={hoverFade}   onChange={setHoverFade} />
               </div>
             </div>
@@ -4808,8 +4506,6 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
             <div className="apple-card">
               <div className="apple-card-title">Post-Processing</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                <CfgSlider label="Bloom Str"    min={0} max={2}   step={0.05} value={bloomStr}    onChange={setBloomStr}    accent="#c084fc" />
-                <CfgSlider label="Bloom Thresh" min={0} max={5}   step={0.01} value={bloomThresh} onChange={setBloomThresh} accent="#c084fc" />
                 <div style={{ height: 1, background: 'rgba(255,255,255,0.1)', margin: '4px 0' }} />
                 <CfgSlider label="Edge Blur"   min={0}     max={5}    step={0.05}  value={tiltBlur}     onChange={setTiltBlur}     accent="#8af" />
                 <CfgSlider label="Resolution"  min={0.005} max={0.12} step={0.001} value={tiltSpread}   onChange={setTiltSpread}   accent="#8af" />
@@ -4858,7 +4554,20 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
                 <CfgSlider label="Count"    min={0}   max={40}  step={1}    value={beaconCount}    onChange={setBeaconCount}    accent="#ff6b35" />
                 <CfgSlider label="Bury Depth" min={0} max={6}   step={1}    value={beaconBury}     onChange={setBeaconBury}     accent="#ff6b35" />
                 <CfgSlider label="Emissive" min={0.5} max={8}   step={0.25} value={beaconEmissive} onChange={setBeaconEmissive} accent="#ff6b35" />
-                <CfgSlider label="Light"    min={0}   max={4}   step={0.1}  value={beaconLight}    onChange={setBeaconLight}    accent="#ff6b35" />
+                <CfgSlider label="Light Int" min={0}   max={4}   step={0.1}  value={beaconLight}    onChange={setBeaconLight}    accent="#ff6b35" />
+                <CfgSlider label="Seed"     min={1}   max={100} step={1}    value={beaconSeed}     onChange={setBeaconSeed}     accent="#ff6b35" />
+              </div>
+            </div>
+
+            {/* ── ATMOSPHERE PARTICLES ── */}
+            <div className="apple-card">
+              <div className="apple-card-title">ATMOSPHERE PARTICLES</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <CfgSlider label="Engine Limit" min={1000} max={500000} step={1000} value={partLimit} onChange={setPartLimit} accent="#14b8a6" />
+                <CfgSlider label="Count"   min={1}   max={100000} step={1}    value={partCount}  onChange={setPartCount}  accent="#14b8a6" />
+                <CfgSlider label="Size"    min={0.1} max={5.0} step={0.1}  value={partSize}   onChange={setPartSize}   accent="#14b8a6" />
+                <CfgSlider label="Speed"   min={0}   max={5}   step={0.1}  value={partSpeed}  onChange={setPartSpeed}  accent="#14b8a6" />
+                <CfgSlider label="Chance"  min={0}   max={1.0} step={0.05} value={partChance} onChange={setPartChance} accent="#14b8a6" />
               </div>
             </div>
 
@@ -4911,6 +4620,19 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
             gameStartTimeRef.current = Date.now();
             isTransitioningWaveRef.current = false;
             isGameOverRef.current = false;
+            
+            // Force a complete board heal!
+            const emptySet = new Set<string>();
+            setBrokenBlocks(emptySet);
+            brokenBlocksRef.current = emptySet;
+            regeneratingBlocksRef.current.clear();
+            
+
+            if (renderMode === 'glass') {
+              rebuildMeshes(terrainRef.current, bevel, glowInt, opacity, terrainTint, layerColors, matTransmit, matThickness, matIor, matRoughness, cubeJitter, emptySet);
+            } else {
+              rebuildMixedMeshes(terrainRef.current, layerColors, terrainTint, enabledShapes, emptySet);
+            }
           }} 
         />
       )}    {/* ── Mouse Cooldown Overlay ── */}

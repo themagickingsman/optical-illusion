@@ -41,25 +41,11 @@ export default function HireMeView() {
     setInputText("");
 
     if (tutorialStep === 0) {
-      // First message from user
-      setLocalMessages(prev => [...prev, {
-        id: 'u1',
-        sender: 'user',
-        text,
-        timestamp: new Date().toISOString()
-      }]);
       setTutorialStep(1);
-      setIsThinking(true);
-      
-      // Simulate thinking then send to DB
-      setTimeout(() => {
-        setIsThinking(false);
-        sendMessage(text);
-      }, 1500);
-    } else {
-      // Subsequent messages
-      sendMessage(text);
     }
+    
+    // Send message to DB (this handles optimistic update automatically)
+    sendMessage(text);
   };
 
   return (
@@ -102,7 +88,8 @@ export default function HireMeView() {
                 borderBottomRightRadius: msg.sender === 'user' ? '4px' : '28px',
                 borderBottomLeftRadius: msg.sender === 'admin' ? '4px' : '28px',
                 fontSize: '22px',
-                lineHeight: 1.5
+                lineHeight: 1.5,
+                whiteSpace: 'pre-wrap'
               }}>
                 {msg.text}
               </div>

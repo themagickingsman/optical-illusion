@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import fs from 'fs/promises';
 import path from 'path';
+import nodemailer from 'nodemailer';
 
 const dbPath = path.join(process.cwd(), 'src', 'data', 'chat_db.json');
 
@@ -63,7 +64,9 @@ export async function GET() {
   return NextResponse.json({ 
     profiles: db.profiles || [], 
     messages: db.messages || [],
-    ndaLinks: db.ndaLinks || []
+    ndaLinks: db.ndaLinks || [],
+    emailTemplate: db.emailTemplate || "",
+    emailSubject: db.emailSubject || ""
   });
 }
 
@@ -77,7 +80,15 @@ export async function POST(req: Request) {
     if (!db.messages) db.messages = [];
 
     // --- Legacy CMS Action Support ---
-    if (body.action === 'admin_reply') {
+    if (body.action === 'save_template') {
+      db.emailTemplate = body.template;
+      db.emailSubject = body.subject;
+    }
+    else if (body.action === 'update_email') {
+      const p = db.profiles.find((x: any) => x.id === body.profileId);
+      if (p) p.email = body.email;
+    }
+    else if (body.action === 'admin_reply') {
       const { profileId, text } = body;
       db.messages.push({
         id: Date.now().toString(),
@@ -88,7 +99,34 @@ export async function POST(req: Request) {
       });
       // Update lastActive
       const p = db.profiles.find((x: any) => x.id === profileId);
-      if (p) p.lastActive = new Date().toISOString();
+      if (p) {
+        p.lastActive = new Date().toISOString();
+        
+        // Send email via Gmail Nodemailer if available
+        if (p.email && process.env.GMAIL_EMAIL && process.env.GMAIL_APP_PASSWORD) {
+          try {
+            const transporter = nodemailer.createTransport({
+              service: 'gmail',
+              auth: {
+                user: process.env.GMAIL_EMAIL,
+                pass: process.env.GMAIL_APP_PASSWORD
+              }
+            });
+            
+            const template = db.emailTemplate || "Hi there,\n\n{{message}}\n\nThanks,\nOptical Illusions";
+            const emailBody = template.replace('{{message}}', text);
+            
+            await transporter.sendMail({
+              from: `"Optical Illusions" <${process.env.GMAIL_EMAIL}>`,
+              to: p.email,
+              subject: db.emailSubject || 'New message from Optical Illusions',
+              text: emailBody
+            });
+          } catch (emailErr) {
+            console.error("Failed to send email:", emailErr);
+          }
+        }
+      }
     }
     else if (body.action === 'delete_message') {
       db.messages = db.messages.filter((m: any) => m.id !== body.messageId);

@@ -4,11 +4,23 @@ export default function ChatCMS() {
   const [data, setData] = useState<any>(null);
   const [activeProfileId, setActiveProfileId] = useState<string | null>(null);
   const [replyText, setReplyText] = useState("");
+  const [activeTab, setActiveTab] = useState<'chat' | 'email'>('chat');
+  const [emailTemplate, setEmailTemplate] = useState("");
+  const [emailSubject, setEmailSubject] = useState("");
+  const [editingEmail, setEditingEmail] = useState("");
 
   const fetchData = () => {
     fetch('/api/chat')
       .then(res => res.json())
-      .then(db => setData(db))
+      .then(db => {
+        setData(db);
+        if (db.emailTemplate && emailTemplate === "") {
+          setEmailTemplate(db.emailTemplate);
+        }
+        if (db.emailSubject && emailSubject === "") {
+          setEmailSubject(db.emailSubject);
+        }
+      })
       .catch(err => console.error(err));
   };
 
@@ -72,6 +84,42 @@ export default function ChatCMS() {
     }
   };
 
+  const handleSaveEmailTemplate = async () => {
+    try {
+      await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'save_template',
+          template: emailTemplate,
+          subject: emailSubject
+        })
+      });
+      alert('Template saved!');
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleSaveUserEmail = async () => {
+    if (!activeProfileId || !editingEmail.trim()) return;
+    try {
+      await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'update_email',
+          profileId: activeProfileId,
+          email: editingEmail.trim()
+        })
+      });
+      setEditingEmail("");
+      fetchData();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   if (!data) return <div style={{ color: 'white', padding: '20px' }}>Loading...</div>;
 
   const profiles = data.profiles || [];
@@ -84,7 +132,57 @@ export default function ChatCMS() {
   const latestNda = profileNdas.sort((a:any, b:any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())[0];
 
   return (
-    <div style={{ display: 'flex', height: '100%', width: '100%', backgroundColor: '#050505', color: '#fff' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%', backgroundColor: '#050505', color: '#fff' }}>
+      {/* Top Navigation Tabs */}
+      <div style={{ display: 'flex', borderBottom: '1px solid #333', backgroundColor: '#111' }}>
+        <button 
+          onClick={() => setActiveTab('chat')}
+          style={{ padding: '15px 30px', border: 'none', background: activeTab === 'chat' ? '#222' : 'transparent', color: activeTab === 'chat' ? '#4ade80' : '#888', cursor: 'pointer', fontWeight: 'bold', fontSize: '15px', borderRight: '1px solid #333' }}
+        >
+          Chat View
+        </button>
+        <button 
+          onClick={() => setActiveTab('email')}
+          style={{ padding: '15px 30px', border: 'none', background: activeTab === 'email' ? '#222' : 'transparent', color: activeTab === 'email' ? '#4ade80' : '#888', cursor: 'pointer', fontWeight: 'bold', fontSize: '15px', borderRight: '1px solid #333' }}
+        >
+          Email Template Editor
+        </button>
+      </div>
+
+      {activeTab === 'email' ? (
+        <div style={{ padding: '40px', maxWidth: '800px', width: '100%' }}>
+          <h2>Pre-formatted Email Template</h2>
+          <p style={{ color: '#888', marginBottom: '20px' }}>
+            This template will wrap your chat responses when they are sent out via email. Use <strong>{'{{message}}'}</strong> exactly like that where you want your typed response to appear.
+          </p>
+          <div style={{ marginBottom: '20px' }}>
+            <label style={{ display: 'block', fontSize: '13px', color: '#888', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '1px' }}>Email Subject</label>
+            <input 
+              type="text"
+              value={emailSubject}
+              onChange={e => setEmailSubject(e.target.value)}
+              placeholder="New message from Optical Illusions"
+              style={{ width: '100%', padding: '12px', backgroundColor: '#111', color: '#fff', border: '1px solid #333', borderRadius: '8px', fontSize: '15px' }}
+            />
+          </div>
+          <div style={{ marginBottom: '20px' }}>
+            <label style={{ display: 'block', fontSize: '13px', color: '#888', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '1px' }}>Email Body Template</label>
+            <textarea
+              value={emailTemplate}
+              onChange={(e) => setEmailTemplate(e.target.value)}
+              style={{ width: '100%', height: '300px', backgroundColor: '#111', color: '#fff', padding: '20px', border: '1px solid #333', borderRadius: '8px', fontSize: '15px', fontFamily: 'monospace' }}
+              placeholder={"Hi there,\n\n{{message}}\n\nThanks,\nOptical Illusions"}
+            />
+          </div>
+          <button 
+            onClick={handleSaveEmailTemplate}
+            style={{ padding: '12px 30px', backgroundColor: '#0A84FF', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}
+          >
+            Save Template
+          </button>
+        </div>
+      ) : (
+        <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
       
       {/* Left Column: Profiles Inbox */}
       <div style={{ width: '300px', borderRight: '1px solid #333', overflowY: 'auto' }}>
@@ -169,7 +267,33 @@ export default function ChatCMS() {
           
           <div style={{ marginBottom: '25px' }}>
             <div style={{ fontSize: '11px', color: '#888', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '5px' }}>Email</div>
-            <div style={{ fontSize: '16px' }}>{activeProfile.email || "Not provided"}</div>
+            {activeProfile.email ? (
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ fontSize: '16px' }}>{activeProfile.email}</div>
+                <button onClick={() => setEditingEmail(activeProfile.email)} style={{ background: 'none', border: 'none', color: '#0A84FF', cursor: 'pointer', fontSize: '12px' }}>Edit</button>
+              </div>
+            ) : (
+              <div style={{ fontSize: '16px', color: '#666' }}>Not provided</div>
+            )}
+
+            {/* Email Input Field for Manual Edits */}
+            {(!activeProfile.email || editingEmail) && (
+              <div style={{ display: 'flex', marginTop: '10px', gap: '5px' }}>
+                <input 
+                  type="email" 
+                  value={editingEmail}
+                  onChange={(e) => setEditingEmail(e.target.value)}
+                  placeholder="Enter email address..."
+                  style={{ flex: 1, padding: '8px', backgroundColor: '#111', border: '1px solid #333', color: '#fff', borderRadius: '4px', fontSize: '13px' }}
+                />
+                <button 
+                  onClick={handleSaveUserEmail}
+                  style={{ padding: '8px 12px', backgroundColor: '#222', color: '#4ade80', border: '1px solid #333', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }}
+                >
+                  Save
+                </button>
+              </div>
+            )}
           </div>
           
           <div style={{ marginBottom: '25px' }}>
@@ -298,6 +422,8 @@ export default function ChatCMS() {
           </div>
         )}
       </div>
+      </div>
+      )}
     </div>
   );
 }

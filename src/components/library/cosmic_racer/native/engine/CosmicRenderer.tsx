@@ -1076,7 +1076,7 @@ export default function CosmicRenderer({
                  return existingUrl + (existingUrl.includes('?') ? '&' : '?') + `t=${key}`;
              }
              const isScreensaverTarget = process.env.NEXT_PUBLIC_BUILD_TARGET === 'screensaver';
-             const isPort3006 = typeof window !== 'undefined' && (window.location.port === '3006' || window.location.port === '3007' || window.location.hostname.includes('vercel.app') || window.location.hostname.includes('vercel.app'));
+             const isPort3006 = typeof window !== 'undefined' && (window.location.port === '3006' || window.location.port === '3007' || window.location.port === '3009' || window.location.hostname.includes('vercel.app') || window.location.hostname.includes('vercel.app'));
              const isLocalScheme = typeof window !== 'undefined' && (window.location.protocol === 'app:' || window.location.protocol === 'file:');
              const isStandaloneMode = isScreensaverTarget || isPort3006 || isLocalScheme;
 
@@ -1136,7 +1136,7 @@ export default function CosmicRenderer({
      const fetchConfig = async () => {
          try {
              const isScreensaverTarget = process.env.NEXT_PUBLIC_BUILD_TARGET === 'screensaver';
-             const isPort3006 = typeof window !== 'undefined' && (window.location.port === '3006' || window.location.port === '3007' || window.location.hostname.includes('vercel.app') || window.location.hostname.includes('vercel.app'));
+             const isPort3006 = typeof window !== 'undefined' && (window.location.port === '3006' || window.location.port === '3007' || window.location.port === '3009' || window.location.port === '3009' || window.location.hostname.includes('vercel.app'));
              const isLocalScheme = typeof window !== 'undefined' && (window.location.protocol === 'app:' || window.location.protocol === 'file:');
              const isStandaloneMode = isScreensaverTarget || isPort3006 || isLocalScheme;
 
@@ -1386,7 +1386,7 @@ export default function CosmicRenderer({
   useEffect(() => {
     const fetchConfig = () => {
         const isScreensaverTarget = process.env.NEXT_PUBLIC_BUILD_TARGET === 'screensaver';
-        const isPort3006 = typeof window !== 'undefined' && (window.location.port === '3006' || window.location.port === '3007' || window.location.hostname.includes('vercel.app') || window.location.hostname.includes('vercel.app'));
+        const isPort3006 = typeof window !== 'undefined' && (window.location.port === '3006' || window.location.port === '3007' || window.location.port === '3009' || window.location.hostname.includes('vercel.app') || window.location.hostname.includes('vercel.app'));
         const isLocalScheme = typeof window !== 'undefined' && (window.location.protocol === 'app:' || window.location.protocol === 'file:');
         const isStandaloneMode = isScreensaverTarget || isPort3006 || isLocalScheme;
 
@@ -1611,7 +1611,7 @@ export default function CosmicRenderer({
       if (!shipId || !color) return;
       shipFxColorOverrideRef.current = { ...shipFxColorOverrideRef.current, [shipId]: color };
       const isScreensaverTarget = process.env.NEXT_PUBLIC_BUILD_TARGET === 'screensaver';
-      const isPort3006 = typeof window !== 'undefined' && (window.location.port === '3006' || window.location.port === '3007' || window.location.hostname.includes('vercel.app') || window.location.hostname.includes('vercel.app'));
+      const isPort3006 = typeof window !== 'undefined' && (window.location.port === '3006' || window.location.port === '3007' || window.location.port === '3009' || window.location.hostname.includes('vercel.app') || window.location.hostname.includes('vercel.app'));
       const isLocalScheme = typeof window !== 'undefined' && (window.location.protocol === 'app:' || window.location.protocol === 'file:');
       const isStandaloneMode = isScreensaverTarget || isPort3006 || isLocalScheme;
       if (isStandaloneMode) return;
@@ -1635,7 +1635,7 @@ export default function CosmicRenderer({
     focusedShipIdRef.current = newShipId;
     setFocusedShipId(newShipId);
     const isScreensaverTarget = process.env.NEXT_PUBLIC_BUILD_TARGET === 'screensaver';
-    const isPort3006 = typeof window !== 'undefined' && (window.location.port === '3006' || window.location.port === '3007' || window.location.hostname.includes('vercel.app') || window.location.hostname.includes('vercel.app'));
+    const isPort3006 = typeof window !== 'undefined' && (window.location.port === '3006' || window.location.port === '3007' || window.location.port === '3009' || window.location.hostname.includes('vercel.app') || window.location.hostname.includes('vercel.app'));
     const isLocalScheme = typeof window !== 'undefined' && (window.location.protocol === 'app:' || window.location.protocol === 'file:');
     const isStandaloneMode = isScreensaverTarget || isPort3006 || isLocalScheme;
     if (!isStandaloneMode) {
@@ -1698,7 +1698,7 @@ export default function CosmicRenderer({
 
   useEffect(() => {
       const isScreensaverTarget = process.env.NEXT_PUBLIC_BUILD_TARGET === 'screensaver';
-      const isPort3006 = typeof window !== 'undefined' && (window.location.port === '3006' || window.location.port === '3007' || window.location.hostname.includes('vercel.app') || window.location.hostname.includes('vercel.app'));
+      const isPort3006 = typeof window !== 'undefined' && (window.location.port === '3006' || window.location.port === '3007' || window.location.port === '3009' || window.location.hostname.includes('vercel.app') || window.location.hostname.includes('vercel.app'));
       const isLocalScheme = typeof window !== 'undefined' && (window.location.protocol === 'app:' || window.location.protocol === 'file:');
       const isStandaloneMode = isScreensaverTarget || isPort3006 || isLocalScheme;
 
@@ -3743,7 +3743,7 @@ export default function CosmicRenderer({
 
       // Pre-calculate Lead player motion offset safely ONCE per frame
       const leadVelocityRatio = speed / p.maxSpeed;
-      motionOffsetRef.current += p.motionSpeed * leadVelocityRatio * 0.5;
+      motionOffsetRef.current += p.motionSpeed;
       
       // Must also update standard edge/rim color uniforms because they're bound to params
       const pushFinalUniforms = (mesh: THREE.Mesh | null | undefined, sp: any, activeMotionOffset: number, throttleRatio: number, shipId: string) => {
@@ -3896,8 +3896,8 @@ export default function CosmicRenderer({
               const sp = allShipParamsRef.current[id] || globalShipbankStateRef.current;
               const wVelocityRatio = dr.speed / Math.max(0.0001, sp.maxSpeed);
               
-              // Seed custom motion offset property strictly tied to the wingman lifecycle
-              dr.motionOffset = (dr.motionOffset || 0) + (sp.motionSpeed * wVelocityRatio * 0.5);
+              // We now use the global motionOffsetRef for ALL ships so the environment appears global
+              dr.motionOffset = motionOffsetRef.current;
               
               const wChassis = dr.group.getObjectByName('shipChassis');
               if (wChassis) {
@@ -4277,7 +4277,7 @@ export default function CosmicRenderer({
          
          let cinematicTargetZoom = 1.0;
          if (cinBehavior === 'close_up') {
-             cinematicTargetZoom = 1.25; // Hardcoded safe close up
+             cinematicTargetZoom = 1.45; // Hardcoded safe close up
          } else if (cinBehavior === 'wide_shot') {
              cinematicTargetZoom = 0.68;
          } else if (cinBehavior === 'random') {
@@ -4367,7 +4367,7 @@ export default function CosmicRenderer({
       
       let cinematicTargetZoom2 = 1.0;
       if (cinBehavior2 === 'close_up') {
-          cinematicTargetZoom2 = 1.25; // Hardcoded safe close up
+          cinematicTargetZoom2 = 1.45; // Hardcoded safe close up
       } else if (cinBehavior2 === 'wide_shot') {
           cinematicTargetZoom2 = 0.68;
       } else if (cinBehavior2 === 'random') {

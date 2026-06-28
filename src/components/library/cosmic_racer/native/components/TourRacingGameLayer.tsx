@@ -203,16 +203,13 @@ export default function TourRacingGameLayer({ isCinematicMode, flightGradientCon
             try {
                 const isScreensaverTarget = process.env.NEXT_PUBLIC_BUILD_TARGET === 'screensaver';
                 const isPort3001 = typeof window !== 'undefined' && window.location.port === '3001';
-                const isPort3006 = typeof window !== 'undefined' && (window.location.port === '3006' || window.location.port === '3007' || window.location.hostname.includes('vercel.app') || window.location.hostname.includes('vercel.app'));
+                const isPort3006 = typeof window !== 'undefined' && (window.location.port === '3006' || window.location.port === '3007' || window.location.port === '3009' || window.location.hostname.includes('vercel.app') || window.location.hostname.includes('vercel.app'));
                 const isLocalScheme = typeof window !== 'undefined' && (window.location.protocol === 'app:' || window.location.protocol === 'file:');
                 const isStandaloneMode = (isScreensaverTarget || isPort3006 || isLocalScheme) && !isPort3001;
                 
                 let configUrl = '/game_assets/data/game_config.json';
-                if (isLocalScheme) {
-                    if (window.location.pathname.includes('/builds/')) configUrl = '../game_assets/data/game_config.json';
-                    else configUrl = './game_assets/data/game_config.json';
-                } else if (!isStandaloneMode) {
-                    configUrl = '/api/game-assets/config/';
+                if (isLocalScheme && window.location.pathname.includes('/builds/')) {
+                    configUrl = '../game_assets/data/game_config.json';
                 }
 
                 let db: any = {};
@@ -298,7 +295,7 @@ export default function TourRacingGameLayer({ isCinematicMode, flightGradientCon
             
             const isScreensaverTarget = process.env.NEXT_PUBLIC_BUILD_TARGET === 'screensaver';
             const isPort3001 = typeof window !== 'undefined' && window.location.port === '3001';
-            const isPort3006 = typeof window !== 'undefined' && (window.location.port === '3006' || window.location.port === '3007' || window.location.hostname.includes('vercel.app') || window.location.hostname.includes('vercel.app'));
+            const isPort3006 = typeof window !== 'undefined' && (window.location.port === '3006' || window.location.port === '3007' || window.location.port === '3009' || window.location.hostname.includes('vercel.app') || window.location.hostname.includes('vercel.app'));
             const isLocalScheme = typeof window !== 'undefined' && (window.location.protocol === 'app:' || window.location.protocol === 'file:');
             const isStandaloneMode = (isScreensaverTarget || isPort3006 || isLocalScheme) && !isPort3001;
             
@@ -331,7 +328,7 @@ export default function TourRacingGameLayer({ isCinematicMode, flightGradientCon
             const next = { ...p, ...newParams };
             
             const isScreensaverTarget = process.env.NEXT_PUBLIC_BUILD_TARGET === 'screensaver';
-            const isPort3006 = typeof window !== 'undefined' && (window.location.port === '3006' || window.location.port === '3007' || window.location.hostname.includes('vercel.app') || window.location.hostname.includes('vercel.app'));
+            const isPort3006 = typeof window !== 'undefined' && (window.location.port === '3006' || window.location.port === '3007' || window.location.port === '3009' || window.location.hostname.includes('vercel.app') || window.location.hostname.includes('vercel.app'));
             const isLocalScheme = typeof window !== 'undefined' && (window.location.protocol === 'app:' || window.location.protocol === 'file:');
             const isPort3001 = typeof window !== 'undefined' && window.location.port === '3001';
             const isStandaloneMode = (isScreensaverTarget || isPort3006 || isLocalScheme) && !isPort3001;
@@ -529,7 +526,7 @@ export default function TourRacingGameLayer({ isCinematicMode, flightGradientCon
                                             window.dispatchEvent(new CustomEvent('arn_audio_update', { detail: { masterVolume: val } }));
                                             
                                             const isScreensaverTarget = process.env.NEXT_PUBLIC_BUILD_TARGET === 'screensaver';
-                                            const isPort3006 = typeof window !== 'undefined' && (window.location.port === '3006' || window.location.port === '3007' || window.location.hostname.includes('vercel.app') || window.location.hostname.includes('vercel.app'));
+                                            const isPort3006 = typeof window !== 'undefined' && (window.location.port === '3006' || window.location.port === '3007' || window.location.port === '3009' || window.location.hostname.includes('vercel.app') || window.location.hostname.includes('vercel.app'));
                                             const isLocalScheme = typeof window !== 'undefined' && (window.location.protocol === 'app:' || window.location.protocol === 'file:');
                                             const isStandaloneMode = isScreensaverTarget || isPort3006 || isLocalScheme;
 

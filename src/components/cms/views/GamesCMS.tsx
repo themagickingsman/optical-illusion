@@ -10,6 +10,65 @@ import CosmicFlameAsset from '@/components/library/CosmicFlameAsset';
 import EngineFlameComponent from '@/components/library/EngineFlameComponent';
 import TerrainGenerator from '@/components/library/TerrainGenerator';
 
+const InfoPanel = ({ index, title, description, isHovered }: { index: number, title: string, description: string, isHovered: boolean }) => (
+  <div style={{
+    position: 'absolute',
+    bottom: '-240px', // Doubled slack offset for 0.5 scale container
+    left: 0,
+    width: '100%',
+    height: 'auto', 
+    background: 'linear-gradient(180deg, rgba(200, 200, 200, 0.45) 0%, rgba(180, 180, 180, 0.65) 100%)', // Tinted 10-15% darker to help white text pop
+    backdropFilter: 'blur(32px) saturate(200%)',
+    WebkitBackdropFilter: 'blur(32px) saturate(200%)',
+    borderTop: '2px solid rgba(0, 0, 0, 0.1)', // Thicker border for scale
+    display: 'flex',
+    flexDirection: 'row', 
+    justifyContent: 'space-between', 
+    alignItems: 'center', 
+    padding: index === 0 ? '55px 65px 280px 65px' : '40px 50px 280px 50px', // More compact padding
+    transform: isHovered ? 'translateY(0)' : 'translateY(100%)',
+    transition: 'transform 0.5s cubic-bezier(0.1, 1.4, 0.2, 1)', 
+    zIndex: 2,
+    pointerEvents: 'none',
+    boxShadow: '0 -30px 80px rgba(0,0,0,0.1)', // Smoother shadow
+  }}>
+    <div style={{ flex: 1, paddingRight: index === 0 ? '40px' : '30px' }}>
+      <h3 style={{ 
+        fontSize: index === 0 ? '72px' : '52px', 
+        fontWeight: 700, // Bolder to make the gradient pop
+        margin: 0, // Compact margin
+        lineHeight: 1.05, // Tight line height for wrapped text
+        fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif',
+        letterSpacing: '-0.03em', // Ultra tight tracking
+        color: '#FFF', // Solid white text
+      }}>
+        {title}
+      </h3>
+    </div>
+    
+    <div style={{ flexShrink: 0 }}>
+      <div style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: '16px',
+        background: 'rgba(255, 255, 255, 0.95)', 
+        color: '#000', 
+        padding: index === 0 ? '24px 48px' : '18px 36px', // Tighter horizontally to make it "shorter"
+        borderRadius: '9999px',
+        fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
+        fontSize: index === 0 ? '40px' : '32px', // Scaled up!
+        fontWeight: 600,
+        boxShadow: '0 8px 28px rgba(0,0,0,0.1)'
+      }}>
+        <svg width={index === 0 ? 32 : 24} height={index === 0 ? 32 : 24} viewBox="0 0 24 24" fill="black">
+          <path d="M5 3l14 9-14 9V3z"/>
+        </svg>
+        Play
+      </div>
+    </div>
+  </div>
+);
+
 export default function GamesCMS() {
   const { engines, isLoading } = useLibraryLogic();
   const [hoveredCardIndex, setHoveredCardIndex] = useState<number | null>(null);
@@ -340,7 +399,7 @@ export default function GamesCMS() {
           flexDirection: 'column',
           alignItems: 'center',
           gap: '25px',
-          opacity: hasInteracted ? 0 : 0.6,
+          opacity: hasInteracted ? 0 : (isIdle ? 0 : 0.6),
           transition: 'opacity 0.8s ease-out'
         }}>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
@@ -419,7 +478,12 @@ export default function GamesCMS() {
                 alt={engines[0].title} 
                 className="absolute inset-0 w-full h-full object-cover block"
               />
-
+              <InfoPanel 
+                index={0}
+                title="Delivering Full Games"
+                description="1:13 trillion exact scale simulation of the solar system integrating NASA JPL data."
+                isHovered={hoveredCardIndex === 0}
+              />
             </div>
           </div>
         )}
@@ -440,7 +504,12 @@ export default function GamesCMS() {
                   alt={engines[1].title} 
                   className="absolute inset-0 w-full h-full object-cover block"
                 />
-
+                <InfoPanel 
+                  index={1}
+                  title="Delivering Full Features"
+                  description="Voxel Mini Game with Weapons System"
+                  isHovered={hoveredCardIndex === 1}
+                />
               </div>
             </div>
           )}
@@ -459,7 +528,12 @@ export default function GamesCMS() {
                   alt={engines[2].title} 
                   className="absolute inset-0 w-full h-full object-cover block"
                 />
-
+                <InfoPanel 
+                  index={2}
+                  title="Delivering Components"
+                  description="Standalone interactive particle systems"
+                  isHovered={hoveredCardIndex === 2}
+                />
               </div>
             </div>
           )}

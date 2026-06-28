@@ -5,6 +5,28 @@ import path from 'path';
 const dbPath = path.join(process.cwd(), 'src', 'data', 'chat_db.json');
 
 async function getDb() {
+  const kvUrl = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
+  const kvToken = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+
+  if (kvUrl && kvToken) {
+    try {
+      const res = await fetch(`${kvUrl}/get/chat_db`, {
+        headers: {
+          Authorization: `Bearer ${kvToken}`,
+        },
+        cache: 'no-store'
+      });
+      const data = await res.json();
+      if (data.result) {
+        return typeof data.result === 'string' ? JSON.parse(data.result) : data.result;
+      }
+    } catch (e) {
+      console.error('KV getDb failed:', e);
+    }
+    return { profiles: [], messages: [], ndaLinks: [] };
+  }
+
+  // Local fallback
   try {
     const data = await fs.readFile(dbPath, 'utf8');
     return JSON.parse(data);
@@ -14,6 +36,25 @@ async function getDb() {
 }
 
 async function saveDb(data: any) {
+  const kvUrl = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
+  const kvToken = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+
+  if (kvUrl && kvToken) {
+    try {
+      await fetch(`${kvUrl}/set/chat_db`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${kvToken}`,
+        },
+        body: JSON.stringify(data)
+      });
+      return;
+    } catch (e) {
+      console.error('KV saveDb failed:', e);
+    }
+  }
+
+  // Local fallback
   await fs.writeFile(dbPath, JSON.stringify(data, null, 2), 'utf8');
 }
 

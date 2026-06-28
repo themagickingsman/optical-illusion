@@ -14,7 +14,6 @@ export default function LiveScreensaver({ onReady }: { onReady?: () => void }) {
       width: '100%',
       height: '100%',
       overflow: 'hidden',
-      zIndex: 0,
       pointerEvents: 'auto', // Allow clicks to pass through to the UI on top
     }}>
       <UGCSComponentLoader assetKey="cosmic_racer" onReady={onReady} />

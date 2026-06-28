@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import dynamic from 'next/dynamic';
+import { DEFAULT_SCREENSAVER_SETTINGS } from '../config/defaultScreensaverParams';
 
 const RangeWithArrows = ({ value, defaultValue, onChange, min, max, step, style, type, ...props }: any) => {
   const stepVal = parseFloat(step) || 1;
@@ -110,14 +111,14 @@ const RangeWithArrows = ({ value, defaultValue, onChange, min, max, step, style,
 
 export default function TourRacingGameLayer({ isCinematicMode, flightGradientConfig, audioConfig: audioConfigProp, configNamespace, hideMenu, showScreensaverMenu, isUiHidden, saveToGame, cmsActionButtons }: any) {
     const [params, setParams] = useState<any>({
-        autoPilot: true,
+        autoPilot: false,
         cruiseMode: false,
-        autoTour: false,
-        cinematicBehavior: 'close_up',
-        cinematicCloseZoom: 1.8,
-        cinematicWideZoom: 0.6,
-        cinematicRandomMinZoom: 0.5,
-        cinematicRandomMaxZoom: 2.5,
+        autoTour: true,
+        cinematicBehavior: 'random',
+        cinematicCloseZoom: 0.8,
+        cinematicWideZoom: 0.4,
+        cinematicRandomMinZoom: 0.3,
+        cinematicRandomMaxZoom: 1.5,
         cinematicZoomSpeed: 0.005,
         uiFadeDelay: 3.0,
         letterboxEnabled: false,
@@ -224,6 +225,14 @@ export default function TourRacingGameLayer({ isCinematicMode, flightGradientCon
                     }
                 } catch (err) {
                     console.warn("[TourRacingGameLayer] fetch failed, using fallback", err);
+                    db = {
+                        success: true,
+                        data: {
+                            screensaver_config: DEFAULT_SCREENSAVER_SETTINGS,
+                            website_config: DEFAULT_SCREENSAVER_SETTINGS,
+                            tour_racing_prefs: DEFAULT_SCREENSAVER_SETTINGS
+                        }
+                    };
                 }
                 
                 // If it booted from the Absolute Zero Fallback, unwrap the safe skeleton
@@ -550,23 +559,7 @@ export default function TourRacingGameLayer({ isCinematicMode, flightGradientCon
                                 <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.25)', fontStyle: 'italic' }}>Time before auto-tour activates</div>
                             </div>
 
-                            {/* CINEMATIC LETTERBOX */}
-                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: 10, fontWeight: 'bold', letterSpacing: 1 }}>CINEMATIC LETTERBOX</span>
-                                <button
-                                    onClick={() => updateParam('letterboxEnabled', !(params as any).letterboxEnabled)}
-                                    style={{
-                                        background: (params as any).letterboxEnabled ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.05)',
-                                        border: '1px solid ' + ((params as any).letterboxEnabled ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.12)'),
-                                        color: (params as any).letterboxEnabled ? '#fff' : 'rgba(255,255,255,0.4)',
-                                        borderRadius: 6, padding: '4px 12px', cursor: 'pointer',
-                                        fontSize: 10, fontWeight: (params as any).letterboxEnabled ? 'bold' : 'normal', letterSpacing: 1,
-                                        backdropFilter: 'blur(10px)', transition: 'all 0.2s ease'
-                                    }}
-                                >
-                                    {(params as any).letterboxEnabled ? 'ON' : 'OFF'}
-                                </button>
-                            </div>
+
                             {/* SAVE TO CMS BUTTON */}
                             {saveToGame && (
                                 <button 
@@ -606,313 +599,11 @@ export default function TourRacingGameLayer({ isCinematicMode, flightGradientCon
                                 </button>
                             )}
 
-                            {/* EXIT APPLICATION BUTTON (STICKY BOTTOM) */}
-                            <button onClick={() => {
-                                if (typeof window !== 'undefined') {
-                                    if ((window as any).electronAPI && (window as any).electronAPI.closeScreensaver) {
-                                        (window as any).electronAPI.closeScreensaver();
-                                    } else {
-                                        window.close();
-                                        setTimeout(() => { window.location.href = '/science'; }, 100);
-                                    }
-                                }
-                            }} style={{ position: 'sticky', bottom: -5, zIndex: 10, background: 'rgba(160, 20, 20, 0.95)', border: '1px solid rgba(255, 50, 50, 0.6)', color: '#fff', padding: '10px', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 'bold', letterSpacing: 1, marginTop: 8, transition: 'all 0.2s ease', backdropFilter: 'blur(10px)', boxShadow: '0 -10px 20px rgba(10,15,30,0.8)' }}
-                                onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(220, 30, 30, 1)'; e.currentTarget.style.boxShadow = '0 -10px 20px rgba(10,15,30,0.8), 0 0 15px rgba(255,50,50,0.5)'; }}
-                                onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(160, 20, 20, 0.95)'; e.currentTarget.style.boxShadow = '0 -10px 20px rgba(10,15,30,0.8)'; }}
-                            >
-                                EXIT ENGINE
-                            </button>
+
                 </div>
             )}
 
-            {/* Dedicated Cinematic Director Sidebar Menu */}
-            {!hideMenu && (
-            <>
-            {/* Features Toggle Button */}
-            <button 
-                onClick={() => window.dispatchEvent(new Event('arn_toggle_features'))}
-                style={{ 
-                    position: 'absolute', top: 20, right: 104, zIndex: 4991,
-                    background: showFeatures ? 'rgba(255, 109, 0, 0.2)' : 'rgba(255,255,255,0.05)',
-                    border: showFeatures ? '1px solid rgba(255, 109, 0, 0.4)' : '1px solid rgba(255,255,255,0.2)',
-                    color: showFeatures ? '#ff6d00' : '#fff', width: 32, height: 32, borderRadius: 8, cursor: 'pointer', 
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', 
-                    fontSize: 16, backdropFilter: 'blur(10px)', transition: 'all 0.2s ease',
-                    pointerEvents: isUiHidden ? 'none' : 'auto',
-                    opacity: isUiHidden ? 0 : 1
-                }}
-                onMouseEnter={(e) => { 
-                    e.currentTarget.style.background = showFeatures ? 'rgba(255, 109, 0, 0.3)' : 'rgba(255,255,255,0.2)'; 
-                    e.currentTarget.style.borderColor = showFeatures ? 'rgba(255, 109, 0, 0.6)' : 'rgba(255,255,255,0.4)'; 
-                }}
-                onMouseLeave={(e) => { 
-                    e.currentTarget.style.background = showFeatures ? 'rgba(255, 109, 0, 0.2)' : 'rgba(255,255,255,0.05)'; 
-                    e.currentTarget.style.borderColor = showFeatures ? 'rgba(255, 109, 0, 0.4)' : 'rgba(255,255,255,0.2)'; 
-                }}
-                title="Overlay Features"
-            >
-                {showFeatures ? '✕' : '✨'}
-            </button>
-            {/* Director Settings Toggle Button */}
-            <button 
-                onClick={() => setIsMinimized(prev => !prev)}
-                style={{ 
-                    position: 'absolute', top: 20, right: 62, zIndex: 4991,
-                    background: isMinimized ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.15)',
-                    border: '1px solid rgba(255,255,255,0.2)',
-                    color: '#fff', width: 32, height: 32, borderRadius: 8, cursor: 'pointer', 
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', 
-                    fontSize: 18, backdropFilter: 'blur(10px)', transition: 'all 0.2s ease',
-                    pointerEvents: isUiHidden ? 'none' : 'auto',
-                    opacity: isUiHidden ? 0 : 1
-                }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.2)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.4)'; }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = isMinimized ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.15)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; }}
-                title="Director Settings"
-            >
-                ⚙
-            </button>
-            {/* Click-outside backdrop to close settings panel */}
-            {!isMinimized && (
-                <div
-                    style={{ position: 'fixed', inset: 0, zIndex: 4989, pointerEvents: 'auto' }}
-                    onClick={() => setIsMinimized(true)}
-                />
-            )}
-            <div className="ui-overlay" 
-                 style={{ 
-                position: 'absolute', top: 62, right: isMinimized ? -400 : 20, 
-                width: 360, background: 'rgba(255,255,255,0.05)',
-                zIndex: 4990,
-                display: 'flex', flexDirection: 'column', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 12,
-                backdropFilter: 'blur(24px) saturate(180%)', boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
-                pointerEvents: isMinimized ? 'none' : 'auto', visibility: isMinimized ? 'hidden' : 'visible', transition: 'right 0.3s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.3s'
-            }}>
-                <div style={{ padding: '14px 20px', borderBottom: '1px solid rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.6)', fontWeight: 'bold', fontFamily: '"Rubik", sans-serif', letterSpacing: 2, fontSize: 11, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span>DIRECTOR SETTINGS</span>
-                </div>
-                
-                <style>{`
-                    .director-settings-scroll::-webkit-scrollbar { width: 8px; }
-                    .director-settings-scroll::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 4px; }
-                    .director-settings-scroll::-webkit-scrollbar-thumb { background: rgba(236, 72, 153, 0.5); border-radius: 4px; border: 1px solid rgba(0,0,0,0.2); }
-                    .director-settings-scroll::-webkit-scrollbar-thumb:hover { background: rgba(236, 72, 153, 0.8); }
-                `}</style>
-                <div className="director-settings-scroll" style={{ overflowY: 'auto', maxHeight: 'calc(100vh - 250px)' }}>
-                    <div style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
-                    
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 4 }}>
-                        <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 10, fontWeight: 'bold', letterSpacing: 2, fontFamily: '"Rubik", sans-serif' }}>THEME MODE</div>
-                        <div style={{ display: 'flex', gap: 8 }}>
-                            {(['game', 'demo', 'website'] as const).map(theme => {
-                                const isActive = activeTheme === theme;
-                                return (
-                                    <button
-                                        key={theme}
-                                        onClick={() => setActiveTheme(theme)}
-                                        style={{
-                                            flex: 1, background: isActive ? 'rgba(255, 109, 0, 0.2)' : 'rgba(255,255,255,0.05)',
-                                            color: isActive ? '#ff6d00' : 'rgba(255,255,255,0.4)',
-                                            border: '1px solid ' + (isActive ? 'rgba(255, 109, 0, 0.4)' : 'rgba(255,255,255,0.12)'),
-                                            padding: '10px 4px', borderRadius: 8, cursor: 'pointer', fontFamily: '"Rubik", sans-serif',
-                                            fontSize: 10, textTransform: 'uppercase', letterSpacing: 1, transition: 'all 0.2s ease',
-                                            fontWeight: isActive ? 'bold' : 'normal', backdropFilter: 'blur(10px)'
-                                        }}
-                                    >
-                                        {theme === 'game' ? 'Racing' : theme === 'demo' ? 'Screensaver' : 'Website'}
-                                    </button>
-                                );
-                            })}
-                        </div>
-                    </div>
-                    
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 4 }}>
-                        <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 10, fontWeight: 'bold', letterSpacing: 2, fontFamily: '"Rubik", sans-serif' }}>FLIGHT MODE</div>
-                        <div style={{ display: 'flex', gap: 8 }}>
-                            <button key="autopilot" 
-                            onClick={() => updateMultipleParams({ autoPilot: !params.autoPilot, cruiseMode: false, autoTour: false })}
-                            style={{
-                                flex: 1, background: params.autoPilot ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.05)', color: params.autoPilot ? '#fff' : 'rgba(255,255,255,0.4)',
-                                border: '1px solid ' + (params.autoPilot ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.12)'), padding: '10px 8px', borderRadius: 8, cursor: 'pointer', fontFamily: '"Rubik", sans-serif', fontSize: 12, textTransform: 'uppercase', letterSpacing: 1, transition: 'all 0.2s ease', fontWeight: params.autoPilot ? 'bold' : 'normal', backdropFilter: 'blur(10px)'
-                            }}
-                            >Donut</button>
-                            <button key="cruisemode" 
-                            onClick={() => updateMultipleParams({ cruiseMode: !params.cruiseMode, autoPilot: false, autoTour: false })}
-                            style={{
-                                flex: 1, background: params.cruiseMode ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.05)', color: params.cruiseMode ? '#fff' : 'rgba(255,255,255,0.4)',
-                                border: '1px solid ' + (params.cruiseMode ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.12)'), padding: '10px 8px', borderRadius: 8, cursor: 'pointer', fontFamily: '"Rubik", sans-serif', fontSize: 12, textTransform: 'uppercase', letterSpacing: 1, transition: 'all 0.2s ease', fontWeight: params.cruiseMode ? 'bold' : 'normal', backdropFilter: 'blur(10px)'
-                            }}
-                            >Cruise</button>
-                            <button key="autotour" 
-                            onClick={() => updateMultipleParams({ autoTour: !params.autoTour, cruiseMode: false, autoPilot: false })}
-                            style={{
-                                flex: 1, background: params.autoTour ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.05)', color: params.autoTour ? '#fff' : 'rgba(255,255,255,0.4)',
-                                border: '1px solid ' + (params.autoTour ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.12)'), padding: '10px 8px', borderRadius: 8, cursor: 'pointer', fontFamily: '"Rubik", sans-serif', fontSize: 12, textTransform: 'uppercase', letterSpacing: 1, transition: 'all 0.2s ease', fontWeight: params.autoTour ? 'bold' : 'normal', backdropFilter: 'blur(10px)'
-                            }}
-                            >Tour</button>
-                        </div>
-                    </div>
 
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                        {((params as any).cinematicBehavior || 'close_up') === 'random' ? (
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                            <label style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: '#fff' }}>
-                                <span>Random Zoom Min <span style={{fontSize: 9, color: '#888'}}>(Lower=Wider)</span></span>
-                                <span style={{ color: '#ec4899' }}>{((params as any).cinematicRandomMinZoom ?? 0.5).toFixed(2)}x</span>
-                                </div>
-                                <RangeWithArrows type="range" min="0.01" max="50.0" step="0.01" value={(params as any).cinematicRandomMinZoom ?? 0.5} 
-                                onChange={(e: any) => updateParam('cinematicRandomMinZoom', parseFloat(e.target.value))} 
-                                style={{ accentColor: '#ec4899' }} />
-                            </label>
-                            <label style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: '#fff' }}>
-                                <span>Random Zoom Max <span style={{fontSize: 9, color: '#888'}}>(Higher=Closer)</span></span>
-                                <span style={{ color: '#ec4899' }}>{((params as any).cinematicRandomMaxZoom ?? 2.5).toFixed(2)}x</span>
-                                </div>
-                                <RangeWithArrows type="range" min="0.01" max="50.0" step="0.01" value={(params as any).cinematicRandomMaxZoom ?? 2.5} 
-                                onChange={(e: any) => updateParam('cinematicRandomMaxZoom', parseFloat(e.target.value))} 
-                                style={{ accentColor: '#ec4899' }} />
-                            </label>
-                            </div>
-                        ) : ((params as any).cinematicBehavior || 'close_up') === 'close_up' ? (
-                            <label style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: '#fff' }}>
-                                <span>Close Up Zoom <span style={{fontSize: 9, color: '#888'}}>(Higher=Closer)</span></span>
-                                <span style={{ color: '#ec4899' }}>{((params as any).cinematicCloseZoom ?? 1.8).toFixed(2)}x</span>
-                            </div>
-                            <RangeWithArrows type="range" min="0.01" max="50.0" step="0.05" value={(params as any).cinematicCloseZoom ?? 1.8} 
-                                onChange={(e: any) => updateParam('cinematicCloseZoom', parseFloat(e.target.value))} 
-                                style={{ accentColor: '#ec4899' }} />
-                            </label>
-                        ) : (
-                            <label style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: '#fff' }}>
-                                <span>Wide Shot Zoom <span style={{fontSize: 9, color: '#888'}}>(Lower=Wider)</span></span>
-                                <span style={{ color: '#ec4899' }}>{((params as any).cinematicWideZoom ?? 0.6).toFixed(2)}x</span>
-                            </div>
-                            <RangeWithArrows type="range" min="0.01" max="50.0" step="0.01" value={(params as any).cinematicWideZoom ?? 0.6} 
-                                onChange={(e: any) => updateParam('cinematicWideZoom', parseFloat(e.target.value))} 
-                                style={{ accentColor: '#ec4899' }} />
-                            </label>
-                        )}
-
-                        <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
-                            {(['close_up', 'wide_shot', 'random'] as const).map(tab => {
-                            const isActive = ((params as any).cinematicBehavior || 'close_up') === tab;
-                            return (
-                                <button
-                                    key={tab}
-                                    onClick={() => updateParam('cinematicBehavior', tab)}
-                                    style={{
-                                        flex: 1, padding: '10px 0', fontSize: 12, cursor: 'pointer',
-                                        textTransform: 'uppercase', letterSpacing: 1, fontFamily: '"Rubik", sans-serif',
-                                        background: isActive ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.05)',
-                                        color: isActive ? '#fff' : 'rgba(255,255,255,0.4)',
-                                        border: '1px solid ' + (isActive ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.12)'),
-                                        borderRadius: 8, fontWeight: isActive ? 'bold' : 'normal',
-                                        backdropFilter: 'blur(10px)', transition: 'all 0.2s ease'
-                                    }}
-                                >
-                                    {tab.replace('_', ' ')}
-                                </button>
-                            );
-                            })}
-                        </div>
-                    </div>
-                    
-                    <label style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: '#fff' }}>
-                            <span>Cinematic Zoom Speed</span>
-                            <span style={{ color: '#ec4899' }}>{(params.cinematicZoomSpeed ?? 0.005).toFixed(4)}</span>
-                        </div>
-                        <RangeWithArrows type="range" min="0.0001" max="0.0100" step="0.0001" value={params.cinematicZoomSpeed ?? 0.005} 
-                            onChange={(e: any) => updateParam('cinematicZoomSpeed', parseFloat(e.target.value))} 
-                            style={{ accentColor: '#ec4899' }} />
-                    </label>
-
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '4px 0', marginTop: '4px' }}>
-                        <span style={{ fontSize: 10, color: '#ec4899', fontWeight: 'bold' }}>CINEMATIC LETTERBOX</span>
-                        <label style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
-                            <input type="checkbox" checked={(params as any).letterboxEnabled ?? false} onChange={e => updateParam('letterboxEnabled', e.target.checked)} style={{ accentColor: '#ec4899', width: 14, height: 14 }} />
-                            <span style={{ fontSize: 10, color: (params as any).letterboxEnabled ? '#fff' : '#666' }}>{(params as any).letterboxEnabled ? 'ON' : 'OFF'}</span>
-                        </label>
-                    </div>
-
-                    {(params as any).letterboxEnabled && (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 4, paddingLeft: 8, borderLeft: '2px solid rgba(236, 72, 153, 0.3)' }}>
-                            <label style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, color: '#aaa' }}><span>In Speed (Sec)</span><span style={{ color: '#ec4899' }}>{((params as any).letterboxInSpeed ?? 2.0).toFixed(1)}s</span></div>
-                                <RangeWithArrows type="range" min="0.1" max="10.0" step="0.1" value={(params as any).letterboxInSpeed ?? 2.0} onChange={(e: any) => updateParam('letterboxInSpeed', parseFloat(e.target.value))} style={{ accentColor: '#ec4899' }} />
-                            </label>
-                            <label style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, color: '#aaa' }}><span>Out Speed (Sec)</span><span style={{ color: '#ec4899' }}>{((params as any).letterboxOutSpeed ?? 3.0).toFixed(1)}s</span></div>
-                                <RangeWithArrows type="range" min="0.1" max="10.0" step="0.1" value={(params as any).letterboxOutSpeed ?? 3.0} onChange={(e: any) => updateParam('letterboxOutSpeed', parseFloat(e.target.value))} style={{ accentColor: '#ec4899' }} />
-                            </label>
-                        </div>
-                    )}
-
-                    <div style={{ padding: '8px 0', borderTop: '1px solid rgba(255,255,255,0.05)', marginTop: 8 }}>
-                        <label style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, color: '#aaa', fontWeight: 'bold' }}>
-                                <span style={{ color: '#ec4899' }}>UI FADE DELAY (Sec)</span>
-                                <span style={{ color: '#ec4899' }}>{((params as any).uiFadeDelay ?? 3.0).toFixed(1)}s</span>
-                            </div>
-                            <RangeWithArrows type="range" min="1.0" max="10.0" step="0.5" value={(params as any).uiFadeDelay ?? 3.0} onChange={(e: any) => updateParam('uiFadeDelay', parseFloat(e.target.value))} style={{ accentColor: '#ec4899' }} />
-                        </label>
-                    </div>
-
-
-
-                    <div style={{ color: '#00e5ff', fontWeight: 'bold', marginBottom: 2, textAlign: 'center', marginTop: 12 }}>SYSTEM SETTINGS v1</div>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '4px 0', marginTop: '4px' }}>
-                        <label style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
-                            <input type="checkbox" checked={params.autoStartScreensaver ?? false} onChange={(e) => updateParam('autoStartScreensaver', e.target.checked)} />
-                            <span style={{ fontSize: 11, color: '#fff' }}>Auto-Start Engine (No Clicks)</span>
-                        </label>
-                    </div>
-
-                    <div style={{ marginTop: 16 }}>
-                        <button 
-                            onClick={async (e) => {
-                                const btn = e.currentTarget;
-                                const originalText = btn.innerText;
-                                btn.innerText = 'SAVING...';
-                                try {
-                                    await fetch('/api/game-assets/config', {
-                                        method: 'POST',
-                                        headers: { 'Content-Type': 'application/json' },
-                                        body: JSON.stringify({ [configNamespace || 'screensaver_config']: params })
-                                    });
-                                    btn.innerText = '✓ SAVED TO JSON';
-                                    btn.style.borderColor = '#4ade80';
-                                    btn.style.color = '#4ade80';
-                                } catch (err) {
-                                    btn.innerText = 'ERROR SAVING';
-                                    btn.style.borderColor = '#f87171';
-                                    btn.style.color = '#f87171';
-                                }
-                                setTimeout(() => {
-                                    btn.innerText = originalText;
-                                    btn.style.borderColor = 'rgba(236, 72, 153, 0.5)';
-                                    btn.style.color = '#ec4899';
-                                }, 2000);
-                            }}
-                            style={{ width: '100%', background: 'rgba(236, 72, 153, 0.1)', border: '1px solid rgba(236, 72, 153, 0.5)', color: '#ec4899', padding: '8px 0', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '1px', transition: 'all 0.2s', marginBottom: '8px' }}
-                        >
-                            SAVE TO JSON
-                        </button>
-
-
-                        {cmsActionButtons}
-                    </div>
-
-                    </div>
-                </div>
-            </div>
-
-            </>
-            )}
         </div>
     );
 }

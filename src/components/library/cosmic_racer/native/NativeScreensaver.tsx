@@ -23,7 +23,7 @@ function EngineConnector({ onReady }: { onReady?: () => void }) {
                 initialActiveMode="screensaver"
                 isCmsMode={false}
                 isPlanetSystem={false}
-                isCinematicMode={false}
+                isCinematicMode={true}
                 isUiHidden={false}
                 hidePreferences={true}
                 coordinateEngine={coordinateEngine}
@@ -37,7 +37,7 @@ function EngineConnector({ onReady }: { onReady?: () => void }) {
                 mode="screensaver"
                 hideMenu={true}
                 showScreensaverMenu={true}
-                isCinematicMode={false}
+                isCinematicMode={true}
                 isUiHidden={false}
             />
         </div>

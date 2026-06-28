@@ -246,7 +246,7 @@ export default function GamesCMS() {
           <button
             onClick={() => setShowScreensaver(false)}
             style={{
-              position: 'absolute', top: '40px', right: '40px', zIndex: 100,
+              position: 'absolute', top: '90px', right: '40px', zIndex: 100,
               background: 'rgba(52, 199, 89, 0.9)', border: '1px solid rgba(52, 199, 89, 1)',
               color: 'white', padding: '16px 32px', borderRadius: '9999px', cursor: 'pointer',
               fontFamily: 'system-ui, -apple-system, sans-serif', fontSize: '16px', fontWeight: '600', letterSpacing: '0.5px',

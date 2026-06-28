@@ -753,20 +753,20 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
   const _defaultPreset =
     LS_KEY === 'arn_terrain_regional_v1' ? DEFAULT_REGIONAL_PRESET :
     LS_KEY === 'arn_terrain_city_v1'     ? DEFAULT_CITY_PRESET     : {
-      gridW: 32, gridH: 32, octaves: 1, seed: 905, maxElev: 5, roughness: 1.54,
-      bevel: 0.03, bloomStr: 0, bloomThresh: 0, glowInt: 0.55, opacity: 1, damageEmissive: 5.0, damageHalo: 0.72,
-      tiltBlur: 0.3, tiltSpread: 0.02, tiltVignette: 0, vigColor: '#1a001a', shadowColor: '#0a0e2a',
-      layerColors: ["#00b3ff", "#e7b883", "#ff00ae", "#ae00ff", "#ffffff"],
-      matTransmit: 0, matThickness: 0, matIor: 1, matRoughness: 0.14, cubeJitter: 0.5,
-      shadowIntensity: 1, shadowBias: -0.01, shadowNormalBias: 0, hemIntensity: 0.46,
-      shadowRadius: 3, shadowMapSize: 2048, keyLightInt: 4.4, ambientInt: 1.15,
-      keyLightColor: '#c8aaff', lightElev: 13, lightAzimuth: 0, camElev: 35.26, camAzimuth: 45, camZoom: 28,
+      gridW: 32, gridH: 32, octaves: 1, seed: 360, maxElev: 4, roughness: 0.9,
+      bevel: 0.12, bloomStr: 0, bloomThresh: 0, glowInt: 0.1, opacity: 1, damageEmissive: 0, damageHalo: 0,
+      tiltBlur: 0.15, tiltSpread: 0.015, tiltVignette: 0, vigColor: '#1a001a', shadowColor: '#0a0e2a',
+      layerColors: ["#00ace6", "#8b00d6", "#fac400", "#c34b9d", "#000000"],
+      matTransmit: 0.03, matThickness: 3.6, matIor: 2.5, matRoughness: 0.6, cubeJitter: 0.04,
+      shadowIntensity: 0.97, shadowBias: -0.0001, shadowNormalBias: 0.5, hemIntensity: 1.5,
+      shadowRadius: 5, shadowMapSize: 512, keyLightInt: 2.5, ambientInt: 0.35,
+      keyLightColor: '#ffffff', lightElev: 37, lightAzimuth: 43, camElev: 35.26, camAzimuth: 45, camZoom: 28,
       terrainTint: '#1e7a8c', beaconCount: 0, beaconColor: '#ff6b35', beaconEmissive: 0.5,
       beaconLight: 0, beaconBury: 0, beaconSeed: 7, renderMode: 'glass',
       enabledShapes: ["box", "slab", "pillar", "cylinder", "ring"],
-      partSize: 1.5, partCount: 12, partSpeed: 1, partChance: 0.85, partDecay: 0.94, partLife: 180, partFalloff: 0.0008, partLimit: 4000,
-      regenSpeed: 250, regenFadeSpeed: 0.08, baseGlow: 0, hoverFade: 0.05,
-      sheepCount: 25, sheepAnimate: true, sheepSize: 1.35, sheepSeed: 42, sheepSpeed: 2, sheepBounciness: 0.15, sheepBounceSpeed: 10, sheepGravity: 40, sheepExplodeForce: 25, sheepExplodeRadius: 8, sheepSeparation: 0.4, sheepCohesion: 0.1, sheepAlignment: 0.1,
+      partSize: 1.1, partCount: 2840, partSpeed: 0.7, partChance: 1, partDecay: 0.94, partLife: 180, partFalloff: 0.0008, partLimit: 4000,
+      regenSpeed: 110, regenFadeSpeed: 0.08, baseGlow: 0.35, hoverFade: 0.01,
+      sheepCount: 25, sheepAnimate: true, sheepSize: 2, sheepSeed: 42, sheepSpeed: 2, sheepBounciness: 0.15, sheepBounceSpeed: 10, sheepGravity: 40, sheepExplodeForce: 25, sheepExplodeRadius: 8, sheepSeparation: 0.4, sheepCohesion: 0.1, sheepAlignment: 0.1,
       scatterCount: 26, scatterRadius: 2, scatterDepth: 3, scatterDelay: 0, scatterProjectiles: 8, scatterSpread: 2,
       artilleryRadius: 5, artilleryDepth: 7, artilleryDelay: 0,
       flyoverRadius: 7, flyoverDepth: 7, flyoverDelay: 2500, flyoverLength: 10, flyoverSpacing: 1.5,
@@ -967,7 +967,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
     seismicDepth, setSeismicDepth, seismicDepthRef,
     seismicSpeed, setSeismicSpeed, seismicSpeedRef,
     seismicDelay, setSeismicDelay, seismicDelayRef,
-    seismicCount, setSeismicCount,
+    seismicCount, setSeismicCount, seismicCountRef,
 
     carpetRadius, setCarpetRadius, carpetRadiusRef,
     carpetDepth, setCarpetDepth, carpetDepthRef,
@@ -1008,6 +1008,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
   useEffect(() => { isRaidModeRef.current = isRaidMode; }, [isRaidMode]);
   
   const [difficulty, setDifficulty] = useState<Difficulty>('medium');
+  const [scoreSettingsOpen, setScoreSettingsOpen] = useState(false);
   const difficultyRef = useRef<Difficulty>('medium');
   useEffect(() => { difficultyRef.current = difficulty; }, [difficulty]);
 
@@ -1166,6 +1167,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
           if (s.seismicSpeed !== undefined) setSeismicSpeed(s.seismicSpeed);
           if (s.seismicDelay !== undefined) setSeismicDelay(s.seismicDelay);
           if (s.seismicDepth !== undefined) setSeismicDepth(s.seismicDepth);
+          if (s.seismicCount !== undefined) setSeismicCount(s.seismicCount);
           if (s.carpetCount !== undefined) setCarpetCount(s.carpetCount);
           if (s.carpetDelay !== undefined) setCarpetDelay(s.carpetDelay);
           if (s.carpetRadius !== undefined) setCarpetRadius(s.carpetRadius);
@@ -2940,7 +2942,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
                else if (wpType === 'artillery') params = { radius: artilleryRadiusRef.current, depth: artilleryDepthRef.current, delay: artilleryDelayRef.current, partSpeed: artilleryPartSpeedRef.current };
                else if (wpType === 'flyover') params = { radius: flyoverRadiusRef.current, depth: flyoverDepthRef.current, delay: flyoverDelayRef.current, hitObject: hit.object, instanceId: hit.instanceId, hoverPoolRef: hoverPoolRef.current, partSpeed: flyoverPartSpeedRef.current };
                else if (wpType === 'laser') params = { radius: laserRadiusRef.current, depth: laserDepthRef.current, delay: laserDelayRef.current, duration: laserDurationRef.current, partSpeed: laserPartSpeedRef.current };
-               else if (wpType === 'seismic') params = { radius: seismicRadiusRef.current, depth: seismicDepthRef.current, delay: seismicDelayRef.current, speed: seismicSpeedRef.current, partSpeed: seismicPartSpeedRef.current };
+               else if (wpType === 'seismic') params = { radius: seismicRadiusRef.current, depth: seismicDepthRef.current, delay: seismicDelayRef.current, speed: seismicSpeedRef.current, partSpeed: seismicPartSpeedRef.current, count: seismicCountRef.current };
                else if (wpType === 'carpet') params = { count: carpetCountRef.current, radius: carpetRadiusRef.current, depth: carpetDepthRef.current, delay: carpetDelayRef.current, partSpeed: carpetPartSpeedRef.current };
                else if (wpType === 'blackhole') params = { radius: blackholeRadiusRef.current, depth: blackholeDepthRef.current, delay: blackholeDelayRef.current, duration: blackholeDurationRef.current, partSpeed: blackholePartSpeedRef.current };
 
@@ -3744,7 +3746,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
           <button
             onClick={handleClose}
             style={{
-              position: 'absolute', top: '40px', right: '40px', zIndex: 110,
+              position: 'absolute', top: '90px', right: '40px', zIndex: 110,
               background: 'rgba(52, 199, 89, 0.9)', border: '1px solid rgba(52, 199, 89, 1)',
               color: 'white', padding: '16px 32px', borderRadius: '9999px', cursor: 'pointer',
               fontFamily: 'system-ui, -apple-system, sans-serif', fontSize: '16px', fontWeight: '600', letterSpacing: '0.5px',
@@ -3818,10 +3820,31 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
           >
           </div>
           
-          <div style={{ width: '100%', height: 1, background: 'rgba(255,255,255,0.1)', margin: '16px 0' }} />
+          <button 
+            onClick={() => setScoreSettingsOpen(prev => !prev)}
+            style={{ 
+              width: '100%', background: 'transparent', border: 'none',
+              marginTop: 16, padding: '8px 0', cursor: 'pointer',
+              color: 'rgba(255,255,255,0.4)', fontSize: 9, textTransform: 'uppercase', letterSpacing: 1, fontWeight: 700,
+              display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8, pointerEvents: 'auto'
+            }}
+          >
+            <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.1)' }} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+              SETTINGS
+              <span style={{ transform: scoreSettingsOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.3s ease' }}>▼</span>
+            </div>
+            <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.1)' }} />
+          </button>
           
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', pointerEvents: 'auto' }}>
-            {/* Difficulty Reset Panel */}
+          <div style={{ 
+            display: 'grid', gridTemplateRows: scoreSettingsOpen ? '1fr' : '0fr', 
+            transition: 'grid-template-rows 0.3s cubic-bezier(0.4, 0, 0.2, 1)', pointerEvents: scoreSettingsOpen ? 'auto' : 'none'
+          }}>
+            <div style={{ overflow: 'hidden' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', paddingTop: 8 }}>
+                <div style={{ width: '100%', height: 1, background: 'rgba(255,255,255,0.1)', marginBottom: 8 }} />
+                {/* Difficulty Reset Panel */}
             <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: 1, fontWeight: 700, textAlign: 'center', marginBottom: 2 }}>Difficulty</div>
             <button 
                onClick={() => {
@@ -3834,6 +3857,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
                   if (flockEngineRef.current) flockEngineRef.current.reset();
                   const { sheepCount, unlockedWeapons } = getWaveParams(1, 'easy');
                   setUnlockedWeapons(unlockedWeapons);
+                  setSelectedWeapon(unlockedWeapons[0]);
                   announceWave(1, sheepCount);
                   
                   // Force a complete board heal!
@@ -3859,6 +3883,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
                   if (flockEngineRef.current) flockEngineRef.current.reset();
                   const { sheepCount, unlockedWeapons } = getWaveParams(1, 'medium');
                   setUnlockedWeapons(unlockedWeapons);
+                  setSelectedWeapon(unlockedWeapons[0]);
                   announceWave(1, sheepCount);
                   
                   // Force a complete board heal!
@@ -3884,6 +3909,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
                   if (flockEngineRef.current) flockEngineRef.current.reset();
                   const { sheepCount, unlockedWeapons } = getWaveParams(1, 'hard');
                   setUnlockedWeapons(unlockedWeapons);
+                  setSelectedWeapon(unlockedWeapons[0]);
                   announceWave(1, sheepCount);
                   
                   // Force a complete board heal!
@@ -3900,9 +3926,9 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
                style={{ background: difficulty === 'hard' ? 'rgba(255, 59, 48, 0.3)' : 'rgba(255,255,255,0.05)', color: difficulty === 'hard' ? '#ff3b30' : 'rgba(255,255,255,0.6)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 9999, padding: '8px', cursor: 'pointer', fontFamily: 'system-ui', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', transition: 'all 0.2s', backdropFilter: 'blur(10px)' }}>Hard</button>
           </div>
           
-          <div style={{ width: '100%', height: 1, background: 'rgba(255,255,255,0.1)', margin: '16px 0' }} />
-          
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', pointerEvents: 'auto' }}>
+                <div style={{ width: '100%', height: 1, background: 'rgba(255,255,255,0.1)', margin: '16px 0' }} />
+                
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
             {/* Render Engine Panel */}
             <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: 1, fontWeight: 700, textAlign: 'center', marginBottom: 2 }}>Particle Rendering Engine</div>
             <button 
@@ -3938,8 +3964,10 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
                   if (sceneRef.current) sceneRef.current.add(particleSystemRef.current.group);
                }}
                style={{ background: renderEngine === 'gpu' ? 'rgba(10, 132, 255, 0.3)' : 'rgba(255,255,255,0.05)', color: renderEngine === 'gpu' ? '#0a84ff' : 'rgba(255,255,255,0.6)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 9999, padding: '8px', cursor: 'pointer', fontFamily: 'system-ui', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', transition: 'all 0.2s', backdropFilter: 'blur(10px)' }}>OP Optimized</button>
+            </div>
           </div>
         </div>
+      </div>
 
         {/* ── Wave Announcer ── */}
         <div 
@@ -4118,10 +4146,10 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
                 onClick={() => {
                   if (unlockedWeapons.length > 1) {
                     setUnlockedWeapons(['scatter']);
-                    if (selectedWeapon !== 'scatter') setSelectedWeapon('scatter');
                   } else {
                     setUnlockedWeapons(['scatter', 'artillery', 'flyover', 'seismic', 'carpet', 'laser', 'blackhole']);
                   }
+                  setSelectedWeapon('scatter');
                 }}
                 style={{
                   background: 'rgba(255,255,255,0.1)', border: 'none', color: 'white',
@@ -4340,10 +4368,10 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
             <div className="apple-card">
               <div className="apple-card-title">Grid Generation</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                <CfgSlider label="Width"   min={8} max={64} step={4} value={gridW}     onChange={setGridW}     />
-                <CfgSlider label="Height"  min={8} max={64} step={4} value={gridH}     onChange={setGridH}     />
-                <CfgSlider label="Octaves" min={1} max={6}  step={1} value={octaves}   onChange={setOctaves}   />
-                <CfgSlider label="Seed"    min={1} max={999} step={1} value={seed}     onChange={setSeed}      />
+                <CfgSlider label="Width"   min={8} max={64} step={4} value={gridW}     baseline={_defaultPreset.gridW} onChange={setGridW}     />
+                <CfgSlider label="Height"  min={8} max={64} step={4} value={gridH}     baseline={_defaultPreset.gridH} onChange={setGridH}     />
+                <CfgSlider label="Octaves" min={1} max={6}  step={1} value={octaves}   baseline={_defaultPreset.octaves} onChange={setOctaves}   />
+                <CfgSlider label="Seed"    min={1} max={999} step={1} value={seed}     baseline={_defaultPreset.seed} onChange={setSeed}      />
               </div>
             </div>
 
@@ -4351,10 +4379,10 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
             <div className="apple-card">
               <div className="apple-card-title">Elevation & Repair</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                <CfgSlider label="Max Height" min={2} max={8}   step={1}   value={maxElev}    onChange={setMaxElev}    />
-                <CfgSlider label="Roughness"  min={0.3} max={4} step={0.1} value={roughness}  onChange={setRoughness}  accent="#f97316" />
-                <CfgSlider label="Heal Speed" min={10} max={1000} step={10} value={regenSpeed} onChange={setRegenSpeed} accent="#10b981" />
-                <CfgSlider label="Fade Speed" min={0.01} max={0.5} step={0.01} value={regenFadeSpeed} onChange={setRegenFadeSpeed} accent="#10b981" />
+                <CfgSlider label="Max Height" min={2} max={8}   step={1}   value={maxElev}    baseline={_defaultPreset.maxElev} onChange={setMaxElev}    />
+                <CfgSlider label="Roughness"  min={0.3} max={4} step={0.1} value={roughness}  baseline={_defaultPreset.roughness} onChange={setRoughness}  accent="#f97316" />
+                <CfgSlider label="Heal Speed" min={10} max={1000} step={10} value={regenSpeed} baseline={_defaultPreset.regenSpeed} onChange={setRegenSpeed} accent="#10b981" />
+                <CfgSlider label="Fade Speed" min={0.01} max={0.5} step={0.01} value={regenFadeSpeed} baseline={_defaultPreset.regenFadeSpeed} onChange={setRegenFadeSpeed} accent="#10b981" />
               </div>
             </div>
 
@@ -4362,15 +4390,15 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
             <div className="apple-card">
               <div className="apple-card-title">Glass Properties</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                <CfgSlider label="Bevel"       min={0.01} max={0.35} step={0.01} value={bevel}       onChange={setBevel}       />
-                <CfgSlider label="Roughness"   min={0}    max={1.0}  step={0.01} value={matRoughness} onChange={setMatRoughness} accent="#7df" />
-                <CfgSlider label="Opacity"     min={0.4}  max={1.0}  step={0.01} value={opacity}     onChange={setOpacity}     />
-                <CfgSlider label="Cube Jitter" min={0}    max={1.0}  step={0.01} value={cubeJitter}  onChange={setCubeJitter}  accent="#7df" />
-                <CfgSlider label="Damage Emissive" min={0} max={20} step={0.1} value={damageEmissive} onChange={setDamageEmissive} accent="#ef4444" />
-                <CfgSlider label="Damage Opacity" min={0} max={1} step={0.01} value={damageHalo} onChange={setDamageHalo} accent="#ef4444" />
-                <CfgSlider label="Base Glow"   min={0}    max={2}    step={0.01} value={baseGlow}    onChange={setBaseGlow}    />
+                <CfgSlider label="Bevel"       min={0.01} max={0.35} step={0.01} value={bevel}       baseline={_defaultPreset.bevel} onChange={setBevel}       />
+                <CfgSlider label="Roughness"   min={0}    max={1.0}  step={0.01} value={matRoughness} baseline={_defaultPreset.matRoughness} onChange={setMatRoughness} accent="#7df" />
+                <CfgSlider label="Opacity"     min={0.4}  max={1.0}  step={0.01} value={opacity}     baseline={_defaultPreset.opacity} onChange={setOpacity}     />
+                <CfgSlider label="Cube Jitter" min={0}    max={1.0}  step={0.01} value={cubeJitter}  baseline={_defaultPreset.cubeJitter} onChange={setCubeJitter}  accent="#7df" />
+                <CfgSlider label="Damage Emissive" min={0} max={20} step={0.1} value={damageEmissive} baseline={_defaultPreset.damageEmissive} onChange={setDamageEmissive} accent="#ef4444" />
+                <CfgSlider label="Damage Opacity" min={0} max={1} step={0.01} value={damageHalo} baseline={_defaultPreset.damageHalo} onChange={setDamageHalo} accent="#ef4444" />
+                <CfgSlider label="Base Glow"   min={0}    max={2}    step={0.01} value={baseGlow}    baseline={_defaultPreset.baseGlow} onChange={setBaseGlow}    />
 
-                <CfgSlider label="Glow Fade"   min={0.01} max={0.5}  step={0.01} value={hoverFade}   onChange={setHoverFade} />
+                <CfgSlider label="Glow Fade"   min={0.01} max={0.5}  step={0.01} value={hoverFade}   baseline={_defaultPreset.hoverFade} onChange={setHoverFade} />
               </div>
             </div>
 
@@ -4379,9 +4407,9 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
               <div className="apple-card">
                 <div className="apple-card-title">Transmission</div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                  <CfgSlider label="Transmit"  min={0} max={1}   step={0.01} value={matTransmit}  onChange={setMatTransmit}  accent="#06b6d4" />
-                  <CfgSlider label="Thickness" min={0} max={5}   step={0.05} value={matThickness} onChange={setMatThickness} accent="#06b6d4" />
-                  <CfgSlider label="IOR"       min={1} max={2.5} step={0.01} value={matIor}       onChange={setMatIor}       accent="#06b6d4" />
+                  <CfgSlider label="Transmit"  min={0} max={1}   step={0.01} value={matTransmit}  baseline={_defaultPreset.matTransmit} onChange={setMatTransmit}  accent="#06b6d4" />
+                  <CfgSlider label="Thickness" min={0} max={5}   step={0.05} value={matThickness} baseline={_defaultPreset.matThickness} onChange={setMatThickness} accent="#06b6d4" />
+                  <CfgSlider label="IOR"       min={1} max={2.5} step={0.01} value={matIor}       baseline={_defaultPreset.matIor} onChange={setMatIor}       accent="#06b6d4" />
                 </div>
               </div>
             )}
@@ -4407,10 +4435,10 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
                 })}
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                <CfgSlider label="Key Light"  min={0}   max={20}  step={0.1}  value={keyLightInt}  onChange={setKeyLightInt}  accent="#facc15" />
-                <CfgSlider label="Ambient"    min={0}   max={1.5} step={0.05} value={ambientInt}   onChange={setAmbientInt}   accent="#facc15" />
-                <CfgSlider label="Elevation"  min={5}   max={85}  step={1}    value={lightElev}    onChange={setLightElev}    accent="#facc15" />
-                <CfgSlider label="Azimuth"    min={0}   max={360} step={1}    value={lightAzimuth} onChange={setLightAzimuth} accent="#facc15" />
+                <CfgSlider label="Key Light"  min={0}   max={20}  step={0.1}  value={keyLightInt}  baseline={_defaultPreset.keyLightInt} onChange={setKeyLightInt}  accent="#facc15" />
+                <CfgSlider label="Ambient"    min={0}   max={1.5} step={0.05} value={ambientInt}   baseline={_defaultPreset.ambientInt} onChange={setAmbientInt}   accent="#facc15" />
+                <CfgSlider label="Elevation"  min={5}   max={85}  step={1}    value={lightElev}    baseline={_defaultPreset.lightElev} onChange={setLightElev}    accent="#facc15" />
+                <CfgSlider label="Azimuth"    min={0}   max={360} step={1}    value={lightAzimuth} baseline={_defaultPreset.lightAzimuth} onChange={setLightAzimuth} accent="#facc15" />
               </div>
               
               <div className="apple-card-title" style={{ marginTop: 24 }}>Key Color</div>
@@ -4444,11 +4472,11 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
             <div className="apple-card">
               <div className="apple-card-title">Shadows</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                <CfgSlider label="Cast Opacity" min={0}      max={1}     step={0.01}    value={shadowIntensity}   onChange={setShadowIntensity}   accent="#94a3b8" />
-                <CfgSlider label="Softness"     min={1}      max={16}    step={1}       value={shadowRadius}      onChange={setShadowRadius}      accent="#94a3b8" />
-                <CfgSlider label="Bias"         min={-0.01}  max={0.002} step={0.0001}  value={shadowBias}        onChange={setShadowBias}        accent="#94a3b8" />
-                <CfgSlider label="Normal Bias"  min={0}      max={0.5}   step={0.005}   value={shadowNormalBias}  onChange={setShadowNormalBias}  accent="#94a3b8" />
-                <CfgSlider label="Fill Strength" min={0} max={1.5} step={0.02} value={hemIntensity} onChange={setHemIntensity} accent="#94a3b8" />
+                <CfgSlider label="Cast Opacity" min={0}      max={1}     step={0.01}    value={shadowIntensity}   baseline={_defaultPreset.shadowIntensity} onChange={setShadowIntensity}   accent="#94a3b8" />
+                <CfgSlider label="Softness"     min={1}      max={16}    step={1}       value={shadowRadius}      baseline={_defaultPreset.shadowRadius} onChange={setShadowRadius}      accent="#94a3b8" />
+                <CfgSlider label="Bias"         min={-0.01}  max={0.002} step={0.0001}  value={shadowBias}        baseline={_defaultPreset.shadowBias} onChange={setShadowBias}        accent="#94a3b8" />
+                <CfgSlider label="Normal Bias"  min={0}      max={0.5}   step={0.005}   value={shadowNormalBias}  baseline={_defaultPreset.shadowNormalBias} onChange={setShadowNormalBias}  accent="#94a3b8" />
+                <CfgSlider label="Fill Strength" min={0} max={1.5} step={0.02} value={hemIntensity} baseline={_defaultPreset.hemIntensity} onChange={setHemIntensity} accent="#94a3b8" />
               </div>
               <div className="apple-card-title" style={{ marginTop: 24 }}>Fill Color</div>
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>

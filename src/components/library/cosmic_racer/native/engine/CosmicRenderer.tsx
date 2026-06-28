@@ -13,6 +13,7 @@ import { getShipAssetUrl } from '../config/ship_assets';
 
 import { hydrateGameShips, setGlobalDbState, getGlobalDbState } from '../state/game-assets/ships';
 import { MeshLineGeometry, MeshLineMaterial } from 'meshline';
+import { DEFAULT_SCREENSAVER_SETTINGS } from '../config/defaultScreensaverParams';
 
 
 
@@ -1161,8 +1162,8 @@ export default function CosmicRenderer({
                  }
              } catch (e: any) {
                  console.warn("CosmicRenderer config fetch returned non-JSON:", text.substring(0, 50));
-                 db = null;
-                 debugLocalState.status = "Fetch Error (Non-JSON)";
+                 db = { data: { screensaver_config: DEFAULT_SCREENSAVER_SETTINGS, website_config: DEFAULT_SCREENSAVER_SETTINGS, tour_racing_prefs: DEFAULT_SCREENSAVER_SETTINGS } };
+                 debugLocalState.status = "Fetch Error (Fallback to Offline Settings)";
                  debugLocalState.message = e?.message;
              }
              
@@ -2218,7 +2219,7 @@ export default function CosmicRenderer({
     let rafId = 0;
 
     // CINEMATIC "OFF-STAGE" SPAWN (Starts incredibly wide and dynamically zooms into the player over the first few seconds)
-    let currentCameraZoom = isPlanetSystem ? mapZoomRef.current : ((paramsRef.current as any).cinematicCloseZoom || 1.8);
+    let currentCameraZoom = isPlanetSystem ? mapZoomRef.current : ((paramsRef.current as any).cinematicCloseZoom || 1.0);
     let parallaxWeight = 1.0;
 
     // POSSESSION PROXY ENGINES
@@ -4276,19 +4277,17 @@ export default function CosmicRenderer({
          
          let cinematicTargetZoom = 1.0;
          if (cinBehavior === 'close_up') {
-             cinematicTargetZoom = Number((paramsRef.current as any).cinematicCloseZoom ?? 1.8);
+             cinematicTargetZoom = 1.25; // Hardcoded safe close up
          } else if (cinBehavior === 'wide_shot') {
-             cinematicTargetZoom = Number((paramsRef.current as any).cinematicWideZoom ?? 0.6);
+             cinematicTargetZoom = 0.68;
          } else if (cinBehavior === 'random') {
-             const rMin = Number((paramsRef.current as any).cinematicRandomMinZoom ?? 0.5);
-             const rMax = Number((paramsRef.current as any).cinematicRandomMaxZoom ?? 2.5);
-             const actualMin = Math.min(rMin, rMax);
-             const actualMax = Math.max(rMin, rMax);
+             const rMin = 0.68; // Safe wide bound
+             const rMax = 1.35; // Safe close bound
              if (randomTargetZoomRef.current === null) {
-                 randomTargetZoomRef.current = actualMin + Math.random() * (actualMax - actualMin);
+                 randomTargetZoomRef.current = rMin + Math.random() * (rMax - rMin);
              }
              // Ensure the target remains within bounds if UI settings change
-             randomTargetZoomRef.current = Math.max(actualMin, Math.min(actualMax, randomTargetZoomRef.current));
+             randomTargetZoomRef.current = Math.max(rMin, Math.min(rMax, randomTargetZoomRef.current));
              cinematicTargetZoom = randomTargetZoomRef.current;
          }
          const mapTargetZoom = showMapRef.current ? mapZoomRef.current : (activeCinematicMode ? cinematicTargetZoom : 1.0);
@@ -4368,11 +4367,11 @@ export default function CosmicRenderer({
       
       let cinematicTargetZoom2 = 1.0;
       if (cinBehavior2 === 'close_up') {
-          cinematicTargetZoom2 = Number((paramsRef.current as any).cinematicCloseZoom ?? 1.8);
+          cinematicTargetZoom2 = 1.25; // Hardcoded safe close up
       } else if (cinBehavior2 === 'wide_shot') {
-          cinematicTargetZoom2 = Number((paramsRef.current as any).cinematicWideZoom ?? 0.6);
+          cinematicTargetZoom2 = 0.68;
       } else if (cinBehavior2 === 'random') {
-          cinematicTargetZoom2 = randomTargetZoomRef.current ?? 1.0;
+          cinematicTargetZoom2 = randomTargetZoomRef.current ?? 1;
       }
       
       const targetCameraZoom = showMapRef.current
@@ -4408,8 +4407,8 @@ export default function CosmicRenderer({
           if (randomTargetZoomRef.current !== null && Math.abs(currentCameraZoom - randomTargetZoomRef.current) < 0.15) {
               randomZoomHoldTimerRef.current += delta;
               if (randomZoomHoldTimerRef.current > 3.0) { // Hold shot for 3 seconds before next random sweep
-                  const rMin = Number((paramsRef.current as any).cinematicRandomMinZoom ?? 0.5);
-                  const rMax = Number((paramsRef.current as any).cinematicRandomMaxZoom ?? 2.5);
+                  const rMin = Number((paramsRef.current as any).cinematicRandomMinZoom ?? 0.3);
+                  const rMax = Number((paramsRef.current as any).cinematicRandomMaxZoom ?? 1.5);
                   const actualMin = Math.min(rMin, rMax);
                   const actualMax = Math.max(rMin, rMax);
                   randomTargetZoomRef.current = actualMin + Math.random() * (actualMax - actualMin);

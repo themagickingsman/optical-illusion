@@ -144,23 +144,28 @@ export class WeaponEngine {
            partSpeed: params.partSpeed
       });
     } else if (wpType === 'seismic') {
-      const pGeo = new THREE.RingGeometry(0.1, 0.4, 32);
-      const pMat = new THREE.MeshBasicMaterial({ color: 0xffaa00, transparent: true, opacity: 1, side: THREE.DoubleSide });
-      const pMesh = new THREE.Mesh(pGeo, pMat);
-      pMesh.rotation.x = -Math.PI / 2;
-      pMesh.position.set(targetPos.x, targetPos.y + 1, targetPos.z);
-      this.scene.add(pMesh);
-      
-      this.projectiles.push({
-           id: Math.random().toString(),
-           type: 'seismic', mesh: pMesh,
-           startX: targetPos.x, startY: targetPos.y + 1, startZ: targetPos.z,
-           targetX: targetPos.x, targetY: targetPos.y, targetZ: targetPos.z,
-           progress: 0, speed: params.speed / 1000,
-           radius: params.radius, depth: params.depth,
-           delayMs: params.delay, startTime: Date.now(),
-           partSpeed: params.partSpeed
-      });
+      const aftershocks = params.count ?? 1;
+      for (let i = 0; i < aftershocks; i++) {
+          const pGeo = new THREE.RingGeometry(0.1, 0.4, 32);
+          const pMat = new THREE.MeshBasicMaterial({ color: 0xffaa00, transparent: true, opacity: 1, side: THREE.DoubleSide });
+          const pMesh = new THREE.Mesh(pGeo, pMat);
+          pMesh.rotation.x = -Math.PI / 2;
+          pMesh.position.set(targetPos.x, targetPos.y + 1, targetPos.z);
+          pMesh.visible = false;
+          this.scene.add(pMesh);
+          
+          this.projectiles.push({
+              id: Math.random().toString(),
+              type: 'seismic', mesh: pMesh,
+              startX: targetPos.x, startY: targetPos.y + 1, startZ: targetPos.z,
+              targetX: targetPos.x, targetY: targetPos.y, targetZ: targetPos.z,
+              progress: 0, speed: params.speed / 1000,
+              radius: params.radius, depth: params.depth,
+              delayMs: params.delay + (i * 300), // 300ms delay between aftershocks
+              startTime: Date.now(),
+              partSpeed: params.partSpeed
+          });
+      }
     } else if (wpType === 'carpet') {
       const angle = Math.random() * Math.PI * 2;
       const spacing = 3;

@@ -2128,8 +2128,8 @@
     "trailMountZ": -20,
     "cinematicRandomMinZoom": 2.66,
     "cinematicRandomMaxZoom": 0.35,
-    "cinematicWideZoom": 1,
-    "cinematicCloseZoom": 1.85,
+    "cinematicWideZoom": 0.4,
+    "cinematicCloseZoom": 0.8,
     "showTitleSequence": false,
     "masterVolume": 0.3,
     "engineMode": "LEGACY",
@@ -2268,8 +2268,8 @@
       "trailMountZ": -20,
       "cinematicRandomMinZoom": 2.66,
       "cinematicRandomMaxZoom": 0.35,
-      "cinematicWideZoom": 1,
-      "cinematicCloseZoom": 1.85,
+      "cinematicWideZoom": 0.4,
+      "cinematicCloseZoom": 0.8,
       "showTitleSequence": false,
       "masterVolume": 0.3,
       "engineMode": "LEGACY",
@@ -2407,8 +2407,8 @@
       "trailMountZ": -20,
       "cinematicRandomMinZoom": 2.66,
       "cinematicRandomMaxZoom": 0.35,
-      "cinematicWideZoom": 1,
-      "cinematicCloseZoom": 1.85,
+      "cinematicWideZoom": 0.4,
+      "cinematicCloseZoom": 0.8,
       "showTitleSequence": false,
       "masterVolume": 0.3,
       "engineMode": "LEGACY",
@@ -2546,8 +2546,8 @@
       "trailMountZ": -20,
       "cinematicRandomMinZoom": 2.66,
       "cinematicRandomMaxZoom": 0.35,
-      "cinematicWideZoom": 1,
-      "cinematicCloseZoom": 1.85,
+      "cinematicWideZoom": 0.4,
+      "cinematicCloseZoom": 0.8,
       "showTitleSequence": false,
       "masterVolume": 0.3,
       "engineMode": "LEGACY",
@@ -2685,8 +2685,8 @@
       "trailMountZ": -20,
       "cinematicRandomMinZoom": 2.66,
       "cinematicRandomMaxZoom": 0.35,
-      "cinematicWideZoom": 1,
-      "cinematicCloseZoom": 1.85,
+      "cinematicWideZoom": 0.4,
+      "cinematicCloseZoom": 0.8,
       "showTitleSequence": false,
       "masterVolume": 0.3,
       "engineMode": "LEGACY",
@@ -2824,8 +2824,8 @@
       "trailMountZ": -20,
       "cinematicRandomMinZoom": 2.66,
       "cinematicRandomMaxZoom": 0.35,
-      "cinematicWideZoom": 1,
-      "cinematicCloseZoom": 1.85,
+      "cinematicWideZoom": 0.4,
+      "cinematicCloseZoom": 0.8,
       "showTitleSequence": false,
       "masterVolume": 0.3,
       "engineMode": "LEGACY",
@@ -2963,8 +2963,8 @@
       "trailMountZ": -20,
       "cinematicRandomMinZoom": 2.66,
       "cinematicRandomMaxZoom": 0.35,
-      "cinematicWideZoom": 1,
-      "cinematicCloseZoom": 1.85,
+      "cinematicWideZoom": 0.4,
+      "cinematicCloseZoom": 0.8,
       "showTitleSequence": false,
       "masterVolume": 0.3,
       "engineMode": "LEGACY",
@@ -3103,8 +3103,8 @@
       "trailMountZ": -20,
       "cinematicRandomMinZoom": 2.66,
       "cinematicRandomMaxZoom": 0.35,
-      "cinematicWideZoom": 1,
-      "cinematicCloseZoom": 1.85,
+      "cinematicWideZoom": 0.4,
+      "cinematicCloseZoom": 0.8,
       "masterVolume": 0.3,
       "engineMode": "LEGACY",
       "glow2Size": 0.4,
@@ -3240,8 +3240,8 @@
       "trailMountZ": -20,
       "cinematicRandomMinZoom": 2.66,
       "cinematicRandomMaxZoom": 0.35,
-      "cinematicWideZoom": 1,
-      "cinematicCloseZoom": 1.85,
+      "cinematicWideZoom": 0.4,
+      "cinematicCloseZoom": 0.8,
       "showTitleSequence": false,
       "masterVolume": 0.3,
       "engineMode": "LEGACY",
@@ -3379,8 +3379,8 @@
       "trailMountZ": -20,
       "cinematicRandomMinZoom": 2.66,
       "cinematicRandomMaxZoom": 0.35,
-      "cinematicWideZoom": 1,
-      "cinematicCloseZoom": 1.85,
+      "cinematicWideZoom": 0.4,
+      "cinematicCloseZoom": 0.8,
       "showTitleSequence": false,
       "masterVolume": 0.3,
       "engineMode": "LEGACY",
@@ -3705,8 +3705,8 @@
       "trailMountZ": -20,
       "cinematicRandomMinZoom": 1.6,
       "cinematicRandomMaxZoom": 1.33,
-      "cinematicWideZoom": 1,
-      "cinematicCloseZoom": 1.7
+      "cinematicWideZoom": 0.4,
+      "cinematicCloseZoom": 0.8
     },
     "custom_ship_1776765778168-copy-1777158527845": {
       "maxSpeed": 0.28,
@@ -3828,8 +3828,8 @@
       "trailMountZ": -20,
       "cinematicRandomMinZoom": 1.6,
       "cinematicRandomMaxZoom": 1.33,
-      "cinematicWideZoom": 1,
-      "cinematicCloseZoom": 1.7
+      "cinematicWideZoom": 0.4,
+      "cinematicCloseZoom": 0.8
     },
     "custom_ship_1776793637033-copy-1777136012439-copy-1777137579775-copy-1777159008997": {
       "maxSpeed": 0.28,
@@ -3951,8 +3951,8 @@
       "trailMountZ": -20,
       "cinematicRandomMinZoom": 1.6,
       "cinematicRandomMaxZoom": 1.33,
-      "cinematicWideZoom": 1,
-      "cinematicCloseZoom": 1.7
+      "cinematicWideZoom": 0.4,
+      "cinematicCloseZoom": 0.8
     },
     "custom_ship_1776766014444": {
       "maxSpeed": 0.48,
@@ -4582,8 +4582,8 @@
       "trailMountZ": -20,
       "cinematicRandomMinZoom": 1.6,
       "cinematicRandomMaxZoom": 1.97,
-      "cinematicWideZoom": 1,
-      "cinematicCloseZoom": 1.7
+      "cinematicWideZoom": 0.4,
+      "cinematicCloseZoom": 0.8
     },
     "custom_ship_1777211066647": {
       "maxSpeed": 0.25,
@@ -4706,8 +4706,8 @@
       "trailMountZ": -20,
       "cinematicRandomMinZoom": 2.3,
       "cinematicRandomMaxZoom": 0.35,
-      "cinematicWideZoom": 1,
-      "cinematicCloseZoom": 1.95
+      "cinematicWideZoom": 0.4,
+      "cinematicCloseZoom": 0.8
     },
     "custom_ship_1776911090729": {
       "maxSpeed": 0.2,
@@ -4829,8 +4829,8 @@
       "trailMountZ": -20,
       "cinematicRandomMinZoom": 1.6,
       "cinematicRandomMaxZoom": 1.97,
-      "cinematicWideZoom": 1,
-      "cinematicCloseZoom": 2.25
+      "cinematicWideZoom": 0.4,
+      "cinematicCloseZoom": 0.8
     },
     "studio-v5": {
       "maxSpeed": 0.29,
@@ -5148,8 +5148,8 @@
       "trailMountZ": -20,
       "cinematicRandomMinZoom": 1.6,
       "cinematicRandomMaxZoom": 1.97,
-      "cinematicWideZoom": 1,
-      "cinematicCloseZoom": 2.25
+      "cinematicWideZoom": 0.4,
+      "cinematicCloseZoom": 0.8
     },
     "studio-v2": {
       "maxSpeed": 0.45,
@@ -5372,8 +5372,8 @@
       "trailMountZ": -20,
       "cinematicRandomMinZoom": 1.6,
       "cinematicRandomMaxZoom": 1.97,
-      "cinematicWideZoom": 1,
-      "cinematicCloseZoom": 1.7
+      "cinematicWideZoom": 0.4,
+      "cinematicCloseZoom": 0.8
     },
     "v1-player-2": {
       "maxSpeed": 0.48,
@@ -5604,8 +5604,8 @@
       "trailMountZ": -20,
       "cinematicRandomMinZoom": 1.6,
       "cinematicRandomMaxZoom": 1.97,
-      "cinematicWideZoom": 1,
-      "cinematicCloseZoom": 1.45,
+      "cinematicWideZoom": 0.4,
+      "cinematicCloseZoom": 0.8,
       "showTitleSequence": false,
       "masterVolume": 0.3,
       "engineMode": "LEGACY",
@@ -5733,8 +5733,8 @@
       "trailMountZ": -20,
       "cinematicRandomMinZoom": 1.6,
       "cinematicRandomMaxZoom": 1.97,
-      "cinematicWideZoom": 1,
-      "cinematicCloseZoom": 2.25
+      "cinematicWideZoom": 0.4,
+      "cinematicCloseZoom": 0.8
     },
     "custom_ship_1776682282161": {
       "maxSpeed": 0.48,
@@ -5957,8 +5957,8 @@
       "trailMountZ": -20,
       "cinematicRandomMinZoom": 2.3,
       "cinematicRandomMaxZoom": 0.35,
-      "cinematicWideZoom": 0.98,
-      "cinematicCloseZoom": 1.5
+      "cinematicWideZoom": 0.4,
+      "cinematicCloseZoom": 0.8
     },
     "studio-v1": {
       "maxSpeed": 0.54,
@@ -6385,8 +6385,8 @@
       "trailMountZ": -20,
       "cinematicRandomMinZoom": 2.66,
       "cinematicRandomMaxZoom": 0.35,
-      "cinematicWideZoom": 1,
-      "cinematicCloseZoom": 1.85,
+      "cinematicWideZoom": 0.4,
+      "cinematicCloseZoom": 0.8,
       "showTitleSequence": false
     }
   },
@@ -7732,8 +7732,8 @@
     "trailMountZ": -20,
     "cinematicRandomMinZoom": 2,
     "cinematicRandomMaxZoom": 5,
-    "cinematicWideZoom": 5,
-    "cinematicCloseZoom": 2,
+    "cinematicWideZoom": 0.4,
+    "cinematicCloseZoom": 0.8,
     "showTitleSequence": false,
     "masterVolume": 0.3,
     "engineMode": "LEGACY",
@@ -7969,8 +7969,8 @@
     "trailMountZ": -20,
     "cinematicRandomMinZoom": 2,
     "cinematicRandomMaxZoom": 5,
-    "cinematicWideZoom": 5,
-    "cinematicCloseZoom": 2,
+    "cinematicWideZoom": 0.4,
+    "cinematicCloseZoom": 0.8,
     "showTitleSequence": false,
     "masterVolume": 0.3,
     "engineMode": "LEGACY",
@@ -8021,7 +8021,7 @@
     "sunY": 40,
     "sunZ": 20,
     "cameraAngle": "top",
-    "cinematicZoomScale": 1.76,
+    "cinematicZoomScale": 0.8,
     "cinematicZoomSpeed": 0.0011,
     "shadowOpacity": 0.6,
     "shadowSize": 1,
@@ -8110,8 +8110,8 @@
     "trailMountZ": -20,
     "cinematicRandomMinZoom": 2,
     "cinematicRandomMaxZoom": 5,
-    "cinematicWideZoom": 5,
-    "cinematicCloseZoom": 2,
+    "cinematicWideZoom": 0.4,
+    "cinematicCloseZoom": 0.8,
     "showTitleSequence": false,
     "masterVolume": 0.3,
     "engineMode": "LEGACY",

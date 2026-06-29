@@ -1,0 +1,21 @@
+[
+  {
+    "id": 1,
+    "name": "Mars Prime",
+    "color1": "#ffffff",
+    "color2": "#d6461a",
+    "color3": "#4f1a04",
+    "color4": "#1a0400",
+    "color5": "#0a0000",
+    "waterLevel": 0.1,
+    "terraces": 5,
+    "atmosphereColor": "#ff9c59",
+    "backlightColor": "#0066ff",
+    "bloomIntensity": 2,
+    "noiseScale": 3,
+    "timeScale": 0.1,
+    "cloudStretchX": 1,
+    "cloudStretchY": 1,
+    "warpScale": 0
+  }
+]

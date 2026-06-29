@@ -1,0 +1,378 @@
+--- backup/src/components/library/TerrainGenerator.tsx	2026-06-29 08:23:24
++++ src/components/library/TerrainGenerator.tsx	2026-06-29 10:52:36
+@@ -414,7 +414,7 @@
+   matTransmit: 0, matThickness: 0, matIor: 1, matRoughness: 0.14, cubeJitter: 0.5,
+   shadowIntensity: 1, shadowBias: -0.01, shadowNormalBias: 0, hemIntensity: 0.46,
+   shadowRadius: 3, shadowMapSize: 2048, keyLightInt: 4.4, ambientInt: 1.15,
+-  keyLightColor: '#c8aaff', lightElev: 13, lightAzimuth: 0, camElev: 35.26, camAzimuth: 45, camZoom: 56,
++  keyLightColor: '#c8aaff', lightElev: 13, lightAzimuth: 0, camElev: 35.26, camAzimuth: 45, camZoom: 28,
+   terrainTint: '#1e7a8c', beaconCount: 0, beaconColor: '#ff6b35', beaconEmissive: 0.5,
+   beaconLight: 0, beaconBury: 0, beaconSeed: 7, renderMode: 'glass',
+ };
+@@ -426,7 +426,7 @@
+   matTransmit: 0.0, matThickness: 0.5, matIor: 1.5, matRoughness: 0.88, cubeJitter: 0.12,
+   shadowIntensity: 0.75, shadowBias: -0.001, shadowNormalBias: 0.15, hemIntensity: 0.4,
+   shadowRadius: 5, shadowMapSize: 1024, keyLightInt: 0.5, ambientInt: 0.18,
+-  keyLightColor: '#b8e8c0', lightElev: 48, lightAzimuth: 55, camElev: 35.26, camAzimuth: 45, camZoom: 72,
++  keyLightColor: '#b8e8c0', lightElev: 48, lightAzimuth: 55, camElev: 35.26, camAzimuth: 45, camZoom: 36,
+   terrainTint: '#2d6a4f', beaconCount: 0, beaconColor: '#40ff80', beaconEmissive: 2.5,
+   beaconLight: 0.9, beaconBury: 3, beaconSeed: 13, renderMode: 'glass',
+ };
+@@ -681,14 +681,11 @@
+   const bloomPassRef  = useRef<UnrealBloomPass | null>(null);
+   const sceneRef      = useRef<THREE.Scene | null>(null);
+   const cameraRef     = useRef<THREE.OrthographicCamera | null>(null);
+-  const cinematicZoomRef = useRef<number | null>(null);
+   const controlsRef   = useRef<OrbitControls | null>(null);
+   const meshGroupRef  = useRef<THREE.Group | null>(null);
+   const beaconGrpRef  = useRef<THREE.Group | null>(null);
+   const sheepGrpRef   = useRef<THREE.Group | null>(null);
+   const flockEngineRef= useRef<FlockEngine | null>(null);
+-
+-
+   
+   // Wave System
+   const waveNumberRef = useRef(1);
+@@ -763,7 +760,7 @@
+       matTransmit: 0.03, matThickness: 3.6, matIor: 2.5, matRoughness: 0.6, cubeJitter: 0.04,
+       shadowIntensity: 0.97, shadowBias: -0.0001, shadowNormalBias: 0.5, hemIntensity: 1.5,
+       shadowRadius: 5, shadowMapSize: 512, keyLightInt: 2.5, ambientInt: 0.35,
+-      keyLightColor: '#ffffff', lightElev: 37, lightAzimuth: 43, camElev: 35.26, camAzimuth: 45, camZoom: 56,
++      keyLightColor: '#ffffff', lightElev: 37, lightAzimuth: 43, camElev: 35.26, camAzimuth: 45, camZoom: 28,
+       terrainTint: '#1e7a8c', beaconCount: 0, beaconColor: '#ff6b35', beaconEmissive: 0.5,
+       beaconLight: 0, beaconBury: 0, beaconSeed: 7, renderMode: 'glass',
+       enabledShapes: ["box", "slab", "pillar", "cylinder", "ring"],
+@@ -820,7 +817,6 @@
+   const [bevel,       setBevel]       = useState<number>(_defaultPreset.bevel      ?? 0.08);
+   const [bloomStr,    setBloomStr]    = useState<number>(_defaultPreset.bloomStr      ?? 0.5);
+   const [bloomThresh, setBloomThresh] = useState<number>(_defaultPreset.bloomThresh   ?? 0.85);
+-  const [bloomParticlesOnly, setBloomParticlesOnly] = useState<boolean>(false);
+   const [glowInt,     setGlowInt]     = useState<number>(_defaultPreset.glowInt       ?? 0.2);
+   const [shellEmissive, setShellEmissive] = useState<number>(_defaultPreset.shellEmissive ?? 2.75);
+   const [shellHalo,     setShellHalo]     = useState<number>(_defaultPreset.shellHalo     ?? 0.72);
+@@ -920,7 +916,6 @@
+   const partLimitRef = useRef(partLimit);   useEffect(() => { partLimitRef.current = partLimit; }, [partLimit]);
+   const partDecayRef = useRef(partDecay);   useEffect(() => { partDecayRef.current = partDecay; }, [partDecay]);
+   const partFalloffRef = useRef(partFalloff); useEffect(() => { partFalloffRef.current = partFalloff; }, [partFalloff]);
+-  const bloomParticlesOnlyRef = useRef(bloomParticlesOnly); useEffect(() => { bloomParticlesOnlyRef.current = bloomParticlesOnly; }, [bloomParticlesOnly]);
+   const partLifeRef = useRef(partLife);     useEffect(() => { partLifeRef.current = partLife; }, [partLife]);
+   const partSizeRef = useRef(partSize);     useEffect(() => { partSizeRef.current = partSize; }, [partSize]);
+ 
+@@ -1018,27 +1013,8 @@
+   useEffect(() => { difficultyRef.current = difficulty; }, [difficulty]);
+ 
+   const [renderEngine, setRenderEngine] = useState<RenderEngine>('multimesh');
+-  const [particleDimensionType, setParticleDimensionType] = useState<'2D' | '3D'>('2D');
+-  const particleDimensionTypeRef = useRef(particleDimensionType); 
+-  useEffect(() => { particleDimensionTypeRef.current = particleDimensionType; }, [particleDimensionType]);
+-  
+-  const recreateParticleSystem = (engine: RenderEngine, dim: '2D' | '3D') => {
+-      if (particleSystemRef.current && sceneRef.current) {
+-          particleSystemRef.current.dispose();
+-          sceneRef.current.remove(particleSystemRef.current.group);
+-      }
+-      if (engine === 'multimesh') particleSystemRef.current = new MultiMeshParticleSystem(dim);
+-      else if (engine === 'global') particleSystemRef.current = new GlobalInstancedParticleSystem(dim);
+-      else if (engine === 'gpu') particleSystemRef.current = new GPUParticleSystem(dim);
+-      
+-      if (sceneRef.current) sceneRef.current.add(particleSystemRef.current.group);
+-  };
+   const renderEngineRef = useRef<RenderEngine>('multimesh');
+   useEffect(() => { renderEngineRef.current = renderEngine; }, [renderEngine]);
+-  
+-  const [particleRenderAmount, setParticleRenderAmount] = useState<number>(50);
+-  const particleRenderAmountRef = useRef<number>(50);
+-  useEffect(() => { particleRenderAmountRef.current = particleRenderAmount; }, [particleRenderAmount]);
+ 
+ 
+   const [brokenBlocks, setBrokenBlocks]       = useState<Set<string>>(new Set());
+@@ -1081,8 +1057,6 @@
+               }
+               await showText(`2`, 250);
+               await showText(`1`, 250);
+-              if (cameraRef.current) cinematicZoomRef.current = cameraRef.current.zoom * 1.35;
+-
+               if (flockEngineRef.current) flockEngineRef.current.spawnWave(count);
+               isTransitioningWaveRef.current = false;
+           })();
+@@ -1207,10 +1181,8 @@
+       } catch (e) {
+         console.error(e);
+       } finally {
+-        setTimeout(() => {
+-            setIsLoaded(true);
+-            if (onLoadComplete) onLoadComplete();
+-        }, 1200); // Artificial delay to ensure thin loader is visible
++        setIsLoaded(true);
++        if (onLoadComplete) onLoadComplete();
+       }
+     };
+     load();
+@@ -1298,10 +1270,10 @@
+         // Radius 1 (Scatter) -> ~3.8 force. Radius 27 (Blackhole) -> ~50 force.
+         const force = 2.0 + (weaponRadius * 1.8);
+         // Cap visual shard count to prevent "shit is all over the place"
+-        // Scale it cleanly between ~5 to max particles based on radius, capped by user preference
+-        const calculatedShards = Math.min(particleRenderAmountRef.current, Math.max(5, Math.floor(weaponRadius * 5.5)));
++        // Scale it cleanly between ~5 to 150 shards per block based on radius
++        const calculatedShards = Math.min(150, Math.max(5, Math.floor(weaponRadius * 5.5)));
+         
+-        particleSystemRef.current.explode(px, py, pz, force, 5.0, color, isTreasureModeRef.current, calculatedShards);
++        particleSystemRef.current.explode(px, py, pz, force, 5.0, color, isTreasureModeRef.current);
+     }
+   };
+ 
+@@ -2029,7 +2001,6 @@
+       setTerrain(heights);
+       const emptySet = new Set<string>();
+       setBrokenBlocks(emptySet);
+-      brokenBlocksRef.current = emptySet;
+       if (renderMode === 'glass') {
+         rebuildMeshes(heights, bevel, glowInt, opacity, terrainTint, layerColors, matTransmit, matThickness, matIor, matRoughness, cubeJitter, emptySet);
+       } else {
+@@ -2171,13 +2142,13 @@
+     const controls = new OrbitControls(camera, renderer.domElement);
+     controls.enableRotate  = false; // Locked to isometric angle
+     controls.enableZoom    = true;
+-    controls.enablePan     = true; // Re-enabled per user request
++    controls.enablePan     = false; // Disabled panning per user request
+     controls.minZoom       = 0.5;   // Constrain zoom out
+     controls.maxZoom       = 3.0;   // Constrain zoom in
+     controls.enableDamping = true;
+     controls.dampingFactor = 0.05;
+-    controls.mouseButtons  = { LEFT: THREE.MOUSE.PAN, MIDDLE: THREE.MOUSE.DOLLY, RIGHT: THREE.MOUSE.PAN };
+-    controls.touches       = { ONE: THREE.TOUCH.PAN, TWO: THREE.TOUCH.DOLLY_PAN };
++    controls.mouseButtons  = { LEFT: THREE.MOUSE.DOLLY, MIDDLE: THREE.MOUSE.DOLLY, RIGHT: THREE.MOUSE.DOLLY };
++    controls.touches       = { ONE: THREE.TOUCH.DOLLY, TWO: THREE.TOUCH.DOLLY_PAN };
+     // Mark scene dirty whenever camera changes so we re-render exactly once
+     controls.addEventListener('change', () => { needsRenderRef.current = true; });
+     controlsRef.current = controls;
+@@ -2287,7 +2258,7 @@
+         particleSystemRef.current.dispose();
+         scene.remove(particleSystemRef.current.group);
+     }
+-    particleSystemRef.current = new MultiMeshParticleSystem('2D');
++    particleSystemRef.current = new MultiMeshParticleSystem();
+     scene.add(particleSystemRef.current.group);
+ 
+     // Plane at Y=0 used to project mouse ray to 3D world pos (for magnet target)
+@@ -2301,19 +2272,6 @@
+     const loop = () => {
+       rafRef.current = requestAnimationFrame(loop);
+       controls.update();
+-
+-
+-
+-      if (cinematicZoomRef.current !== null && cameraRef.current) {
+-          const diff = cinematicZoomRef.current - cameraRef.current.zoom;
+-          if (Math.abs(diff) > 0.005) {
+-              cameraRef.current.zoom += diff * 0.04;
+-              cameraRef.current.updateProjectionMatrix();
+-              needsRenderRef.current = true;
+-          } else {
+-              cinematicZoomRef.current = null;
+-          }
+-      }
+ 
+       const cdNow = Date.now();
+       const wpnList = ['scatter', 'artillery', 'flyover', 'laser', 'seismic', 'carpet', 'blackhole'];
+@@ -2356,8 +2314,6 @@
+         needsRenderRef.current = true; // Force render
+       }
+ 
+-
+-
+       // ── Hover glow pool lerp — drives trailing fading meshes ──────────────────
+       let anyFading = false;
+       const fadeSpd = Math.max(0.001, hoverFadeRef.current);
+@@ -2738,16 +2694,7 @@
+         shadowsDirtyRef.current = false;
+       }
+ 
+-      const prevThresh = bloom.threshold;
+-      if (bloomParticlesOnlyRef.current) {
+-         bloom.threshold = 5.0; // Override so only super bright particles bloom
+-      }
+-      
+       composer.render();
+-      
+-      if (bloomParticlesOnlyRef.current) {
+-         bloom.threshold = prevThresh;
+-      }
+       fpsCountRef.current++;
+       if (fpsCountRef.current >= 20) {
+         const now  = performance.now();
+@@ -3057,7 +3004,8 @@
+             // 3. Modular Particle Burst!
+             const layerCol = (iMesh.material as THREE.MeshStandardMaterial | THREE.MeshPhysicalMaterial).emissive;
+             if (particleSystemRef.current) {
+-                particleSystemRef.current.explode(hit.point.x, hit.point.y + 0.5, hit.point.z, 25.0, 5.0, layerCol, isTreasureModeRef.current, particleRenderAmountRef.current, bloomParticlesOnlyRef.current);
++                // Approximate 200 particles with high force
++                particleSystemRef.current.explode(hit.point.x, hit.point.y + 0.5, hit.point.z, 25.0, 5.0, layerCol, isTreasureModeRef.current);
+             }
+             needsRenderRef.current = true;
+           }
+@@ -3065,7 +3013,6 @@
+       }
+     };
+ 
+-
+     renderer.domElement.addEventListener('mousemove', onCanvasMouseMove);
+     renderer.domElement.addEventListener('mouseleave', onCanvasMouseLeave);
+     renderer.domElement.addEventListener('pointerdown', onCanvasPointerDown);
+@@ -3404,7 +3351,6 @@
+       setTerrain(heights);
+       const emptySet = new Set<string>();
+       setBrokenBlocks(emptySet);
+-      brokenBlocksRef.current = emptySet;
+       if (renderModeRef.current === 'glass') {
+         rebuildMeshes(heights, bevel, glowInt, opacity, terrainTint, layerColors, matTransmit, matThickness, matIor, matRoughness, cubeJitter, emptySet);
+       } else {
+@@ -3552,10 +3498,6 @@
+     setSaved(false);
+ 
+     // ── Reset slot state on regenerate ────────────────────────────────────────
+-    const emptySet = new Set<string>();
+-    setBrokenBlocks(emptySet);
+-    brokenBlocksRef.current = emptySet;
+-    
+     slotMeshesRef.current.clear();
+     beamMeshesRef.current.clear();
+     energonPlacedRef.current.clear();
+@@ -3786,9 +3728,11 @@
+       <div ref={mountRef} className="game-canvas-wrapper" style={{ flex: 1, position: 'relative', display: 'flex', flexDirection: 'column' }}>
+         <style>{`
+           .game-canvas-wrapper canvas {
+-            transform: scale(1);
++            transform: ${(isLoaded && !isExiting) ? 'scale(1)' : 'scale(0)'};
+             opacity: ${(isLoaded && !isExiting) ? 1 : 0};
+-            transition: opacity 0.4s ease-out;
++            transition: ${isExiting 
++              ? 'transform 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55), opacity 0.4s ease-out 0.4s' 
++              : 'transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.4s ease-out'};
+             transform-origin: center center;
+           }
+         `}</style>
+@@ -3986,52 +3930,40 @@
+                 
+                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+             {/* Render Engine Panel */}
+-            {/* Render Engine Panel */}
+-            <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: 1, fontWeight: 700, textAlign: 'center', marginBottom: 2 }}>Particle Type</div>
+-            <div style={{ display: 'flex', gap: '4px' }}>
+-               <button 
+-                  onClick={() => { setParticleDimensionType('2D'); recreateParticleSystem(renderEngine, '2D'); }}
+-                  style={{ flex: 1, background: particleDimensionType === '2D' ? 'rgba(10, 132, 255, 0.3)' : 'rgba(255,255,255,0.05)', color: particleDimensionType === '2D' ? '#0a84ff' : 'rgba(255,255,255,0.6)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 9999, padding: '4px', cursor: 'pointer', fontFamily: 'system-ui', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', transition: 'all 0.2s', backdropFilter: 'blur(10px)' }}>2D</button>
+-               <button 
+-                  onClick={() => { setParticleDimensionType('3D'); recreateParticleSystem(renderEngine, '3D'); }}
+-                  style={{ flex: 1, background: particleDimensionType === '3D' ? 'rgba(10, 132, 255, 0.3)' : 'rgba(255,255,255,0.05)', color: particleDimensionType === '3D' ? '#0a84ff' : 'rgba(255,255,255,0.6)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 9999, padding: '4px', cursor: 'pointer', fontFamily: 'system-ui', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', transition: 'all 0.2s', backdropFilter: 'blur(10px)' }}>3D</button>
+-            </div>
+-            
+-            <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: 1, fontWeight: 700, textAlign: 'center', marginBottom: 2, marginTop: 4 }}>Particle Engine</div>
++            <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: 1, fontWeight: 700, textAlign: 'center', marginBottom: 2 }}>Particle Rendering Engine</div>
+             <button 
+                onClick={() => {
+                   setRenderEngine('multimesh');
+-                  recreateParticleSystem('multimesh', particleDimensionType);
++                  if (particleSystemRef.current && sceneRef.current) {
++                      particleSystemRef.current.dispose();
++                      sceneRef.current.remove(particleSystemRef.current.group);
++                  }
++                  particleSystemRef.current = new MultiMeshParticleSystem();
++                  if (sceneRef.current) sceneRef.current.add(particleSystemRef.current.group);
+                }}
+                style={{ background: renderEngine === 'multimesh' ? 'rgba(10, 132, 255, 0.3)' : 'rgba(255,255,255,0.05)', color: renderEngine === 'multimesh' ? '#0a84ff' : 'rgba(255,255,255,0.6)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 9999, padding: '8px', cursor: 'pointer', fontFamily: 'system-ui', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', transition: 'all 0.2s', backdropFilter: 'blur(10px)' }}>Multi-Mesh</button>
+             <button 
+                onClick={() => {
+                   setRenderEngine('global');
+-                  recreateParticleSystem('global', particleDimensionType);
++                  if (particleSystemRef.current && sceneRef.current) {
++                      particleSystemRef.current.dispose();
++                      sceneRef.current.remove(particleSystemRef.current.group);
++                  }
++                  particleSystemRef.current = new GlobalInstancedParticleSystem();
++                  if (sceneRef.current) sceneRef.current.add(particleSystemRef.current.group);
+                }}
+                style={{ background: renderEngine === 'global' ? 'rgba(10, 132, 255, 0.3)' : 'rgba(255,255,255,0.05)', color: renderEngine === 'global' ? '#0a84ff' : 'rgba(255,255,255,0.6)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 9999, padding: '8px', cursor: 'pointer', fontFamily: 'system-ui', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', transition: 'all 0.2s', backdropFilter: 'blur(10px)' }}>Global Mesh</button>
+             <button 
+                onClick={() => {
+                   setRenderEngine('gpu');
+-                  recreateParticleSystem('gpu', particleDimensionType);
++                  if (particleSystemRef.current && sceneRef.current) {
++                      particleSystemRef.current.dispose();
++                      sceneRef.current.remove(particleSystemRef.current.group);
++                  }
++                  particleSystemRef.current = new GPUParticleSystem();
++                  if (sceneRef.current) sceneRef.current.add(particleSystemRef.current.group);
+                }}
+                style={{ background: renderEngine === 'gpu' ? 'rgba(10, 132, 255, 0.3)' : 'rgba(255,255,255,0.05)', color: renderEngine === 'gpu' ? '#0a84ff' : 'rgba(255,255,255,0.6)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 9999, padding: '8px', cursor: 'pointer', fontFamily: 'system-ui', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', transition: 'all 0.2s', backdropFilter: 'blur(10px)' }}>OP Optimized</button>
+-            
+-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 9999, padding: '4px 12px', marginTop: 4 }}>
+-                <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: 1, fontWeight: 700 }}>Count</span>
+-                <input 
+-                  type="number" 
+-                  min={10} 
+-                  max={100} 
+-                  step={10} 
+-                  value={particleRenderAmount} 
+-                  onChange={(e) => setParticleRenderAmount(Number(e.target.value))}
+-                  style={{ 
+-                    background: 'transparent', border: 'none', color: '#0a84ff', 
+-                    fontSize: 11, fontWeight: 700, width: 40, textAlign: 'right', outline: 'none'
+-                  }} 
+-                />
+-              </div>
+             </div>
+           </div>
+         </div>
+@@ -4236,6 +4168,17 @@
+ 
+         {/* ── Shape Library Panel — Hidden for Raid Mode ──────────────────────── */}
+ 
++      {/* ── HUD ───────────────────────────────────────────────────── */}
++      <div style={{
++        position: 'absolute', top: 120, right: 40,
++        fontSize: 12, color: 'rgba(255,255,255,0.6)',
++        pointerEvents: 'none', fontFamily: 'system-ui, -apple-system, sans-serif', lineHeight: 1.6,
++        textAlign: 'right', zIndex: 100
++      }}>
++        <div>🖱 Scroll to zoom</div>
++        <div style={{ color: saved ? '#4af' : '#9ca3af' }}>{status}</div>
++      </div>
++
+         </div> {/* End of UI Fading Wrapper */}
+     </div> {/* End of Viewport (Left/Main) */}
+ 
+@@ -4456,23 +4399,6 @@
+                 <CfgSlider label="Base Glow"   min={0}    max={2}    step={0.01} value={baseGlow}    baseline={_defaultPreset.baseGlow} onChange={setBaseGlow}    />
+ 
+                 <CfgSlider label="Glow Fade"   min={0.01} max={0.5}  step={0.01} value={hoverFade}   baseline={_defaultPreset.hoverFade} onChange={setHoverFade} />
+-                
+-
+-              </div>
+-            </div>
+-
+-            {/* ── POST-PROCESSING ── */}
+-            <div className="apple-card">
+-              <div className="apple-card-title">Post-Processing</div>
+-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+-                <CfgSlider label="Bloom Strength"  min={0} max={2.0} step={0.05} value={bloomStr}    baseline={_defaultPreset.bloomStr} onChange={setBloomStr}    accent="#8b5cf6" />
+-                <CfgSlider label="Bloom Threshold" min={0} max={1.0} step={0.05} value={bloomThresh} baseline={_defaultPreset.bloomThresh} onChange={setBloomThresh} accent="#8b5cf6" />
+-                <CfgSlider label="Block Glow Int." min={0} max={2.0} step={0.05} value={glowInt}     baseline={_defaultPreset.glowInt} onChange={setGlowInt}     accent="#8b5cf6" />
+-                
+-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 12px', marginTop: 8, background: 'rgba(255,255,255,0.05)', borderRadius: 12, border: '1px solid rgba(255,255,255,0.1)' }}>
+-                  <span style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.8)', textTransform: 'uppercase', letterSpacing: 1 }}>Particles Bloom Only</span>
+-                  <input type="checkbox" checked={bloomParticlesOnly} onChange={e => setBloomParticlesOnly(e.target.checked)} style={{ cursor: 'pointer', accentColor: '#0a84ff', width: 16, height: 16 }} />
+-                </div>
+               </div>
+             </div>
+ 
+@@ -4600,7 +4526,7 @@
+               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                 <CfgSlider label="Elevation"  min={5}   max={89}  step={0.5}  value={camElev}    onChange={setCamElev}    accent="#67e8f9" />
+                 <CfgSlider label="Azimuth"    min={0}   max={360} step={1}    value={camAzimuth} onChange={setCamAzimuth} accent="#67e8f9" />
+-                <CfgSlider label="Zoom"       min={8}   max={120}  step={1}    value={camZoom}    onChange={setCamZoom}    accent="#67e8f9" />
++                <CfgSlider label="Zoom"       min={8}   max={80}  step={1}    value={camZoom}    onChange={setCamZoom}    accent="#67e8f9" />
+               </div>
+             </div>
+ 

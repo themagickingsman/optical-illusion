@@ -1,0 +1,191 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "description": "ALLIANCES progression cost matrix. Defines how costs scale by tier, octave, and arc phase. All equipment costs in equipment_catalog.json are base (tier 1) values. This matrix defines multipliers for upgrades and unlocks.",
+    "formula": "finalCost = baseCost × tierMultiplier[tier] × octaveFactor[octave] × arcPhaseModifier[phase]"
+  },
+
+  "tierMultipliers": {
+    "1": 1.0,
+    "2": 2.5,
+    "3": 6.25,
+    "4": 15.6,
+    "5": 39.0
+  },
+
+  "octaveFactors": {
+    "11": 1.0,
+    "12": 4.0,
+    "13": 16.0,
+    "14": 64.0,
+    "15": 256.0
+  },
+
+  "arcPhaseModifiers": {
+    "venus-protocol":    { "costMod": 1.0,  "note": "Crash conditions. Everything costs exactly what it costs." },
+    "forge-sequence":    { "costMod": 1.4,  "note": "Mid-build. Material scarcity on Venus. 40% markup." },
+    "breakout":          { "costMod": 2.0,  "note": "Final push. Critical components at critical prices." },
+    "alliance-formation":{ "costMod": 0.85, "note": "Alliance network active. Trade discounts apply." }
+  },
+
+  "buildingCosts": {
+    "_note": "Buildings are purchased with empire resources, not octave currency.",
+    "Headquarters": {
+      "tier1": { "energy": 0, "food": 0, "science": 0, "population": 0, "buildTime": 0, "note": "Auto-placed. Cannot be purchased." }
+    },
+    "Power Plant": {
+      "tier1": { "energy": 100, "food": 500,   "science": 0,   "buildTime": 120 },
+      "tier2": { "energy": 250, "food": 1250,  "science": 50,  "buildTime": 300, "requires": "tier1" },
+      "tier3": { "energy": 625, "food": 3125,  "science": 200, "buildTime": 600, "requires": "tier2" }
+    },
+    "Hydroponics Farm": {
+      "tier1": { "energy": 80,  "food": 400,   "science": 0,   "buildTime": 90  },
+      "tier2": { "energy": 200, "food": 1000,  "science": 40,  "buildTime": 225, "requires": "tier1" },
+      "tier3": { "energy": 500, "food": 2500,  "science": 160, "buildTime": 450, "requires": "tier2" }
+    },
+    "Docking Station": {
+      "tier1": { "energy": 150, "food": 600,   "science": 20,  "buildTime": 150 },
+      "tier2": { "energy": 375, "food": 1500,  "science": 80,  "buildTime": 375, "requires": "tier1" },
+      "tier3": { "energy": 938, "food": 3750,  "science": 320, "buildTime": 750, "requires": "tier2" }
+    },
+    "Recharge Station": {
+      "tier1": { "energy": 120, "food": 400,   "science": 10,  "buildTime": 100 },
+      "tier2": { "energy": 300, "food": 1000,  "science": 40,  "buildTime": 250, "requires": "tier1" },
+      "tier3": { "energy": 750, "food": 2500,  "science": 160, "buildTime": 500, "requires": "tier2" }
+    },
+    "Storage Silo": {
+      "tier1": { "energy": 60,  "food": 300,   "science": 0,   "buildTime": 80  },
+      "tier2": { "energy": 150, "food": 750,   "science": 30,  "buildTime": 200, "requires": "tier1" },
+      "tier3": { "energy": 375, "food": 1875,  "science": 120, "buildTime": 400, "requires": "tier2" }
+    },
+    "Marketplace": {
+      "tier1": { "energy": 200, "food": 800,   "science": 50,  "buildTime": 180 },
+      "tier2": { "energy": 500, "food": 2000,  "science": 200, "buildTime": 450, "requires": "tier1" },
+      "tier3": { "energy": 1250,"food": 5000,  "science": 800, "buildTime": 900, "requires": "tier2" }
+    },
+    "Residential Quarters": {
+      "tier1": { "energy": 90,  "food": 450,   "science": 0,   "buildTime": 100 },
+      "tier2": { "energy": 225, "food": 1125,  "science": 50,  "buildTime": 250, "requires": "tier1" },
+      "tier3": { "energy": 563, "food": 2813,  "science": 200, "buildTime": 500, "requires": "tier2" }
+    },
+    "Fuel Resonator": {
+      "tier1": { "energy": 180, "food": 700,   "science": 80,  "buildTime": 160 },
+      "tier2": { "energy": 450, "food": 1750,  "science": 320, "buildTime": 400, "requires": "tier1" },
+      "tier3": { "energy": 1125,"food": 4375,  "science": 1280,"buildTime": 800, "requires": "tier2" }
+    },
+    "Barracks": {
+      "tier1": { "energy": 200, "food": 1000,  "science": 100, "buildTime": 200 },
+      "tier2": { "energy": 500, "food": 2500,  "science": 400, "buildTime": 500, "requires": "tier1" },
+      "tier3": { "energy": 1250,"food": 6250,  "science": 1600,"buildTime": 1000,"requires": "tier2" }
+    },
+    "Research Lab": {
+      "tier1": { "energy": 300, "food": 600,   "science": 200, "buildTime": 250 },
+      "tier2": { "energy": 750, "food": 1500,  "science": 800, "buildTime": 625, "requires": "tier1" },
+      "tier3": { "energy": 1875,"food": 3750,  "science": 3200,"buildTime": 1250,"requires": "tier2" }
+    },
+    "Shipyard": {
+      "tier1": { "energy": 500, "food": 1000,  "science": 500, "buildTime": 400, "note": "Venus arc only. Required for Forge Sequence." },
+      "tier2": { "energy": 1250,"food": 2500,  "science": 2000,"buildTime": 1000,"requires": "tier1" },
+      "tier3": { "energy": 3125,"food": 6250,  "science": 8000,"buildTime": 2000,"requires": "tier2" }
+    }
+  },
+
+  "shipProgression": {
+    "_note": "Ship slots unlock by arc phase. Each ship can equip one item per slot category.",
+    "slots": {
+      "weapon":  { "startCount": 1, "maxCount": 3, "unlockCosts": { "2": {"octave_11": 800}, "3": {"octave_11": 2000, "octave_12": 400} } },
+      "engine":  { "startCount": 1, "maxCount": 1, "unlockCosts": {} },
+      "hull":    { "startCount": 1, "maxCount": 2, "unlockCosts": { "2": {"octave_11": 1200} } },
+      "cargo":   { "startCount": 1, "maxCount": 2, "unlockCosts": { "2": {"octave_11": 600} } },
+      "sensor":  { "startCount": 0, "maxCount": 1, "unlockCosts": { "1": {"octave_11": 400} } },
+      "doctrine":{ "startCount": 1, "maxCount": 1, "unlockCosts": {} }
+    },
+    "fleetSize": {
+      "venus-protocol":    { "maxShips": 3,  "note": "3 ships. The ones that survived the crash." },
+      "forge-sequence":    { "maxShips": 4,  "note": "4 ships. Built one more. Barely." },
+      "breakout":          { "maxShips": 6,  "note": "6 ships. Enough to run the extraction." },
+      "alliance-formation":{ "maxShips": 9,  "note": "9 ships. Full Alliance wing." }
+    }
+  },
+
+  "bondThresholds": {
+    "_note": "Bond values that trigger narrative or mechanical consequences.",
+    "trust": {
+      "0":   "Cold. No cooperation bonus.",
+      "30":  "Neutral. Standard operation.",
+      "55":  "Working relationship. Unlocks forge-sequence arc.",
+      "70":  "Alliance-grade. Unlocks breakout arc co-pilot bonus.",
+      "90":  "Full trust. Rare. The game notices."
+    },
+    "debt": {
+      "0":   "Squared. No moral weight.",
+      "50":  "Acknowledged. Tension rises if ignored.",
+      "80":  "Critical. Butterworth files reports about it.",
+      "100": "Breaking point. Arc branch: Howard does something about it."
+    },
+    "tension": {
+      "0":   "Calm. Unusual.",
+      "40":  "Operational friction. Minor efficiency penalty.",
+      "70":  "Active conflict. Announcer lines shift tone.",
+      "90":  "Crisis level. Arc trigger: forced resolution event."
+    },
+    "respect": {
+      "0":   "None. They are aware each other exists.",
+      "30":  "Baseline professional acknowledgment.",
+      "60":  "Earned. Howard flew through something. Eve noticed.",
+      "85":  "Commander-level recognition. Unlocks Sci Eve shared mission arcs."
+    }
+  },
+
+  "matchBondDeltas": {
+    "_note": "Default bond changes applied after each match result. Game can override with context-specific values.",
+    "win": {
+      "howard_butterworth": { "trust": 5, "debt": -3, "tension": -2, "respect": 3 },
+      "howard_civilians":   { "trust": 2, "respect": 2 },
+      "butterworth_civilians": { "trust": 3, "debt": -5, "respect": 4 }
+    },
+    "loss": {
+      "howard_butterworth": { "trust": -3, "tension": 8, "debt": 5 },
+      "howard_civilians":   { "trust": -4, "tension": 5 },
+      "butterworth_civilians": { "trust": -2, "debt": 8, "tension": 4 }
+    },
+    "draw": {
+      "howard_butterworth": { "tension": 3 },
+      "howard_civilians":   {},
+      "butterworth_civilians": { "tension": 2 }
+    },
+    "perfectVictory": {
+      "howard_butterworth": { "trust": 10, "debt": -8, "tension": -5, "respect": 8 },
+      "howard_civilians":   { "trust": 6, "respect": 8 },
+      "butterworth_civilians": { "trust": 6, "debt": -12, "respect": 6 }
+    }
+  },
+
+  "octaveCurrencyYield": {
+    "_note": "How much octave currency each match result generates per arc phase.",
+    "venus-protocol": {
+      "win":           { "octave_11": 150 },
+      "perfectVictory":{ "octave_11": 300 },
+      "loss":          { "octave_11": 50  },
+      "draw":          { "octave_11": 80  }
+    },
+    "forge-sequence": {
+      "win":           { "octave_11": 250, "octave_12": 20  },
+      "perfectVictory":{ "octave_11": 500, "octave_12": 50  },
+      "loss":          { "octave_11": 80  },
+      "draw":          { "octave_11": 130 }
+    },
+    "breakout": {
+      "win":           { "octave_11": 400, "octave_12": 60  },
+      "perfectVictory":{ "octave_11": 800, "octave_12": 150 },
+      "loss":          { "octave_11": 100, "octave_12": 10  },
+      "draw":          { "octave_11": 200, "octave_12": 30  }
+    },
+    "alliance-formation": {
+      "win":           { "octave_11": 600, "octave_12": 100, "octave_13": 10 },
+      "perfectVictory":{ "octave_11": 1200,"octave_12": 250, "octave_13": 30 },
+      "loss":          { "octave_11": 150, "octave_12": 20  },
+      "draw":          { "octave_11": 300, "octave_12": 50  }
+    }
+  }
+}

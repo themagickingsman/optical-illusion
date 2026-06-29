@@ -1,0 +1,747 @@
+{
+  "hydraulic_system": {
+    "acoustic_pulse": 1.48,
+    "mechanical_cycle": 0.0031527144043368943,
+    "water_hammer_period": 0.6756756756756757,
+    "flow_frequency": 16.50757401921918
+  },
+  "ground_transmission": {
+    "pyramid_network_freq": 30.0,
+    "obelisk_coupling_freq": 15.0,
+    "schumann_fundamental": 7.83,
+    "schumann_harmonics": [
+      7.83,
+      14.1,
+      20.3,
+      26.4,
+      32.5
+    ]
+  },
+  "domain_matches": {
+    "total_matches": 18,
+    "unique_domains": 6,
+    "matches": [
+      {
+        "system_component": "Harmonic_\u00d72",
+        "calculated_freq": 2.96,
+        "domain": "GEOLOGICAL",
+        "domain_freq": 2.9339,
+        "match_type": "peak",
+        "percent_diff": 0.8896008725587107,
+        "domain_level": 3,
+        "domain_status": "ACTIVE"
+      },
+      {
+        "system_component": "Harmonic_\u00d72",
+        "calculated_freq": 2.96,
+        "domain": "STELLAR",
+        "domain_freq": 2.9337,
+        "match_type": "average",
+        "percent_diff": 0.8964788492347544,
+        "domain_level": 5,
+        "domain_status": "ACTIVE"
+      },
+      {
+        "system_component": "Harmonic_\u00d72",
+        "calculated_freq": 2.96,
+        "domain": "STELLAR",
+        "domain_freq": 3.0187,
+        "match_type": "peak",
+        "percent_diff": 1.9445456653526345,
+        "domain_level": 5,
+        "domain_status": "ACTIVE"
+      },
+      {
+        "system_component": "Harmonic_\u00d72",
+        "calculated_freq": 2.96,
+        "domain": "GEOLOGICAL",
+        "domain_freq": 2.8517,
+        "match_type": "average",
+        "percent_diff": 3.797734684574108,
+        "domain_level": 3,
+        "domain_status": "ACTIVE"
+      },
+      {
+        "system_component": "Hydraulic_Acoustic_Pulse",
+        "calculated_freq": 1.48,
+        "domain": "ATOMIC",
+        "domain_freq": 1.5413,
+        "match_type": "average",
+        "percent_diff": 3.9771621358593343,
+        "domain_level": 1,
+        "domain_status": "ACTIVE"
+      },
+      {
+        "system_component": "Subharmonic_Div1",
+        "calculated_freq": 1.48,
+        "domain": "ATOMIC",
+        "domain_freq": 1.5413,
+        "match_type": "average",
+        "percent_diff": 3.9771621358593343,
+        "domain_level": 1,
+        "domain_status": "ACTIVE"
+      },
+      {
+        "system_component": "Harmonic_\u00d71",
+        "calculated_freq": 1.48,
+        "domain": "ATOMIC",
+        "domain_freq": 1.5413,
+        "match_type": "average",
+        "percent_diff": 3.9771621358593343,
+        "domain_level": 1,
+        "domain_status": "ACTIVE"
+      },
+      {
+        "system_component": "Harmonic_\u00d72",
+        "calculated_freq": 2.96,
+        "domain": "PLANETARY",
+        "domain_freq": 2.8453,
+        "match_type": "peak",
+        "percent_diff": 4.031209362808844,
+        "domain_level": 4,
+        "domain_status": "ACTIVE"
+      },
+      {
+        "system_component": "Subharmonic_Div8",
+        "calculated_freq": 0.185,
+        "domain": "UNIVERSAL",
+        "domain_freq": 0.1929,
+        "match_type": "average",
+        "percent_diff": 4.095386210471743,
+        "domain_level": 7,
+        "domain_status": "DORMANT"
+      },
+      {
+        "system_component": "Subharmonic_Div8",
+        "calculated_freq": 0.185,
+        "domain": "UNIVERSAL",
+        "domain_freq": 0.1939,
+        "match_type": "peak",
+        "percent_diff": 4.58999484270242,
+        "domain_level": 7,
+        "domain_status": "DORMANT"
+      },
+      {
+        "system_component": "Harmonic_\u00d72",
+        "calculated_freq": 2.96,
+        "domain": "PLANETARY",
+        "domain_freq": 2.7771,
+        "match_type": "average",
+        "percent_diff": 6.586006985704515,
+        "domain_level": 4,
+        "domain_status": "ACTIVE"
+      },
+      {
+        "system_component": "Hydraulic_Acoustic_Pulse",
+        "calculated_freq": 1.48,
+        "domain": "ATOMIC",
+        "domain_freq": 1.5915,
+        "match_type": "peak",
+        "percent_diff": 7.005969211435749,
+        "domain_level": 1,
+        "domain_status": "ACTIVE"
+      },
+      {
+        "system_component": "Subharmonic_Div1",
+        "calculated_freq": 1.48,
+        "domain": "ATOMIC",
+        "domain_freq": 1.5915,
+        "match_type": "peak",
+        "percent_diff": 7.005969211435749,
+        "domain_level": 1,
+        "domain_status": "ACTIVE"
+      },
+      {
+        "system_component": "Harmonic_\u00d71",
+        "calculated_freq": 1.48,
+        "domain": "ATOMIC",
+        "domain_freq": 1.5915,
+        "match_type": "peak",
+        "percent_diff": 7.005969211435749,
+        "domain_level": 1,
+        "domain_status": "ACTIVE"
+      },
+      {
+        "system_component": "Harmonic_\u00d73",
+        "calculated_freq": 4.4399999999999995,
+        "domain": "QUANTUM_MECHANICS",
+        "domain_freq": 4.1407,
+        "match_type": "peak",
+        "percent_diff": 7.228246431762737,
+        "domain_level": 8,
+        "domain_status": "HYPER-ACTIVE"
+      },
+      {
+        "system_component": "Harmonic_\u00d73",
+        "calculated_freq": 4.4399999999999995,
+        "domain": "QUANTUM_MECHANICS",
+        "domain_freq": 4.1239,
+        "match_type": "average",
+        "percent_diff": 7.66507432284972,
+        "domain_level": 8,
+        "domain_status": "HYPER-ACTIVE"
+      },
+      {
+        "system_component": "Subharmonic_Div7",
+        "calculated_freq": 0.21142857142857144,
+        "domain": "UNIVERSAL",
+        "domain_freq": 0.1939,
+        "match_type": "peak",
+        "percent_diff": 9.040005894054385,
+        "domain_level": 7,
+        "domain_status": "DORMANT"
+      },
+      {
+        "system_component": "Subharmonic_Div7",
+        "calculated_freq": 0.21142857142857144,
+        "domain": "UNIVERSAL",
+        "domain_freq": 0.1929,
+        "match_type": "average",
+        "percent_diff": 9.605272902318015,
+        "domain_level": 7,
+        "domain_status": "DORMANT"
+      }
+    ]
+  },
+  "harmonic_relationships": {
+    "total_relationships": 67,
+    "relationships": [
+      {
+        "freq1": 0.8534,
+        "freq2": 0.8635,
+        "ratio": 1.011835012889618,
+        "harmonic_order": 1,
+        "name1": "VOID_avg",
+        "name2": "VOID_peak"
+      },
+      {
+        "freq1": 1.5413,
+        "freq2": 1.5915,
+        "ratio": 1.032569908518783,
+        "harmonic_order": 1,
+        "name1": "ATOMIC_avg",
+        "name2": "ATOMIC_peak"
+      },
+      {
+        "freq1": 2.3207,
+        "freq2": 2.3785,
+        "ratio": 1.0249062782781058,
+        "harmonic_order": 1,
+        "name1": "BIOLOGICAL_avg",
+        "name2": "BIOLOGICAL_peak"
+      },
+      {
+        "freq1": 2.8517,
+        "freq2": 2.9339,
+        "ratio": 1.0288249114563242,
+        "harmonic_order": 1,
+        "name1": "GEOLOGICAL_avg",
+        "name2": "GEOLOGICAL_peak"
+      },
+      {
+        "freq1": 2.8517,
+        "freq2": 2.7771,
+        "ratio": 1.0268625544632892,
+        "harmonic_order": 1,
+        "name1": "GEOLOGICAL_avg",
+        "name2": "PLANETARY_avg"
+      },
+      {
+        "freq1": 2.8517,
+        "freq2": 2.8453,
+        "ratio": 1.0022493234456824,
+        "harmonic_order": 1,
+        "name1": "GEOLOGICAL_avg",
+        "name2": "PLANETARY_peak"
+      },
+      {
+        "freq1": 2.8517,
+        "freq2": 2.9337,
+        "ratio": 1.0287547778518076,
+        "harmonic_order": 1,
+        "name1": "GEOLOGICAL_avg",
+        "name2": "STELLAR_avg"
+      },
+      {
+        "freq1": 2.9339,
+        "freq2": 2.8453,
+        "ratio": 1.031139071451165,
+        "harmonic_order": 1,
+        "name1": "GEOLOGICAL_peak",
+        "name2": "PLANETARY_peak"
+      },
+      {
+        "freq1": 2.9339,
+        "freq2": 2.9337,
+        "ratio": 1.0000681732965198,
+        "harmonic_order": 1,
+        "name1": "GEOLOGICAL_peak",
+        "name2": "STELLAR_avg"
+      },
+      {
+        "freq1": 2.9339,
+        "freq2": 3.0187,
+        "ratio": 1.0289035072770032,
+        "harmonic_order": 1,
+        "name1": "GEOLOGICAL_peak",
+        "name2": "STELLAR_peak"
+      },
+      {
+        "freq1": 2.7771,
+        "freq2": 2.8453,
+        "ratio": 1.0245579921500847,
+        "harmonic_order": 1,
+        "name1": "PLANETARY_avg",
+        "name2": "PLANETARY_peak"
+      },
+      {
+        "freq1": 2.8453,
+        "freq2": 2.9337,
+        "ratio": 1.0310687800934875,
+        "harmonic_order": 1,
+        "name1": "PLANETARY_peak",
+        "name2": "STELLAR_avg"
+      },
+      {
+        "freq1": 2.9337,
+        "freq2": 3.0187,
+        "ratio": 1.028973651020895,
+        "harmonic_order": 1,
+        "name1": "STELLAR_avg",
+        "name2": "STELLAR_peak"
+      },
+      {
+        "freq1": 4.9994,
+        "freq2": 5.0284,
+        "ratio": 1.0058006960835302,
+        "harmonic_order": 1,
+        "name1": "GALACTIC_avg",
+        "name2": "GALACTIC_peak"
+      },
+      {
+        "freq1": 4.9994,
+        "freq2": 5.2104,
+        "ratio": 1.042205064607753,
+        "harmonic_order": 1,
+        "name1": "GALACTIC_avg",
+        "name2": "CONSCIOUSNESS_avg"
+      },
+      {
+        "freq1": 5.0284,
+        "freq2": 5.2104,
+        "ratio": 1.0361944157187175,
+        "harmonic_order": 1,
+        "name1": "GALACTIC_peak",
+        "name2": "CONSCIOUSNESS_avg"
+      },
+      {
+        "freq1": 5.0284,
+        "freq2": 5.2559,
+        "ratio": 1.0452430196483968,
+        "harmonic_order": 1,
+        "name1": "GALACTIC_peak",
+        "name2": "CONSCIOUSNESS_peak"
+      },
+      {
+        "freq1": 0.1929,
+        "freq2": 0.1939,
+        "ratio": 1.0051840331778124,
+        "harmonic_order": 1,
+        "name1": "UNIVERSAL_avg",
+        "name2": "UNIVERSAL_peak"
+      },
+      {
+        "freq1": 4.1239,
+        "freq2": 4.1407,
+        "ratio": 1.0040738136230267,
+        "harmonic_order": 1,
+        "name1": "QUANTUM_MECHANICS_avg",
+        "name2": "QUANTUM_MECHANICS_peak"
+      },
+      {
+        "freq1": 6.6272,
+        "freq2": 6.8184,
+        "ratio": 1.0288507967165619,
+        "harmonic_order": 1,
+        "name1": "DIMENSIONAL_MATH_avg",
+        "name2": "DIMENSIONAL_MATH_peak"
+      },
+      {
+        "freq1": 6.6272,
+        "freq2": 6.4228,
+        "ratio": 1.0318241265491688,
+        "harmonic_order": 1,
+        "name1": "DIMENSIONAL_MATH_avg",
+        "name2": "TEMPORAL_PHYSICS_avg"
+      },
+      {
+        "freq1": 6.6272,
+        "freq2": 6.4645,
+        "ratio": 1.025168226467631,
+        "harmonic_order": 1,
+        "name1": "DIMENSIONAL_MATH_avg",
+        "name2": "TEMPORAL_PHYSICS_peak"
+      },
+      {
+        "freq1": 6.8184,
+        "freq2": 7.1114,
+        "ratio": 1.04297195823067,
+        "harmonic_order": 1,
+        "name1": "DIMENSIONAL_MATH_peak",
+        "name2": "SOURCE_CODE_avg"
+      },
+      {
+        "freq1": 6.8184,
+        "freq2": 7.1538,
+        "ratio": 1.0491904259063711,
+        "harmonic_order": 1,
+        "name1": "DIMENSIONAL_MATH_peak",
+        "name2": "SOURCE_CODE_peak"
+      },
+      {
+        "freq1": 6.4228,
+        "freq2": 6.4645,
+        "ratio": 1.0064924954848353,
+        "harmonic_order": 1,
+        "name1": "TEMPORAL_PHYSICS_avg",
+        "name2": "TEMPORAL_PHYSICS_peak"
+      },
+      {
+        "freq1": 5.2104,
+        "freq2": 5.2559,
+        "ratio": 1.0087325349301397,
+        "harmonic_order": 1,
+        "name1": "CONSCIOUSNESS_avg",
+        "name2": "CONSCIOUSNESS_peak"
+      },
+      {
+        "freq1": 7.1114,
+        "freq2": 7.1538,
+        "ratio": 1.0059622577832776,
+        "harmonic_order": 1,
+        "name1": "SOURCE_CODE_avg",
+        "name2": "SOURCE_CODE_peak"
+      },
+      {
+        "freq1": 1.5413,
+        "freq2": 2.9339,
+        "ratio": 1.9035230000648804,
+        "harmonic_order": 2,
+        "name1": "ATOMIC_avg",
+        "name2": "GEOLOGICAL_peak"
+      },
+      {
+        "freq1": 1.5413,
+        "freq2": 2.9337,
+        "ratio": 1.903393239473172,
+        "harmonic_order": 2,
+        "name1": "ATOMIC_avg",
+        "name2": "STELLAR_avg"
+      },
+      {
+        "freq1": 1.5413,
+        "freq2": 3.0187,
+        "ratio": 1.9585414909491987,
+        "harmonic_order": 2,
+        "name1": "ATOMIC_avg",
+        "name2": "STELLAR_peak"
+      },
+      {
+        "freq1": 1.5915,
+        "freq2": 4.9994,
+        "ratio": 3.1413132265158654,
+        "harmonic_order": 3,
+        "name1": "ATOMIC_peak",
+        "name2": "GALACTIC_avg"
+      },
+      {
+        "freq1": 2.3207,
+        "freq2": 6.6272,
+        "ratio": 2.85569009350627,
+        "harmonic_order": 3,
+        "name1": "BIOLOGICAL_avg",
+        "name2": "DIMENSIONAL_MATH_avg"
+      },
+      {
+        "freq1": 2.3207,
+        "freq2": 6.8184,
+        "ratio": 2.938079027879519,
+        "harmonic_order": 3,
+        "name1": "BIOLOGICAL_avg",
+        "name2": "DIMENSIONAL_MATH_peak"
+      },
+      {
+        "freq1": 2.3207,
+        "freq2": 7.1114,
+        "ratio": 3.064334037143965,
+        "harmonic_order": 3,
+        "name1": "BIOLOGICAL_avg",
+        "name2": "SOURCE_CODE_avg"
+      },
+      {
+        "freq1": 2.3207,
+        "freq2": 7.1538,
+        "ratio": 3.0826043866074895,
+        "harmonic_order": 3,
+        "name1": "BIOLOGICAL_avg",
+        "name2": "SOURCE_CODE_peak"
+      },
+      {
+        "freq1": 2.3785,
+        "freq2": 6.8184,
+        "ratio": 2.8666806811015344,
+        "harmonic_order": 3,
+        "name1": "BIOLOGICAL_peak",
+        "name2": "DIMENSIONAL_MATH_peak"
+      },
+      {
+        "freq1": 2.3785,
+        "freq2": 7.1114,
+        "ratio": 2.989867563590498,
+        "harmonic_order": 3,
+        "name1": "BIOLOGICAL_peak",
+        "name2": "SOURCE_CODE_avg"
+      },
+      {
+        "freq1": 2.3785,
+        "freq2": 7.1538,
+        "ratio": 3.007693924742485,
+        "harmonic_order": 3,
+        "name1": "BIOLOGICAL_peak",
+        "name2": "SOURCE_CODE_peak"
+      },
+      {
+        "freq1": 1.5413,
+        "freq2": 6.4228,
+        "ratio": 4.167131642120288,
+        "harmonic_order": 4,
+        "name1": "ATOMIC_avg",
+        "name2": "TEMPORAL_PHYSICS_avg"
+      },
+      {
+        "freq1": 1.5413,
+        "freq2": 6.4645,
+        "ratio": 4.194186725491469,
+        "harmonic_order": 4,
+        "name1": "ATOMIC_avg",
+        "name2": "TEMPORAL_PHYSICS_peak"
+      },
+      {
+        "freq1": 1.5915,
+        "freq2": 6.6272,
+        "ratio": 4.164121897580899,
+        "harmonic_order": 4,
+        "name1": "ATOMIC_peak",
+        "name2": "DIMENSIONAL_MATH_avg"
+      },
+      {
+        "freq1": 1.5915,
+        "freq2": 6.4228,
+        "ratio": 4.035689601005341,
+        "harmonic_order": 4,
+        "name1": "ATOMIC_peak",
+        "name2": "TEMPORAL_PHYSICS_avg"
+      },
+      {
+        "freq1": 1.5915,
+        "freq2": 6.4645,
+        "ratio": 4.061891297518065,
+        "harmonic_order": 4,
+        "name1": "ATOMIC_peak",
+        "name2": "TEMPORAL_PHYSICS_peak"
+      },
+      {
+        "freq1": 0.8534,
+        "freq2": 4.1239,
+        "ratio": 4.832317787672838,
+        "harmonic_order": 5,
+        "name1": "VOID_avg",
+        "name2": "QUANTUM_MECHANICS_avg"
+      },
+      {
+        "freq1": 0.8534,
+        "freq2": 4.1407,
+        "ratio": 4.852003749707054,
+        "harmonic_order": 5,
+        "name1": "VOID_avg",
+        "name2": "QUANTUM_MECHANICS_peak"
+      },
+      {
+        "freq1": 0.8635,
+        "freq2": 4.1239,
+        "ratio": 4.775796178343949,
+        "harmonic_order": 5,
+        "name1": "VOID_peak",
+        "name2": "QUANTUM_MECHANICS_avg"
+      },
+      {
+        "freq1": 0.8635,
+        "freq2": 4.1407,
+        "ratio": 4.795251881876085,
+        "harmonic_order": 5,
+        "name1": "VOID_peak",
+        "name2": "QUANTUM_MECHANICS_peak"
+      },
+      {
+        "freq1": 0.8534,
+        "freq2": 4.9994,
+        "ratio": 5.858214202015467,
+        "harmonic_order": 6,
+        "name1": "VOID_avg",
+        "name2": "GALACTIC_avg"
+      },
+      {
+        "freq1": 0.8534,
+        "freq2": 5.0284,
+        "ratio": 5.8921959221935785,
+        "harmonic_order": 6,
+        "name1": "VOID_avg",
+        "name2": "GALACTIC_peak"
+      },
+      {
+        "freq1": 0.8534,
+        "freq2": 5.2104,
+        "ratio": 6.1054605108975855,
+        "harmonic_order": 6,
+        "name1": "VOID_avg",
+        "name2": "CONSCIOUSNESS_avg"
+      },
+      {
+        "freq1": 0.8534,
+        "freq2": 5.2559,
+        "ratio": 6.158776658073587,
+        "harmonic_order": 6,
+        "name1": "VOID_avg",
+        "name2": "CONSCIOUSNESS_peak"
+      },
+      {
+        "freq1": 0.8635,
+        "freq2": 4.9994,
+        "ratio": 5.789693109438332,
+        "harmonic_order": 6,
+        "name1": "VOID_peak",
+        "name2": "GALACTIC_avg"
+      },
+      {
+        "freq1": 0.8635,
+        "freq2": 5.0284,
+        "ratio": 5.823277359583092,
+        "harmonic_order": 6,
+        "name1": "VOID_peak",
+        "name2": "GALACTIC_peak"
+      },
+      {
+        "freq1": 0.8635,
+        "freq2": 5.2104,
+        "ratio": 6.034047481181239,
+        "harmonic_order": 6,
+        "name1": "VOID_peak",
+        "name2": "CONSCIOUSNESS_avg"
+      },
+      {
+        "freq1": 0.8635,
+        "freq2": 5.2559,
+        "ratio": 6.086740011580775,
+        "harmonic_order": 6,
+        "name1": "VOID_peak",
+        "name2": "CONSCIOUSNESS_peak"
+      },
+      {
+        "freq1": 0.8534,
+        "freq2": 6.6272,
+        "ratio": 7.765643309116475,
+        "harmonic_order": 8,
+        "name1": "VOID_avg",
+        "name2": "DIMENSIONAL_MATH_avg"
+      },
+      {
+        "freq1": 0.8534,
+        "freq2": 6.8184,
+        "ratio": 7.989688305601124,
+        "harmonic_order": 8,
+        "name1": "VOID_avg",
+        "name2": "DIMENSIONAL_MATH_peak"
+      },
+      {
+        "freq1": 0.8534,
+        "freq2": 7.1114,
+        "ratio": 8.333020857745488,
+        "harmonic_order": 8,
+        "name1": "VOID_avg",
+        "name2": "SOURCE_CODE_avg"
+      },
+      {
+        "freq1": 0.8534,
+        "freq2": 7.1538,
+        "ratio": 8.382704476212796,
+        "harmonic_order": 8,
+        "name1": "VOID_avg",
+        "name2": "SOURCE_CODE_peak"
+      },
+      {
+        "freq1": 0.8635,
+        "freq2": 6.6272,
+        "ratio": 7.67481181239143,
+        "harmonic_order": 8,
+        "name1": "VOID_peak",
+        "name2": "DIMENSIONAL_MATH_avg"
+      },
+      {
+        "freq1": 0.8635,
+        "freq2": 6.8184,
+        "ratio": 7.896236247828604,
+        "harmonic_order": 8,
+        "name1": "VOID_peak",
+        "name2": "DIMENSIONAL_MATH_peak"
+      },
+      {
+        "freq1": 0.8635,
+        "freq2": 7.1114,
+        "ratio": 8.235552982049796,
+        "harmonic_order": 8,
+        "name1": "VOID_peak",
+        "name2": "SOURCE_CODE_avg"
+      },
+      {
+        "freq1": 0.8635,
+        "freq2": 7.1538,
+        "ratio": 8.284655471916619,
+        "harmonic_order": 8,
+        "name1": "VOID_peak",
+        "name2": "SOURCE_CODE_peak"
+      },
+      {
+        "freq1": 1.5413,
+        "freq2": 0.1929,
+        "ratio": 7.990150336962157,
+        "harmonic_order": 8,
+        "name1": "ATOMIC_avg",
+        "name2": "UNIVERSAL_avg"
+      },
+      {
+        "freq1": 1.5413,
+        "freq2": 0.1939,
+        "ratio": 7.9489427539969055,
+        "harmonic_order": 8,
+        "name1": "ATOMIC_avg",
+        "name2": "UNIVERSAL_peak"
+      },
+      {
+        "freq1": 1.5915,
+        "freq2": 0.1929,
+        "ratio": 8.250388802488336,
+        "harmonic_order": 8,
+        "name1": "ATOMIC_peak",
+        "name2": "UNIVERSAL_avg"
+      },
+      {
+        "freq1": 1.5915,
+        "freq2": 0.1939,
+        "ratio": 8.207839092315627,
+        "harmonic_order": 8,
+        "name1": "ATOMIC_peak",
+        "name2": "UNIVERSAL_peak"
+      }
+    ]
+  }
+}

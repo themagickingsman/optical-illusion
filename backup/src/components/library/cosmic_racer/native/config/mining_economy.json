@@ -1,0 +1,35 @@
+{
+  "phi": 1.6180339887,
+  "referenceOctave": 11,
+  "tiers": [
+    { "id": 1, "name": "Tetrahedron",    "solid": "T1",  "color": "#22d3ee", "baseMass": 1.0,  "baseValue": 5  },
+    { "id": 2, "name": "Cube",           "solid": "T2",  "color": "#38bdf8", "baseMass": 2.0,  "baseValue": 10 },
+    { "id": 3, "name": "Icosahedron",    "solid": "T3",  "color": "#8b5cf6", "baseMass": 3.5,  "baseValue": 15 },
+    { "id": 4, "name": "Dodecahedron",   "solid": "T4",  "color": "#a855f7", "baseMass": 6.0,  "baseValue": 25 },
+    { "id": 5, "name": "Flower of Life", "solid": "T5",  "color": "#ec4899", "baseMass": 12.0, "baseValue": 50 },
+    { "id": 6, "name": "Rare Mineral",   "solid": "T6",  "color": "#fcd34d", "baseMass": 25.0, "baseValue": 25 }
+  ],
+  "octaves": [
+    { "id": 1,  "name": "Quantum Foam",       "color": "#38bdf8", "material": "Primordial Foam" },
+    { "id": 2,  "name": "String Theory",       "color": "#6366f1", "material": "Boson Strands" },
+    { "id": 3,  "name": "Nuclear Orbital",     "color": "#8b5cf6", "material": "Nuclear Plasma" },
+    { "id": 4,  "name": "Electron Orbital",    "color": "#a855f7", "material": "Isotopic Strontium" },
+    { "id": 5,  "name": "Molecular Bond",      "color": "#d946ef", "material": "Crystalline Polymers" },
+    { "id": 6,  "name": "Chemical Scale",      "color": "#ec4899", "material": "Organic Catalysts" },
+    { "id": 7,  "name": "Cellular Mechanics",  "color": "#f43f5e", "material": "Volatile Cytoplasm" },
+    { "id": 8,  "name": "EM / Neural",         "color": "#fbbf24", "material": "Plasma Filaments" },
+    { "id": 9,  "name": "Atmospheric",         "color": "#f59e0b", "material": "Storm Residue" },
+    { "id": 10, "name": "Geological",          "color": "#ea580c", "material": "Core Mantle Rock" },
+    { "id": 11, "name": "Solar System",        "color": "#ef4444", "material": "Kuiper Materials" },
+    { "id": 12, "name": "Stellar Cluster",     "color": "#e11d48", "material": "Nebula Dust" },
+    { "id": 13, "name": "Constellations",      "color": "#be123c", "material": "Oort Materials" },
+    { "id": 14, "name": "Galactic Rim",        "color": "#9f1239", "material": "Dark Filament" },
+    { "id": 15, "name": "Observable Universe", "color": "#881337", "material": "Void Crystals" }
+  ],
+  "ships": [
+    { "id": 0, "name": "VANGUARD",        "cargoMass": 50,    "strategy": "Speed scout — Octave 11+ bulk runs" },
+    { "id": 1, "name": "FALCOR",          "cargoMass": 200,   "strategy": "Balanced — Octave 7–11 runs" },
+    { "id": 2, "name": "MAMMOTH",         "cargoMass": 1000,  "strategy": "Heavy miner — bulk or rare payload specialist" },
+    { "id": 3, "name": "TRANSPORT BARGE", "cargoMass": 10000, "strategy": "Interplanetary mass transit — any mix" }
+  ]
+}

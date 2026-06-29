@@ -8,6 +8,7 @@ export default function ChatCMS() {
   const [emailTemplate, setEmailTemplate] = useState("");
   const [emailSubject, setEmailSubject] = useState("");
   const [editingEmail, setEditingEmail] = useState("");
+  const [editingName, setEditingName] = useState<string | null>(null);
 
   const fetchData = () => {
     fetch('/api/chat')
@@ -114,6 +115,25 @@ export default function ChatCMS() {
         })
       });
       setEditingEmail("");
+      fetchData();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleSaveUserName = async () => {
+    if (!activeProfileId || editingName === null) return;
+    try {
+      await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'update_name',
+          profileId: activeProfileId,
+          name: editingName.trim()
+        })
+      });
+      setEditingName(null);
       fetchData();
     } catch (err) {
       console.error(err);
@@ -262,7 +282,35 @@ export default function ChatCMS() {
           
           <div style={{ marginBottom: '25px' }}>
             <div style={{ fontSize: '11px', color: '#888', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '5px' }}>Name</div>
-            <div style={{ fontSize: '16px', fontWeight: 'bold' }}>{activeProfile.name || "Anonymous"}</div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ fontSize: '16px', fontWeight: 'bold' }}>{activeProfile.name || "Anonymous"}</div>
+              <button onClick={() => setEditingName(activeProfile.name || "")} style={{ background: 'none', border: 'none', color: '#0A84FF', cursor: 'pointer', fontSize: '12px' }}>Edit</button>
+            </div>
+            
+            {/* Name Input Field for Manual Edits */}
+            {editingName !== null && (
+              <div style={{ display: 'flex', marginTop: '10px', gap: '5px' }}>
+                <input 
+                  type="text" 
+                  value={editingName}
+                  onChange={(e) => setEditingName(e.target.value)}
+                  placeholder="Enter name..."
+                  style={{ flex: 1, padding: '8px', backgroundColor: '#111', border: '1px solid #333', color: '#fff', borderRadius: '4px', fontSize: '13px' }}
+                />
+                <button 
+                  onClick={handleSaveUserName}
+                  style={{ padding: '8px 12px', backgroundColor: '#222', color: '#4ade80', border: '1px solid #333', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }}
+                >
+                  Save
+                </button>
+                <button 
+                  onClick={() => setEditingName(null)}
+                  style={{ padding: '8px 12px', backgroundColor: 'transparent', color: '#888', border: 'none', cursor: 'pointer', fontSize: '13px' }}
+                >
+                  Cancel
+                </button>
+              </div>
+            )}
           </div>
           
           <div style={{ marginBottom: '25px' }}>

@@ -18,7 +18,7 @@ const TOC = [
 
 export default function MasterControllerView() {
   const { paths, activeAssetKey, systemRules } = useMasterController();
-  const [activeSection, setActiveSection] = useState('monetization');
+  const [activeSection, setActiveSection] = useState('deploy_pipeline');
 
   return (
     <div className="w-full h-full flex bg-black/80 backdrop-blur-2xl text-white font-sans">

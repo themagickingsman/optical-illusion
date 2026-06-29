@@ -88,6 +88,10 @@ export async function POST(req: Request) {
       const p = db.profiles.find((x: any) => x.id === body.profileId);
       if (p) p.email = body.email;
     }
+    else if (body.action === 'update_name') {
+      const p = db.profiles.find((x: any) => x.id === body.profileId);
+      if (p) p.name = body.name;
+    }
     else if (body.action === 'admin_reply') {
       const { profileId, text } = body;
       db.messages.push({

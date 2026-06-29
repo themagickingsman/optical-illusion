@@ -183,6 +183,8 @@ export function useWeaponSystem() {
   const [flyoverLength, setFlyoverLength] = useState(10);
   const [flyoverSpacing, setFlyoverSpacing] = useState(1.5);
   const [seismicCount, setSeismicCount] = useState(5);
+  const seismicCountRef = useRef(seismicCount);
+  useEffect(() => { seismicCountRef.current = seismicCount; }, [seismicCount]);
   const [carpetRows, setCarpetRows] = useState(3);
   const [carpetCols, setCarpetCols] = useState(3);
   const [carpetSpacing, setCarpetSpacing] = useState(2);
@@ -361,7 +363,7 @@ export function useWeaponSystem() {
     seismicDepth, setSeismicDepth, seismicDepthRef,
     seismicSpeed, setSeismicSpeed, seismicSpeedRef,
     seismicDelay, setSeismicDelay, seismicDelayRef,
-    seismicCount, setSeismicCount,
+    seismicCount, setSeismicCount, seismicCountRef,
 
     carpetRadius, setCarpetRadius, carpetRadiusRef,
     carpetDepth, setCarpetDepth, carpetDepthRef,

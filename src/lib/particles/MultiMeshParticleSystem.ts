@@ -8,7 +8,6 @@ interface BlockExplosion {
   pointPositions?: Float32Array;
 }
 
-const MAX_EXPLOSIONS = 800;
 const SHARDS_PER_BLOCK = 200;
 
 export class MultiMeshParticleSystem implements IParticleSystem {
@@ -17,9 +16,11 @@ export class MultiMeshParticleSystem implements IParticleSystem {
     private dummy = new THREE.Object3D();
     private nextExplosionIdx = 0;
     private dimensionType: '2D' | '3D';
+    private maxExplosions: number;
 
-    constructor(dimensionType: '2D' | '3D' = '2D') {
+    constructor(dimensionType: '2D' | '3D' = '2D', maxExplosions: number = 200) {
         this.dimensionType = dimensionType;
+        this.maxExplosions = maxExplosions;
         this.group = new THREE.Group();
         
         if (this.dimensionType === '3D') {
@@ -34,7 +35,7 @@ export class MultiMeshParticleSystem implements IParticleSystem {
                depthWrite: true
             });
 
-            for (let i = 0; i < MAX_EXPLOSIONS; i++) {
+            for (let i = 0; i < this.maxExplosions; i++) {
                const mesh = new THREE.InstancedMesh(boxGeo, boxMat.clone(), SHARDS_PER_BLOCK);
                mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
                mesh.visible = false;
@@ -46,25 +47,56 @@ export class MultiMeshParticleSystem implements IParticleSystem {
                });
             }
         } else {
-            const pointMat = new THREE.PointsMaterial({
-                size: 6,
-                sizeAttenuation: false,
+            const pointMat = new THREE.ShaderMaterial({
+                uniforms: {
+                    uSize: { value: 6.0 },
+                    uPixelRatio: { value: window.devicePixelRatio || 1.0 }
+                },
+                vertexShader: `
+                    attribute float opacity;
+                    attribute vec3 instanceColor;
+                    varying float vOpacity;
+                    varying vec3 vColor;
+                    uniform float uSize;
+                    uniform float uPixelRatio;
+                    void main() {
+                        vOpacity = opacity;
+                        vColor = instanceColor;
+                        vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+                        gl_Position = projectionMatrix * mvPosition;
+                        gl_PointSize = uSize * uPixelRatio;
+                    }
+                `,
+                fragmentShader: `
+                    varying float vOpacity;
+                    varying vec3 vColor;
+                    void main() {
+                        vec2 xy = gl_PointCoord.xy - vec2(0.5);
+                        float ll = length(xy);
+                        if (ll > 0.5) discard;
+                        gl_FragColor = vec4(vColor, vOpacity);
+                    }
+                `,
                 transparent: true,
-                opacity: 1.0,
-                color: 0xffffff,
                 blending: THREE.AdditiveBlending,
                 depthWrite: false
             });
             
-            for (let i = 0; i < MAX_EXPLOSIONS; i++) {
+            for (let i = 0; i < this.maxExplosions; i++) {
                 const pointGeo = new THREE.BufferGeometry();
                 const pointPositions = new Float32Array(SHARDS_PER_BLOCK * 3);
+                const pointOpacities = new Float32Array(SHARDS_PER_BLOCK);
+                const pointColors = new Float32Array(SHARDS_PER_BLOCK * 3);
                 
                 for (let j = 0; j < SHARDS_PER_BLOCK; j++) {
                     pointPositions[j * 3 + 1] = -9999;
+                    pointOpacities[j] = 0.0;
                 }
                 
                 pointGeo.setAttribute('position', new THREE.BufferAttribute(pointPositions, 3));
+                pointGeo.setAttribute('opacity', new THREE.BufferAttribute(pointOpacities, 1));
+                pointGeo.setAttribute('instanceColor', new THREE.BufferAttribute(pointColors, 3));
+                
                 const mesh = new THREE.Points(pointGeo, pointMat.clone());
                 mesh.visible = false;
                 
@@ -91,7 +123,7 @@ export class MultiMeshParticleSystem implements IParticleSystem {
         bloomParticlesOnly?: boolean
     ): void {
         const exp = this.explosions[this.nextExplosionIdx];
-        this.nextExplosionIdx = (this.nextExplosionIdx + 1) % MAX_EXPLOSIONS;
+        this.nextExplosionIdx = (this.nextExplosionIdx + 1) % this.maxExplosions;
         
         exp.active = true;
         exp.mesh.visible = true;
@@ -106,12 +138,15 @@ export class MultiMeshParticleSystem implements IParticleSystem {
                 (exp.mesh.material as THREE.MeshStandardMaterial).emissiveIntensity = bloomParticlesOnly ? 10.0 : 1.5;
             }
         } else {
-            (exp.mesh.material as THREE.PointsMaterial).color.copy(color);
-            if (!isTreasureMode) {
-                // Additive points look better a bit overblown
-                const scale = bloomParticlesOnly ? 10.0 : 1.5;
-                (exp.mesh.material as THREE.PointsMaterial).color.setHex(0xffffff).multiplyScalar(scale);
+            const emitC = amount !== undefined ? Math.min(amount, SHARDS_PER_BLOCK) : SHARDS_PER_BLOCK;
+            const colorsAttr = exp.mesh.geometry.attributes.instanceColor as THREE.BufferAttribute;
+            const scale = bloomParticlesOnly ? 10.0 : 1.5;
+            for (let j = 0; j < emitC; j++) {
+                colorsAttr.array[j * 3 + 0] = color.r * scale;
+                colorsAttr.array[j * 3 + 1] = color.g * scale;
+                colorsAttr.array[j * 3 + 2] = color.b * scale;
             }
+            colorsAttr.needsUpdate = true;
         }
 
         const emitCount = amount !== undefined ? Math.min(amount, SHARDS_PER_BLOCK) : SHARDS_PER_BLOCK;
@@ -139,9 +174,15 @@ export class MultiMeshParticleSystem implements IParticleSystem {
             exp.physics[pIdx + 7] = 0;   
             
             if (this.dimensionType === '3D') {
-                exp.physics[pIdx + 1] = -9999;
-            } else if (exp.pointPositions) {
-                exp.pointPositions[i * 3 + 1] = -9999;
+                this.dummy.position.set(0, 0, 0);
+                this.dummy.scale.set(0, 0, 0);
+                this.dummy.updateMatrix();
+                (exp.mesh as THREE.InstancedMesh).setMatrixAt(i, this.dummy.matrix);
+            } else if (exp.mesh.geometry.attributes.position) {
+                const pos = exp.mesh.geometry.attributes.position as THREE.BufferAttribute;
+                pos.array[i * 3 + 1] = -9999;
+                const op = exp.mesh.geometry.attributes.opacity as THREE.BufferAttribute;
+                if (op) op.array[i] = 0;
             }
         }
         
@@ -168,13 +209,19 @@ export class MultiMeshParticleSystem implements IParticleSystem {
                 const maxAge = exp.physics[pIdx + 7];
                 
                 if (age >= maxAge) {
-                    if (this.dimensionType === '3D') {
-                        this.dummy.position.set(0, 0, 0);
-                        this.dummy.scale.set(0, 0, 0);
-                        this.dummy.updateMatrix();
-                        (exp.mesh as THREE.InstancedMesh).setMatrixAt(i, this.dummy.matrix);
-                    } else if (exp.pointPositions) {
-                        exp.pointPositions[i * 3 + 1] = -9999;
+                    if (age === maxAge) {
+                        if (this.dimensionType === '3D') {
+                            this.dummy.position.set(0, 0, 0);
+                            this.dummy.scale.set(0, 0, 0);
+                            this.dummy.updateMatrix();
+                            (exp.mesh as THREE.InstancedMesh).setMatrixAt(i, this.dummy.matrix);
+                        } else if (exp.mesh.geometry.attributes.position) {
+                            const pos = exp.mesh.geometry.attributes.position as THREE.BufferAttribute;
+                            pos.array[i * 3 + 1] = -9999;
+                            const op = exp.mesh.geometry.attributes.opacity as THREE.BufferAttribute;
+                            if (op) op.array[i] = 0;
+                        }
+                        exp.physics[pIdx + 6] = maxAge + 1;
                     }
                     continue;
                 }
@@ -236,10 +283,13 @@ export class MultiMeshParticleSystem implements IParticleSystem {
                     this.dummy.scale.set(sc, sc, sc);
                     this.dummy.updateMatrix();
                     (exp.mesh as THREE.InstancedMesh).setMatrixAt(i, this.dummy.matrix);
-                } else if (exp.pointPositions) {
-                    exp.pointPositions[i * 3 + 0] = px;
-                    exp.pointPositions[i * 3 + 1] = py;
-                    exp.pointPositions[i * 3 + 2] = pz;
+                } else if (exp.mesh.geometry.attributes.position) {
+                    const pos = exp.mesh.geometry.attributes.position as THREE.BufferAttribute;
+                    pos.array[i * 3 + 0] = px;
+                    pos.array[i * 3 + 1] = py;
+                    pos.array[i * 3 + 2] = pz;
+                    const op = exp.mesh.geometry.attributes.opacity as THREE.BufferAttribute;
+                    if (op) op.array[i] = life;
                 }
             }
             
@@ -248,6 +298,9 @@ export class MultiMeshParticleSystem implements IParticleSystem {
                     (exp.mesh as THREE.InstancedMesh).instanceMatrix.needsUpdate = true;
                 } else if (exp.mesh.geometry.attributes.position) {
                     exp.mesh.geometry.attributes.position.needsUpdate = true;
+                    if (exp.mesh.geometry.attributes.opacity) {
+                        exp.mesh.geometry.attributes.opacity.needsUpdate = true;
+                    }
                 }
                 activeExplosionCount++;
             } else {

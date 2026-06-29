@@ -819,6 +819,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
   const [bloomStr, setBloomStr] = useState<number>(_defaultPreset.bloomStr ?? 0.5);
   const [bloomThresh, setBloomThresh] = useState<number>(_defaultPreset.bloomThresh ?? 0.85);
   const [glowInt, setGlowInt] = useState<number>(_defaultPreset.glowInt ?? 0.2);
+  const [bloomParticlesOnly, setBloomParticlesOnly] = useState<boolean>(false);
   const [shellEmissive, setShellEmissive] = useState<number>(_defaultPreset.shellEmissive ?? 2.75);
   const [shellHalo, setShellHalo] = useState<number>(_defaultPreset.shellHalo ?? 0.72);
   const [damageEmissive, setDamageEmissive] = useState<number>(_defaultPreset.damageEmissive ?? 5.0);
@@ -924,6 +925,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
   const [regenFadeSpeed, setRegenFadeSpeed] = useState<number>(0.08);
   const regenSpeedRef = useRef(regenSpeed); useEffect(() => { regenSpeedRef.current = regenSpeed; }, [regenSpeed]);
   const regenFadeSpeedRef = useRef(regenFadeSpeed); useEffect(() => { regenFadeSpeedRef.current = regenFadeSpeed; }, [regenFadeSpeed]);
+  const bloomParticlesOnlyRef = useRef(bloomParticlesOnly); useEffect(() => { bloomParticlesOnlyRef.current = bloomParticlesOnly; }, [bloomParticlesOnly]);
   const regeneratingBlocksRef = useRef<Map<string, { scale: number, fast?: boolean }>>(new Map());
 
   const ws = useWeaponSystem();
@@ -1016,6 +1018,30 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
   const [renderEngine, setRenderEngine] = useState<RenderEngine>('multimesh');
   const renderEngineRef = useRef<RenderEngine>('multimesh');
   useEffect(() => { renderEngineRef.current = renderEngine; }, [renderEngine]);
+
+  const [particleDimensionType, setParticleDimensionType] = useState<'2D' | '3D'>('2D');
+  const particleDimensionTypeRef = useRef(particleDimensionType); 
+  useEffect(() => { particleDimensionTypeRef.current = particleDimensionType; }, [particleDimensionType]);
+  
+  const [particlePoolSize, setParticlePoolSize] = useState<number>(200);
+  const particlePoolSizeRef = useRef<number>(200);
+  useEffect(() => { particlePoolSizeRef.current = particlePoolSize; }, [particlePoolSize]);
+
+  const recreateParticleSystem = (engine: RenderEngine, dim: '2D' | '3D', poolSize: number) => {
+      if (particleSystemRef.current && sceneRef.current) {
+          particleSystemRef.current.dispose();
+          sceneRef.current.remove(particleSystemRef.current.group);
+      }
+      if (engine === 'multimesh') particleSystemRef.current = new MultiMeshParticleSystem(dim, poolSize);
+      else if (engine === 'global') particleSystemRef.current = new GlobalInstancedParticleSystem(dim);
+      else if (engine === 'gpu') particleSystemRef.current = new GPUParticleSystem(dim);
+      
+      if (sceneRef.current) sceneRef.current.add(particleSystemRef.current.group);
+  };
+
+  const [particleRenderAmount, setParticleRenderAmount] = useState<number>(50);
+  const particleRenderAmountRef = useRef<number>(50);
+  useEffect(() => { particleRenderAmountRef.current = particleRenderAmount; }, [particleRenderAmount]);
 
 
   const [brokenBlocks, setBrokenBlocks] = useState<Set<string>>(new Set());
@@ -1281,11 +1307,10 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
       // Calculate force based on weapon AOE radius
       // Radius 1 (Scatter) -> ~3.8 force. Radius 27 (Blackhole) -> ~50 force.
       const force = 2.0 + (weaponRadius * 1.8);
-      // Cap visual shard count to prevent "shit is all over the place"
-      // Scale it cleanly between ~5 to 150 shards per block based on radius
-      const calculatedShards = Math.min(150, Math.max(5, Math.floor(weaponRadius * 5.5)));
+      // Scale it cleanly between ~5 to max particles based on radius, capped by user preference
+      const calculatedShards = Math.min(particleRenderAmountRef.current, Math.max(5, Math.floor(weaponRadius * 5.5)));
 
-      particleSystemRef.current.explode(px, py, pz, force, 5.0, color, isTreasureModeRef.current);
+      particleSystemRef.current.explode(px, py, pz, force, 5.0, color, isTreasureModeRef.current, calculatedShards, bloomParticlesOnlyRef.current);
     }
   };
 
@@ -2141,10 +2166,16 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
     cinematicZoomRef.current = null; // Wait for isLoaded
     cameraRef.current = camera;
 
-    // Composer + bloom — bloom at quarter resolution for max GPU savings (unnoticeable at terrain scale)
-    const composer = new EffectComposer(renderer);
+    // Composer + MSAA (Multi-Sample Anti-Aliasing) to fix jagged edges
+    const renderTarget = new THREE.WebGLRenderTarget(W, H, {
+      samples: renderer.capabilities.isWebGL2 ? 4 : 0,
+      type: THREE.HalfFloatType
+    });
+    const composer = new EffectComposer(renderer, renderTarget);
     composer.addPass(new RenderPass(scene, camera));
-    const bloom = new UnrealBloomPass(new THREE.Vector2(W / 4, H / 4), 0.5, 0.5, 0.28);
+    
+    // Bloom at 1/8th resolution for massive GPU savings
+    const bloom = new UnrealBloomPass(new THREE.Vector2(W / 8, H / 8), 0.5, 0.5, 0.28);
     composer.addPass(bloom);
     // TiltShift: blurs edges, keeps center sharp
     const tiltPass = new ShaderPass(RadialDOFShader);
@@ -2272,7 +2303,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
       particleSystemRef.current.dispose();
       scene.remove(particleSystemRef.current.group);
     }
-    particleSystemRef.current = new MultiMeshParticleSystem();
+    particleSystemRef.current = new MultiMeshParticleSystem('2D', particlePoolSizeRef.current);
     scene.add(particleSystemRef.current.group);
 
     // Plane at Y=0 used to project mouse ray to 3D world pos (for magnet target)
@@ -2721,7 +2752,16 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
         shadowsDirtyRef.current = false;
       }
 
+      const prevThresh = bloom.threshold;
+      if (bloomParticlesOnlyRef.current) {
+         bloom.threshold = 5.0; // Override so only super bright particles bloom
+      }
+
       composer.render();
+
+      if (bloomParticlesOnlyRef.current) {
+         bloom.threshold = prevThresh;
+      }
       fpsCountRef.current++;
       if (fpsCountRef.current >= 20) {
         const now = performance.now();
@@ -2738,7 +2778,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
       const nW = el.clientWidth, nH = el.clientHeight;
       renderer.setSize(nW, nH);
       composer.setSize(nW, nH);
-      bloom.setSize(nW / 4, nH / 4);  // keep bloom at quarter-res on resize too
+      bloom.setSize(nW / 8, nH / 8);  // keep bloom at 1/8th-res on resize too
       const asp = nW / nH, f = camera.top;
       camera.left = -f * asp; camera.right = f * asp;
       camera.updateProjectionMatrix();
@@ -3031,8 +3071,8 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
             // 3. Modular Particle Burst!
             const layerCol = (iMesh.material as THREE.MeshStandardMaterial | THREE.MeshPhysicalMaterial).emissive;
             if (particleSystemRef.current) {
-              // Approximate 200 particles with high force
-              particleSystemRef.current.explode(hit.point.x, hit.point.y + 0.5, hit.point.z, 25.0, 5.0, layerCol, isTreasureModeRef.current);
+              // Use user preference for particle count
+              particleSystemRef.current.explode(hit.point.x, hit.point.y + 0.5, hit.point.z, 25.0, 5.0, layerCol, isTreasureModeRef.current, particleRenderAmountRef.current, bloomParticlesOnlyRef.current);
             }
             needsRenderRef.current = true;
           }
@@ -3935,40 +3975,72 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                   {/* Render Engine Panel */}
-                  <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: 1, fontWeight: 700, textAlign: 'center', marginBottom: 2 }}>Particle Rendering Engine</div>
+                  <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: 1, fontWeight: 700, textAlign: 'center', marginBottom: 2 }}>Particle Type</div>
+                  <div style={{ display: 'flex', gap: '4px' }}>
+                    <button 
+                        onClick={() => { setParticleDimensionType('2D'); recreateParticleSystem(renderEngine, '2D', particlePoolSize); }}
+                        style={{ flex: 1, background: particleDimensionType === '2D' ? 'rgba(10, 132, 255, 0.3)' : 'rgba(255,255,255,0.05)', color: particleDimensionType === '2D' ? '#0a84ff' : 'rgba(255,255,255,0.6)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 9999, padding: '4px', cursor: 'pointer', fontFamily: 'system-ui', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', transition: 'all 0.2s', backdropFilter: 'blur(10px)' }}>2D</button>
+                    <button 
+                        onClick={() => { setParticleDimensionType('3D'); recreateParticleSystem(renderEngine, '3D', particlePoolSize); }}
+                        style={{ flex: 1, background: particleDimensionType === '3D' ? 'rgba(10, 132, 255, 0.3)' : 'rgba(255,255,255,0.05)', color: particleDimensionType === '3D' ? '#0a84ff' : 'rgba(255,255,255,0.6)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 9999, padding: '4px', cursor: 'pointer', fontFamily: 'system-ui', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', transition: 'all 0.2s', backdropFilter: 'blur(10px)' }}>3D</button>
+                  </div>
+                  
+                  <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: 1, fontWeight: 700, textAlign: 'center', marginBottom: 2, marginTop: 4 }}>Particle Engine</div>
                   <button
                     onClick={() => {
                       setRenderEngine('multimesh');
-                      if (particleSystemRef.current && sceneRef.current) {
-                        particleSystemRef.current.dispose();
-                        sceneRef.current.remove(particleSystemRef.current.group);
-                      }
-                      particleSystemRef.current = new MultiMeshParticleSystem();
-                      if (sceneRef.current) sceneRef.current.add(particleSystemRef.current.group);
+                      recreateParticleSystem('multimesh', particleDimensionType, particlePoolSize);
                     }}
                     style={{ background: renderEngine === 'multimesh' ? 'rgba(10, 132, 255, 0.3)' : 'rgba(255,255,255,0.05)', color: renderEngine === 'multimesh' ? '#0a84ff' : 'rgba(255,255,255,0.6)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 9999, padding: '8px', cursor: 'pointer', fontFamily: 'system-ui', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', transition: 'all 0.2s', backdropFilter: 'blur(10px)' }}>Multi-Mesh</button>
                   <button
                     onClick={() => {
                       setRenderEngine('global');
-                      if (particleSystemRef.current && sceneRef.current) {
-                        particleSystemRef.current.dispose();
-                        sceneRef.current.remove(particleSystemRef.current.group);
-                      }
-                      particleSystemRef.current = new GlobalInstancedParticleSystem();
-                      if (sceneRef.current) sceneRef.current.add(particleSystemRef.current.group);
+                      recreateParticleSystem('global', particleDimensionType, particlePoolSize);
                     }}
                     style={{ background: renderEngine === 'global' ? 'rgba(10, 132, 255, 0.3)' : 'rgba(255,255,255,0.05)', color: renderEngine === 'global' ? '#0a84ff' : 'rgba(255,255,255,0.6)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 9999, padding: '8px', cursor: 'pointer', fontFamily: 'system-ui', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', transition: 'all 0.2s', backdropFilter: 'blur(10px)' }}>Global Mesh</button>
                   <button
                     onClick={() => {
                       setRenderEngine('gpu');
-                      if (particleSystemRef.current && sceneRef.current) {
-                        particleSystemRef.current.dispose();
-                        sceneRef.current.remove(particleSystemRef.current.group);
-                      }
-                      particleSystemRef.current = new GPUParticleSystem();
-                      if (sceneRef.current) sceneRef.current.add(particleSystemRef.current.group);
+                      recreateParticleSystem('gpu', particleDimensionType, particlePoolSize);
                     }}
                     style={{ background: renderEngine === 'gpu' ? 'rgba(10, 132, 255, 0.3)' : 'rgba(255,255,255,0.05)', color: renderEngine === 'gpu' ? '#0a84ff' : 'rgba(255,255,255,0.6)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 9999, padding: '8px', cursor: 'pointer', fontFamily: 'system-ui', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', transition: 'all 0.2s', backdropFilter: 'blur(10px)' }}>OP Optimized</button>
+
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 9999, padding: '4px 12px', marginTop: 4 }}>
+                    <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: 1, fontWeight: 700 }}>Count</span>
+                    <input 
+                      type="number" 
+                      min={10} 
+                      max={100} 
+                      step={10} 
+                      value={particleRenderAmount} 
+                      onChange={(e) => setParticleRenderAmount(Number(e.target.value))}
+                      style={{ 
+                        background: 'transparent', border: 'none', color: '#0a84ff', 
+                        fontSize: 11, fontWeight: 700, width: 40, textAlign: 'right', outline: 'none'
+                      }} 
+                    />
+                  </div>
+                  
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 9999, padding: '4px 12px', marginTop: 4 }}>
+                    <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: 1, fontWeight: 700 }}>Pool Size</span>
+                    <input 
+                      type="number" 
+                      min={50} 
+                      max={1000} 
+                      step={50} 
+                      value={particlePoolSize} 
+                      onChange={(e) => {
+                          setParticlePoolSize(Number(e.target.value));
+                      }}
+                      onBlur={() => {
+                          recreateParticleSystem(renderEngine, particleDimensionType, particlePoolSize);
+                      }}
+                      style={{ 
+                        background: 'transparent', border: 'none', color: '#0a84ff', 
+                        fontSize: 11, fontWeight: 700, width: 40, textAlign: 'right', outline: 'none'
+                      }} 
+                    />
+                  </div>
                 </div>
               </div>
             </div>
@@ -4539,6 +4611,15 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
               <div className="apple-card">
                 <div className="apple-card-title">Post-Processing</div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  <CfgSlider label="Bloom Strength"  min={0} max={0.5} step={0.005} value={bloomStr}    baseline={_defaultPreset.bloomStr} onChange={setBloomStr}    accent="#8b5cf6" />
+                  <CfgSlider label="Bloom Threshold" min={0} max={1.0} step={0.01}  value={bloomThresh} baseline={_defaultPreset.bloomThresh} onChange={setBloomThresh} accent="#8b5cf6" />
+                  <CfgSlider label="Block Glow Int." min={0} max={1.0} step={0.01}  value={glowInt}     baseline={_defaultPreset.glowInt} onChange={setGlowInt}     accent="#8b5cf6" />
+                  
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 12px', marginTop: 8, background: 'rgba(255,255,255,0.05)', borderRadius: 12, border: '1px solid rgba(255,255,255,0.1)' }}>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.8)', textTransform: 'uppercase', letterSpacing: 1 }}>Particles Bloom Only</span>
+                    <input type="checkbox" checked={bloomParticlesOnly} onChange={e => setBloomParticlesOnly(e.target.checked)} style={{ cursor: 'pointer', accentColor: '#0a84ff', width: 16, height: 16 }} />
+                  </div>
+
                   <div style={{ height: 1, background: 'rgba(255,255,255,0.1)', margin: '4px 0' }} />
                   <CfgSlider label="Edge Blur" min={0} max={5} step={0.05} value={tiltBlur} onChange={setTiltBlur} accent="#8af" />
                   <CfgSlider label="Resolution" min={0.005} max={0.12} step={0.001} value={tiltSpread} onChange={setTiltSpread} accent="#8af" />

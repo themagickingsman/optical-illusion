@@ -1190,6 +1190,16 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
     load();
   }, [LS_KEY]);
 
+  // ── Trigger cinematic zoom ONLY when board is physically ready ─────────
+  useEffect(() => {
+    if (isLoaded && cameraRef.current) {
+      // Delay it by 100ms just to ensure the first frame of the board is rendered
+      setTimeout(() => {
+        cinematicZoomRef.current = 0.1;
+      }, 100);
+    }
+  }, [isLoaded]);
+
   // ── Auto-save settings whenever any param changes ────────────────────────────
   useEffect(() => {
     if (!isLoaded) return;
@@ -2128,6 +2138,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
     camera.lookAt(0, 0, 0);
     camera.zoom = 0.001;
     camera.updateProjectionMatrix();
+    cinematicZoomRef.current = null; // Wait for isLoaded
     cameraRef.current = camera;
 
     // Composer + bloom — bloom at quarter resolution for max GPU savings (unnoticeable at terrain scale)
@@ -2146,7 +2157,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
     controls.enableRotate = false; // Locked to isometric angle
     controls.enableZoom = true;
     controls.enablePan = false; // Disabled panning per user request
-    controls.minZoom = 0.1;   // Constrain zoom out
+    controls.minZoom = 0.001;   // Allow it to start from zero in 3D
     controls.maxZoom = 3.0;   // Constrain zoom in
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
@@ -2277,16 +2288,16 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
       controls.update();
 
       if (cinematicZoomRef.current !== null && cameraRef.current) {
-          const diff = cinematicZoomRef.current - cameraRef.current.zoom;
-          if (Math.abs(diff) > 0.005) {
-              cameraRef.current.zoom += diff * 0.04;
-              cameraRef.current.updateProjectionMatrix();
-              needsRenderRef.current = true;
-          } else {
-              cameraRef.current.zoom = cinematicZoomRef.current;
-              cameraRef.current.updateProjectionMatrix();
-              cinematicZoomRef.current = null;
-          }
+        const diff = cinematicZoomRef.current - cameraRef.current.zoom;
+        if (Math.abs(diff) > 0.001) {
+          cameraRef.current.zoom += diff * 0.012; // Extremely smooth, majestic zoom (takes ~3s)
+          cameraRef.current.updateProjectionMatrix();
+          needsRenderRef.current = true;
+        } else {
+          cameraRef.current.zoom = cinematicZoomRef.current;
+          cameraRef.current.updateProjectionMatrix();
+          cinematicZoomRef.current = null;
+        }
       }
 
       const cdNow = Date.now();
@@ -3726,8 +3737,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
         <style>{`
           .game-canvas-wrapper canvas {
             transform: scale(1);
-            opacity: ${(isLoaded && !isExiting) ? 1 : 0};
-            transition: opacity 0.4s ease-out;
+            opacity: 1;
             transform-origin: center center;
           }
         `}</style>

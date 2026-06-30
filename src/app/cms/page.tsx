@@ -22,9 +22,14 @@ function DashboardContent() {
   const [activeCmsTab, setActiveCmsTab] = useQueryState<string>("tab", "build");
 
   // If this is a production deployment run by the Autonomous Pipeline,
-  // we completely bypass the developer CMS by instantly returning a 404
+  // we completely bypass the developer CMS and ONLY render the WebsiteBuildCMS tab.
   if (process.env.NEXT_PUBLIC_BUILD === 'true') {
-    return notFound();
+    return (
+      <main id="website-canvas" style={{ width: "100%", height: "100%", overflow: "hidden", position: "relative", pointerEvents: "auto" }}>
+        <GlobalBackground />
+        <WebsiteBuildCMS />
+      </main>
+    );
   }
 
   const dashboardTabs: DashboardTab[] = [

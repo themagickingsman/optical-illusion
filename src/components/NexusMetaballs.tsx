@@ -1320,10 +1320,17 @@ export default function NexusMetaballs({
         fullscreenBtn.onmouseenter = () => fullscreenBtn.style.background = "rgba(40,40,50,0.8)";
         fullscreenBtn.onmouseleave = () => fullscreenBtn.style.background = "rgba(10,10,15,0.7)";
         fullscreenBtn.onclick = () => {
-          if (!document.fullscreenElement) {
-            document.documentElement.requestFullscreen().catch(err => console.error(err));
+          const doc = document as any;
+          const docEl = document.documentElement as any;
+          
+          const requestFullScreen = docEl.requestFullscreen || docEl.webkitRequestFullscreen || docEl.mozRequestFullScreen || docEl.msRequestFullscreen;
+          const exitFullScreen = doc.exitFullscreen || doc.webkitExitFullscreen || doc.mozCancelFullScreen || doc.msExitFullscreen;
+          const isFullscreen = doc.fullscreenElement || doc.webkitFullscreenElement || doc.mozFullScreenElement || doc.msFullscreenElement;
+
+          if (!isFullscreen) {
+            if (requestFullScreen) requestFullScreen.call(docEl).catch((err: any) => console.error(err));
           } else {
-            document.exitFullscreen();
+            if (exitFullScreen) exitFullScreen.call(doc);
           }
         };
         uiContainer.appendChild(fullscreenBtn);

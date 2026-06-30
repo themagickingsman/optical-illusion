@@ -5218,11 +5218,17 @@ export default function CosmicRenderer({
         {/* Fullscreen Toggle */}
         <button 
           onClick={() => {
-            if (!document.fullscreenElement) {
-              const gameContainer = document.getElementById('cosmic-racers-game-container') || document.documentElement;
-              document.documentElement.requestFullscreen().catch(err => console.error("Error attempting to enable fullscreen:", err));
+            const doc = document as any;
+            const docEl = document.documentElement as any;
+            
+            const requestFullScreen = docEl.requestFullscreen || docEl.webkitRequestFullscreen || docEl.mozRequestFullScreen || docEl.msRequestFullscreen;
+            const exitFullScreen = doc.exitFullscreen || doc.webkitExitFullscreen || doc.mozCancelFullScreen || doc.msExitFullscreen;
+            const isFullscreen = doc.fullscreenElement || doc.webkitFullscreenElement || doc.mozFullScreenElement || doc.msFullscreenElement;
+
+            if (!isFullscreen) {
+              if (requestFullScreen) requestFullScreen.call(docEl).catch((err: any) => console.error("Fullscreen err:", err));
             } else {
-              if (document.exitFullscreen) document.exitFullscreen();
+              if (exitFullScreen) exitFullScreen.call(doc);
             }
           }}
           style={{

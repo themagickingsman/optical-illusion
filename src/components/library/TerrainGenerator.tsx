@@ -962,6 +962,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
     flyoverSpacing, setFlyoverSpacing,
 
     laserRadius, setLaserRadius, laserRadiusRef,
+    laserAoe, setLaserAoe, laserAoeRef,
     laserDepth, setLaserDepth, laserDepthRef,
     laserDuration, setLaserDuration, laserDurationRef,
     laserDelay, setLaserDelay, laserDelayRef,
@@ -1025,6 +1026,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
   
   const [particlePoolSize, setParticlePoolSize] = useState<number>(200);
   const particlePoolSizeRef = useRef<number>(200);
+  const brokenBlocksRef = useRef<Set<string>>(new Set());
   useEffect(() => { particlePoolSizeRef.current = particlePoolSize; }, [particlePoolSize]);
 
   const recreateParticleSystem = (engine: RenderEngine, dim: '2D' | '3D', poolSize: number) => {
@@ -1044,14 +1046,11 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
   useEffect(() => { particleRenderAmountRef.current = particleRenderAmount; }, [particleRenderAmount]);
 
 
-  const [brokenBlocks, setBrokenBlocks] = useState<Set<string>>(new Set());
-  const brokenBlocksRef = useRef<Set<string>>(brokenBlocks);
   const [isHealingMode, setIsHealingMode] = useState(false);
   const isHealingRef = useRef(false);
   const isTransitioningWaveRef = useRef(false);
   const announcerElRef = useRef<HTMLDivElement>(null);
   useEffect(() => { isHealingRef.current = isHealingMode; }, [isHealingMode]);
-  useEffect(() => { brokenBlocksRef.current = brokenBlocks; }, [brokenBlocks]);
 
   // Cinematic Wave Announcer
   const announceWave = useCallback((wave: number, count: number, weaponUnlock?: string) => {
@@ -1174,7 +1173,9 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
           if (s.partDecay !== undefined) setPartDecay(s.partDecay);
           if (s.partLife !== undefined) setPartLife(s.partLife);
           if (s.partFalloff !== undefined) setPartFalloff(s.partFalloff);
-          if (s.brokenBlocks !== undefined) setBrokenBlocks(new Set(s.brokenBlocks));
+          if (s.brokenBlocks !== undefined) {
+            brokenBlocksRef.current = new Set(s.brokenBlocks);
+          }
           if (s.regenSpeed !== undefined) setRegenSpeed(s.regenSpeed);
           if (s.regenFadeSpeed !== undefined) setRegenFadeSpeed(s.regenFadeSpeed);
           if (s.scatterCount !== undefined) setScatterCount(s.scatterCount);
@@ -1256,7 +1257,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
             blackholeDepth, blackholeRadius, blackholeDuration, blackholeDelay,
             renderMode,
             enabledShapes: [...enabledShapes],
-            brokenBlocks: [...brokenBlocks],
+            brokenBlocks: [...brokenBlocksRef.current],
           }
         })
       }).catch(e => console.error(e));
@@ -1279,7 +1280,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
     seismicRadius, seismicSpeed, seismicDelay, seismicDepth, seismicCount,
     carpetCount, carpetDelay, carpetRadius, carpetDepth, carpetRows, carpetCols, carpetSpacing,
     blackholeDepth, blackholeRadius, blackholeDuration, blackholeDelay,
-    renderMode, enabledShapes, brokenBlocks, isLoaded, LS_KEY]);
+    renderMode, enabledShapes, isLoaded, LS_KEY]);
 
   // Terrain data (heightmap)
   const terrainRef = useRef<number[][]>([]);
@@ -1360,15 +1361,6 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
               }
             }
 
-            // Break downward 'depth' blocks starting from the actual top surface
-            if (topUnbrokenH >= 0) {
-              for (let dy = 0; dy < depth; dy++) {
-                const bH = topUnbrokenH - dy;
-                if (bH >= 0) {
-                  toBreak.add(isLargeMap ? `${gxRaw}_${gyRaw}_${bH}` : `${gx}_${gy}_${bH}`);
-                }
-              }
-            }
             if (topUnbrokenH >= 0) {
               for (let dy = 0; dy < depth; dy++) {
                 const bH = topUnbrokenH - dy;
@@ -1385,11 +1377,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
 
 
 
-    setBrokenBlocks(prev => {
-      const next = new Set(prev);
-      toBreak.forEach(k => next.add(k));
-      return next;
-    });
+    // We don't use React state for brokenBlocks anymore because it causes syncing issues with fast-healing.
 
     const targetGroup = renderModeRef.current === 'glass' ? meshGroupRef.current : mixedGrpRef.current;
 
@@ -1428,10 +1416,15 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
             const i = indexMap.get(k);
             if (i !== undefined) {
               brokenBlocksRef.current.add(k); // Synchronize instantly so useFrame doesn't spam this block
+              regeneratingBlocksRef.current.delete(k); // Prevent healing loop from instantly overriding this break
+
               // Isolate destruction purely to the global offset instance
               const _dummyMat = new THREE.Matrix4();
               c.getMatrixAt(i, _dummyMat);
-              _dummyMat.elements[0] = 0; _dummyMat.elements[5] = 0; _dummyMat.elements[10] = 0;
+              // Zero out the entire 3x3 rotation/scale sub-matrix to properly set scale to 0 (even if rotated)
+              _dummyMat.elements[0] = 0; _dummyMat.elements[1] = 0; _dummyMat.elements[2] = 0;
+              _dummyMat.elements[4] = 0; _dummyMat.elements[5] = 0; _dummyMat.elements[6] = 0;
+              _dummyMat.elements[8] = 0; _dummyMat.elements[9] = 0; _dummyMat.elements[10] = 0;
               c.setMatrixAt(i, _dummyMat);
               c.instanceMatrix.needsUpdate = true;
 
@@ -1441,7 +1434,9 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
                 if (gMesh) {
                   const _gDummy = new THREE.Matrix4();
                   gMesh.getMatrixAt(i, _gDummy);
-                  _gDummy.elements[0] = 0; _gDummy.elements[5] = 0; _gDummy.elements[10] = 0;
+                  _gDummy.elements[0] = 0; _gDummy.elements[1] = 0; _gDummy.elements[2] = 0;
+                  _gDummy.elements[4] = 0; _gDummy.elements[5] = 0; _gDummy.elements[6] = 0;
+                  _gDummy.elements[8] = 0; _gDummy.elements[9] = 0; _gDummy.elements[10] = 0;
                   gMesh.setMatrixAt(i, _gDummy);
                   gMesh.instanceMatrix.needsUpdate = true;
                 }
@@ -2037,7 +2032,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
       terrainRef.current = heights;
       setTerrain(heights);
       const emptySet = new Set<string>();
-      setBrokenBlocks(emptySet);
+      brokenBlocksRef.current.clear();
       if (renderMode === 'glass') {
         rebuildMeshes(heights, bevel, glowInt, opacity, terrainTint, layerColors, matTransmit, matThickness, matIor, matRoughness, cubeJitter, emptySet);
       } else {
@@ -2166,12 +2161,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
     cinematicZoomRef.current = null; // Wait for isLoaded
     cameraRef.current = camera;
 
-    // Composer + MSAA (Multi-Sample Anti-Aliasing) to fix jagged edges
-    const renderTarget = new THREE.WebGLRenderTarget(W, H, {
-      samples: renderer.capabilities.isWebGL2 ? 4 : 0,
-      type: THREE.HalfFloatType
-    });
-    const composer = new EffectComposer(renderer, renderTarget);
+    const composer = new EffectComposer(renderer);
     composer.addPass(new RenderPass(scene, camera));
     
     // Bloom at 1/8th resolution for massive GPU savings
@@ -2351,14 +2341,62 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
         if (selectedWeaponRef.current === w) {
           const cursorCircle = document.getElementById('mouse-cooldown-circle');
           const overlayContainer = document.getElementById('mouse-cooldown-overlay');
-          if (cursorCircle && overlayContainer) {
+          const bgTrack = document.getElementById('mouse-cooldown-bg-track');
+          const backdrop = document.getElementById('mouse-cooldown-backdrop');
+          
+          if (cursorCircle && overlayContainer && bgTrack && backdrop) {
             if (elapsed < cd) {
-              const progress = 1 - (elapsed / cd);
-              // 88 is approx circumference of r=14. 
-              cursorCircle.style.strokeDashoffset = String(progress * 88);
               overlayContainer.style.opacity = '1';
+              if (elapsed < 80) {
+                 // Step 1: Dark circle expands outward
+                 backdrop.style.opacity = '1';
+                 backdrop.setAttribute('r', String((elapsed / 80) * 21));
+                 bgTrack.style.strokeDashoffset = '88';
+                 cursorCircle.style.strokeDashoffset = '88';
+              } else if (elapsed < 200) {
+                 // Step 2: Background track animates in
+                 backdrop.style.opacity = '1';
+                 backdrop.setAttribute('r', '21');
+                 const fillP = (elapsed - 80) / 120;
+                 bgTrack.style.strokeDashoffset = String(88 - (fillP * 88));
+                 cursorCircle.style.strokeDashoffset = '88';
+              } else {
+                 // Step 3: Yellow progress line starts filling
+                 backdrop.style.opacity = '1';
+                 backdrop.setAttribute('r', '21');
+                 bgTrack.style.strokeDashoffset = '0';
+                 const progress = 1 - ((elapsed - 200) / (cd - 200));
+                 cursorCircle.style.strokeDashoffset = String(progress * 88);
+              }
             } else {
-              overlayContainer.style.opacity = '0';
+              // Cooldown complete, play reverse exit animation (TWICE AS FAST)
+              const outElapsed = elapsed - cd;
+              overlayContainer.style.opacity = '1';
+              
+              if (outElapsed < 50) {
+                 // Step 1: Yellow line un-draws
+                 backdrop.setAttribute('r', '21');
+                 bgTrack.style.strokeDashoffset = '0';
+                 const unfill = outElapsed / 50;
+                 cursorCircle.style.strokeDashoffset = String(unfill * 88);
+              } else if (outElapsed < 100) {
+                 // Step 2: Background track un-draws
+                 backdrop.setAttribute('r', '21');
+                 const unfill = (outElapsed - 50) / 50;
+                 bgTrack.style.strokeDashoffset = String(unfill * 88);
+                 cursorCircle.style.strokeDashoffset = '88';
+              } else if (outElapsed < 140) {
+                 // Step 3: Dark circle shrinks
+                 const shrinkP = 1 - ((outElapsed - 100) / 40);
+                 backdrop.setAttribute('r', String(shrinkP * 21));
+                 bgTrack.style.strokeDashoffset = '88';
+                 cursorCircle.style.strokeDashoffset = '88';
+              } else {
+                 overlayContainer.style.opacity = '0';
+                 backdrop.setAttribute('r', '0');
+                 bgTrack.style.strokeDashoffset = '88';
+                 cursorCircle.style.strokeDashoffset = '88';
+              }
             }
           }
         }
@@ -2685,6 +2723,11 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
             brokenBlocksRef.current.clear();
           }
 
+          // CLEAR ACTIVE PROJECTILES SO THEY DON'T INSTANTLY CLEAR THE NEXT WAVE!
+          if (weaponEngineRef.current) {
+            weaponEngineRef.current.clearProjectiles();
+          }
+
           let nextWave = waveNumberRef.current + 1;
           waveNumberRef.current = nextWave;
           const { sheepCount: nextCount, unlockedWeapons: nextUnlocked, params } = getWaveParams(nextWave, difficultyRef.current);
@@ -2706,7 +2749,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
           carpetRadiusRef.current = params.carpet.radius;
           carpetDepthRef.current = params.carpet.depth;
 
-          laserRadiusRef.current = params.laser.radius;
+          laserAoeRef.current = params.laser.radius;
           laserDepthRef.current = params.laser.depth;
 
           blackholeRadiusRef.current = params.blackhole.radius;
@@ -3008,7 +3051,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
             if (wpType === 'scatter') params = { count: scatterCountRef.current, radius: scatterRadiusRef.current, depth: scatterDepthRef.current, delay: scatterDelayRef.current, partSpeed: scatterPartSpeedRef.current };
             else if (wpType === 'artillery') params = { radius: artilleryRadiusRef.current, depth: artilleryDepthRef.current, delay: artilleryDelayRef.current, partSpeed: artilleryPartSpeedRef.current };
             else if (wpType === 'flyover') params = { radius: flyoverRadiusRef.current, depth: flyoverDepthRef.current, delay: flyoverDelayRef.current, hitObject: hit.object, instanceId: hit.instanceId, hoverPoolRef: hoverPoolRef.current, partSpeed: flyoverPartSpeedRef.current };
-            else if (wpType === 'laser') params = { radius: laserRadiusRef.current, depth: laserDepthRef.current, delay: laserDelayRef.current, duration: laserDurationRef.current, partSpeed: laserPartSpeedRef.current };
+            else if (wpType === 'laser') params = { radius: laserRadiusRef.current, aoe: laserAoeRef.current, depth: laserDepthRef.current, delay: laserDelayRef.current, duration: laserDurationRef.current, partSpeed: laserPartSpeedRef.current };
             else if (wpType === 'seismic') params = { radius: seismicRadiusRef.current, depth: seismicDepthRef.current, delay: seismicDelayRef.current, speed: seismicSpeedRef.current, partSpeed: seismicPartSpeedRef.current, count: seismicCountRef.current };
             else if (wpType === 'carpet') params = { count: carpetCountRef.current, radius: carpetRadiusRef.current, depth: carpetDepthRef.current, delay: carpetDelayRef.current, partSpeed: carpetPartSpeedRef.current };
             else if (wpType === 'blackhole') params = { radius: blackholeRadiusRef.current, depth: blackholeDepthRef.current, delay: blackholeDelayRef.current, duration: blackholeDurationRef.current, partSpeed: blackholePartSpeedRef.current };
@@ -3025,12 +3068,8 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
         if (iMesh.userData.coordMap) {
           const blockKey = iMesh.userData.coordMap[instIdx];
           if (blockKey && !brokenBlocksRef.current.has(blockKey) && (presetExplodeBlocksRef.current.has(blockKey) || isTreasureModeRef.current)) { // Break it!
-            // 1. Log broken block
-            setBrokenBlocks(prev => {
-              const next = new Set(prev);
-              next.add(blockKey);
-              return next;
-            });
+            // 1. Log broken block in ref
+            brokenBlocksRef.current.add(blockKey);
 
             // 2. Hide immediately without full rebuild
             iMesh.getMatrixAt(instIdx, _clickMatrix);
@@ -3232,9 +3271,9 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
   useEffect(() => {
     if ((layoutTab === 'procedural' || layoutTab === 'large_map') && terrainRef.current.length > 0) {
       if (renderMode === 'glass') {
-        rebuildMeshes(terrainRef.current, bevel, glowInt, opacity, terrainTint, layerColors, matTransmit, matThickness, matIor, matRoughness, cubeJitter, brokenBlocks);
+        rebuildMeshes(terrainRef.current, bevel, glowInt, opacity, terrainTint, layerColors, matTransmit, matThickness, matIor, matRoughness, cubeJitter, brokenBlocksRef.current);
       } else {
-        rebuildMixedMeshes(terrainRef.current, layerColors, terrainTint, enabledShapes, brokenBlocks);
+        rebuildMixedMeshes(terrainRef.current, layerColors, terrainTint, enabledShapes, brokenBlocksRef.current);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -3417,7 +3456,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
       terrainRef.current = heights;
       setTerrain(heights);
       const emptySet = new Set<string>();
-      setBrokenBlocks(emptySet);
+      brokenBlocksRef.current.clear();
       if (renderModeRef.current === 'glass') {
         rebuildMeshes(heights, bevel, glowInt, opacity, terrainTint, layerColors, matTransmit, matThickness, matIor, matRoughness, cubeJitter, emptySet);
       } else {
@@ -3430,7 +3469,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
     }, 350);
     return () => clearTimeout(id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [gridW, gridH, octaves, seed, maxElev, roughness, bevel, sheepCount, sheepSize, sheepSeed]);
+  }, [gridW, gridH, octaves, seed, maxElev, roughness, bevel]);
 
   // ── Auto-update beacons when beacon params change (debounced 200ms) ───────
   useEffect(() => {
@@ -3792,8 +3831,9 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
             onClick={handleClose}
             style={{
               position: 'absolute', top: '90px', right: '40px', zIndex: 110,
+              width: '180px', display: 'flex', justifyContent: 'center', alignItems: 'center',
               background: 'rgba(52, 199, 89, 0.9)', border: '1px solid rgba(52, 199, 89, 1)',
-              color: 'white', padding: '16px 32px', borderRadius: '9999px', cursor: 'pointer',
+              color: 'white', padding: '16px', borderRadius: '9999px', cursor: 'pointer',
               fontFamily: 'system-ui, -apple-system, sans-serif', fontSize: '16px', fontWeight: '600', letterSpacing: '0.5px',
               backdropFilter: 'blur(8px)', transition: 'all 0.2s ease',
               boxShadow: '0 8px 24px rgba(52, 199, 89, 0.4)',
@@ -3834,7 +3874,71 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
             {isHealingMode ? 'Auto-Heal: ON' : 'Auto-Heal: OFF'}
           </button>
 
-
+          {/* Randomize Background Button */}
+          <button
+            onClick={() => {
+              window.dispatchEvent(new Event('nexus-randomize'));
+              
+              // Reset game to level 1 start
+              const { sheepCount, unlockedWeapons } = getWaveParams(1, difficultyRef.current);
+              
+              setVictoryStats(null);
+              waveNumberRef.current = 1;
+              shotsFiredRef.current = 0;
+              sheepScoreRef.current = 0;
+              totalKillsRef.current = 0;
+              totalTimeRef.current = 0;
+              gameStartTimeRef.current = Date.now();
+              isGameOverRef.current = false;
+              
+              setUnlockedWeapons(unlockedWeapons);
+              setSelectedWeapon(unlockedWeapons[0]);
+              
+              // Force a complete board heal!
+              const emptySet = new Set<string>();
+              brokenBlocksRef.current.clear();
+              regeneratingBlocksRef.current.clear();
+              
+              if (weaponEngineRef.current) {
+                weaponEngineRef.current.clearProjectiles();
+              }
+              
+              // Start countdown via announceWave instead of instant spawn
+              announceWave(1, sheepCount);
+              
+              if (renderMode === 'glass') {
+                rebuildMeshes(terrainRef.current, bevel, glowInt, opacity, terrainTint, layerColors, matTransmit, matThickness, matIor, matRoughness, cubeJitter, emptySet);
+              } else {
+                rebuildMixedMeshes(terrainRef.current, layerColors, terrainTint, enabledShapes, emptySet);
+              }
+            }}
+            title="Randomize Background & Restart Game"
+            style={{
+              position: 'absolute', top: 96, left: 40, zIndex: 1000,
+              background: 'rgba(255, 255, 255, 0.1)',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              color: '#fff',
+              width: '42px',
+              height: '42px',
+              borderRadius: '50%',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              backdropFilter: 'blur(10px)',
+              transition: 'all 0.3s ease',
+              pointerEvents: 'auto'
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.2)'; e.currentTarget.style.transform = 'rotate(180deg)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.transform = 'rotate(0deg)'; }}
+            onMouseDown={e => e.currentTarget.style.transform = 'scale(0.9)'}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="23 4 23 10 17 10"></polyline>
+              <polyline points="1 20 1 14 7 14"></polyline>
+              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+            </svg>
+          </button>
 
           <div style={{
             position: 'absolute',
@@ -3848,12 +3952,24 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
             border: '1px solid rgba(255, 255, 255, 0.1)',
             borderRadius: 24,
             padding: '24px 20px',
-            width: 140, // Lock width so the container doesn't jiggle when text length changes
+            width: 160, // Increased width slightly to accommodate the status text
             zIndex: 1000,
             pointerEvents: 'none',
             boxShadow: '0 20px 40px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1)',
             transition: 'border-color 0.3s ease'
           }}>
+            <div style={{ 
+              color: saved ? '#4af' : '#9ca3af', 
+              fontSize: 10, 
+              textAlign: 'center', 
+              marginBottom: 16,
+              fontFamily: 'system-ui, -apple-system, sans-serif',
+              fontWeight: 600,
+              lineHeight: 1.4
+            }}>
+              {status}
+            </div>
+
             <div
               ref={waveUIRef}
               style={{
@@ -3870,16 +3986,23 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
               style={{
                 width: '100%', background: 'transparent', border: 'none',
                 marginTop: 16, padding: '8px 0', cursor: 'pointer',
-                color: 'rgba(255,255,255,0.4)', fontSize: 9, textTransform: 'uppercase', letterSpacing: 1, fontWeight: 700,
-                display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8, pointerEvents: 'auto'
+                display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 12, pointerEvents: 'auto'
               }}
             >
-              <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.1)' }} />
-              <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                SETTINGS
-                <span style={{ transform: scoreSettingsOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.3s ease' }}>▼</span>
+              <div style={{ 
+                width: '32px', height: '32px', borderRadius: '50%', 
+                background: scoreSettingsOpen ? 'rgba(255, 255, 255, 0.25)' : 'rgba(255, 255, 255, 0.12)', 
+                border: scoreSettingsOpen ? '2px solid rgba(255, 255, 255, 0.9)' : '2px solid rgba(255, 255, 255, 0.15)',
+                color: '#fff', 
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                transform: scoreSettingsOpen ? 'rotate(90deg)' : 'none', transition: 'all 0.3s ease',
+                boxShadow: scoreSettingsOpen ? '0 4px 16px rgba(0,0,0,0.3)' : 'none'
+              }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="3"></circle>
+                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                </svg>
               </div>
-              <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.1)' }} />
             </button>
 
             <div style={{
@@ -3907,8 +4030,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
 
                       // Force a complete board heal!
                       const emptySet = new Set<string>();
-                      setBrokenBlocks(emptySet);
-                      brokenBlocksRef.current = emptySet;
+                      brokenBlocksRef.current.clear();
                       regeneratingBlocksRef.current.clear();
                       if (renderMode === 'glass') {
                         rebuildMeshes(terrainRef.current, bevel, glowInt, opacity, terrainTint, layerColors, matTransmit, matThickness, matIor, matRoughness, cubeJitter, emptySet);
@@ -3933,8 +4055,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
 
                       // Force a complete board heal!
                       const emptySet = new Set<string>();
-                      setBrokenBlocks(emptySet);
-                      brokenBlocksRef.current = emptySet;
+                      brokenBlocksRef.current.clear();
                       regeneratingBlocksRef.current.clear();
                       if (renderMode === 'glass') {
                         rebuildMeshes(terrainRef.current, bevel, glowInt, opacity, terrainTint, layerColors, matTransmit, matThickness, matIor, matRoughness, cubeJitter, emptySet);
@@ -3959,8 +4080,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
 
                       // Force a complete board heal!
                       const emptySet = new Set<string>();
-                      setBrokenBlocks(emptySet);
-                      brokenBlocksRef.current = emptySet;
+                      brokenBlocksRef.current.clear();
                       regeneratingBlocksRef.current.clear();
                       if (renderMode === 'glass') {
                         rebuildMeshes(terrainRef.current, bevel, glowInt, opacity, terrainTint, layerColors, matTransmit, matThickness, matIor, matRoughness, cubeJitter, emptySet);
@@ -4131,6 +4251,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
                 {settingsWeapon === 'laser' && (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                     <CfgSlider label="Beam Radius" min={1} max={10} step={1} value={laserRadius} baseline={4} onChange={setLaserRadius} accent="#ff2d55" />
+                    <CfgSlider label="Damage AOE" min={1} max={20} step={1} value={ws.laserAoe} baseline={8} onChange={ws.setLaserAoe} accent="#ff2d55" />
                     <CfgSlider label="Penetration Depth" min={1} max={20} step={1} value={laserDepth} baseline={10} onChange={setLaserDepth} accent="#ff2d55" />
                     <CfgSlider label="Burn Duration (ms)" min={500} max={5000} step={100} value={laserDuration} baseline={1500} onChange={setLaserDuration} accent="#ff2d55" />
                     <CfgSlider label="Activation Delay" min={0} max={2000} step={50} value={laserDelay} baseline={0} onChange={setLaserDelay} accent="#ff2d55" />
@@ -4171,6 +4292,20 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
                 {/* Global Weapon Post-Processing removed by user request */}
               </div>
 
+              {/* Scroll to zoom */}
+              <div style={{
+                fontSize: 14,
+                color: 'rgba(255,255,255,0.6)',
+                textAlign: 'center',
+                marginBottom: 4,
+                fontFamily: 'system-ui, -apple-system, sans-serif',
+                pointerEvents: 'none',
+                opacity: settingsWeapon ? 0 : 1, // Hide when drawer is open
+                transition: 'opacity 0.3s',
+              }}>
+                🖱 Scroll to zoom
+              </div>
+
               {/* Helper Text */}
               <div style={{
                 fontFamily: '"Rubik", sans-serif',
@@ -4185,6 +4320,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
               }}>
                 Press and hold weapon for 1 sec to balance system
               </div>
+
 
               {/* Dock */}
               <div style={{
@@ -4245,16 +4381,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
 
           {/* ── Shape Library Panel — Hidden for Raid Mode ──────────────────────── */}
 
-          {/* ── HUD ───────────────────────────────────────────────────── */}
-          <div style={{
-            position: 'absolute', top: 120, right: 40,
-            fontSize: 12, color: 'rgba(255,255,255,0.6)',
-            pointerEvents: 'none', fontFamily: 'system-ui, -apple-system, sans-serif', lineHeight: 1.6,
-            textAlign: 'right', zIndex: 100
-          }}>
-            <div>🖱 Scroll to zoom</div>
-            <div style={{ color: saved ? '#4af' : '#9ca3af' }}>{status}</div>
-          </div>
+
 
         </div> {/* End of UI Fading Wrapper */}
       </div> {/* End of Viewport (Left/Main) */}
@@ -4615,6 +4742,8 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
                   <CfgSlider label="Bloom Threshold" min={0} max={1.0} step={0.01}  value={bloomThresh} baseline={_defaultPreset.bloomThresh} onChange={setBloomThresh} accent="#8b5cf6" />
                   <CfgSlider label="Block Glow Int." min={0} max={1.0} step={0.01}  value={glowInt}     baseline={_defaultPreset.glowInt} onChange={setGlowInt}     accent="#8b5cf6" />
                   
+
+
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 12px', marginTop: 8, background: 'rgba(255,255,255,0.05)', borderRadius: 12, border: '1px solid rgba(255,255,255,0.1)' }}>
                     <span style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.8)', textTransform: 'uppercase', letterSpacing: 1 }}>Particles Bloom Only</span>
                     <input type="checkbox" checked={bloomParticlesOnly} onChange={e => setBloomParticlesOnly(e.target.checked)} style={{ cursor: 'pointer', accentColor: '#0a84ff', width: 16, height: 16 }} />
@@ -4737,8 +4866,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
 
             // Force a complete board heal!
             const emptySet = new Set<string>();
-            setBrokenBlocks(emptySet);
-            brokenBlocksRef.current = emptySet;
+            brokenBlocksRef.current.clear();
             regeneratingBlocksRef.current.clear();
 
 
@@ -4756,19 +4884,20 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
           position: 'fixed', top: 0, left: 0, width: 48, height: 48,
           pointerEvents: 'none', zIndex: 99999,
           transform: 'translate(-100px, -100px)',
-          transition: 'opacity 0.1s',
           opacity: 0
         }}
       >
         <svg width="48" height="48">
+          {/* Dark backdrop for visibility */}
+          <circle id="mouse-cooldown-backdrop" cx="24" cy="24" r="21" fill="rgba(0, 0, 0, 0.5)" opacity="0" />
           {/* Background track */}
-          <circle cx="24" cy="24" r="14" fill="none" stroke="rgba(255, 255, 255, 0.15)" strokeWidth="3" />
+          <circle id="mouse-cooldown-bg-track" cx="24" cy="24" r="14" fill="none" stroke="rgba(255, 255, 255, 0.2)" strokeWidth="3" strokeDasharray="88" strokeDashoffset="88" style={{ transform: 'rotate(-90deg)', transformOrigin: '50% 50%' }} />
           {/* Progress track */}
           <circle
             id="mouse-cooldown-circle"
             cx="24" cy="24" r="14" fill="none" stroke="#ffcc00" strokeWidth="3"
-            strokeDasharray="88" strokeDashoffset="0"
-            style={{ transform: 'rotate(-90deg)', transformOrigin: '50% 50%', transition: 'stroke-dashoffset 0.1s linear' }}
+            strokeDasharray="88" strokeDashoffset="88"
+            style={{ transform: 'rotate(-90deg)', transformOrigin: '50% 50%' }}
           />
         </svg>
       </div>

@@ -66,6 +66,8 @@ export default function NexusMetaballs({
     // Lerp factor per frame: 0.88 ≈ 20-frame dissolve at 60fps (~330ms)
     const ENTITY_FADE_K = 0.88;
 
+    let lightingMode = (window as any).__nexusLightingMode || 'default';
+
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
     const isLowPowerDevice = isMobile || navigator.hardwareConcurrency <= 4;
@@ -111,6 +113,45 @@ export default function NexusMetaballs({
       pos3: {x: 0.92, y: 0.08},
       pos4: {x: 0.72, y: 0.25},
       seed: 0.0
+    };
+
+    const randomizeSettings = () => {
+      settings.fixedTopLeftRadius = 0.8 + Math.random() * 0.6;
+      settings.smallTopLeftRadius = 0.8 + Math.random() * 0.6;
+      settings.fixedBottomRightRadius = 0.4 + Math.random() * 1.2;
+      settings.smallBottomRightRadius = 0.2 + Math.random() * 0.6;
+      settings.seed = Math.random() * 1000.0;
+      
+      cornerHomes[0] = { x: 0.0 + Math.random() * 0.1, y: 0.9 + Math.random() * 0.1 };
+      cornerHomes[1] = { x: 0.9 + Math.random() * 0.1, y: 0.9 + Math.random() * 0.1 };
+      cornerHomes[2] = { x: 0.1 + Math.random() * 0.8, y: 0.1 + Math.random() * 0.3 };
+      cornerHomes[3] = { x: 0.1 + Math.random() * 0.8, y: 0.1 + Math.random() * 0.3 };
+
+      pos5HomeX = 0.15 + Math.random() * 0.70; pos5HomeY = 0.15 + Math.random() * 0.70;
+      pos6HomeX = 0.25 + Math.random() * 0.50; pos6HomeY = 0.25 + Math.random() * 0.50;
+      pos7HomeX = 0.30 + Math.random() * 0.40; pos7HomeY = 0.30 + Math.random() * 0.40;
+
+      if (material) {
+        material.uniforms.uFixedTopLeftRadius.value    = settings.fixedTopLeftRadius;
+        material.uniforms.uSmallTopLeftRadius.value    = settings.smallTopLeftRadius;
+        material.uniforms.uFixedBottomRightRadius.value = settings.fixedBottomRightRadius;
+        material.uniforms.uSmallBottomRightRadius.value = settings.smallBottomRightRadius;
+        material.uniforms.uPos1.value.set(cornerHomes[0].x, cornerHomes[0].y);
+        material.uniforms.uPos2.value.set(cornerHomes[1].x, cornerHomes[1].y);
+        material.uniforms.uPos3.value.set(cornerHomes[2].x, cornerHomes[2].y);
+        material.uniforms.uPos4.value.set(cornerHomes[3].x, cornerHomes[3].y);
+        material.uniforms.uPos5.value.set(pos5HomeX, pos5HomeY);
+        material.uniforms.uPos5Radius.value = 0.35 + Math.random() * 0.65;
+        material.uniforms.uPos6.value.set(pos6HomeX, pos6HomeY);
+        material.uniforms.uPos6Radius.value = 0.3 + Math.random() * 0.6;
+        material.uniforms.uPos7.value.set(pos7HomeX, pos7HomeY);
+        material.uniforms.uPos7Radius.value = 0.4 + Math.random() * 0.4;
+        material.uniforms.uSeed.value = settings.seed;
+      }
+      
+      if (uiContainer) {
+        uiContainer.querySelectorAll('input[type=range]').forEach((el: any) => el.dispatchEvent(new Event('refresh')));
+      }
     };
 
     function init() {
@@ -703,41 +744,6 @@ export default function NexusMetaballs({
         transparent: true
       });
 
-      const randomizeSettings = () => {
-        settings.fixedTopLeftRadius = 0.8 + Math.random() * 0.6;
-        settings.smallTopLeftRadius = 0.8 + Math.random() * 0.6;
-        settings.fixedBottomRightRadius = 0.4 + Math.random() * 1.2;
-        settings.smallBottomRightRadius = 0.2 + Math.random() * 0.6;
-        settings.seed = Math.random() * 1000.0;
-        
-        cornerHomes[0] = { x: 0.0 + Math.random() * 0.1, y: 0.9 + Math.random() * 0.1 };
-        cornerHomes[1] = { x: 0.9 + Math.random() * 0.1, y: 0.9 + Math.random() * 0.1 };
-        cornerHomes[2] = { x: 0.1 + Math.random() * 0.8, y: 0.1 + Math.random() * 0.3 };
-        cornerHomes[3] = { x: 0.1 + Math.random() * 0.8, y: 0.1 + Math.random() * 0.3 };
-
-        if (material) {
-          material.uniforms.uFixedTopLeftRadius.value    = settings.fixedTopLeftRadius;
-          material.uniforms.uSmallTopLeftRadius.value    = settings.smallTopLeftRadius;
-          material.uniforms.uFixedBottomRightRadius.value = settings.fixedBottomRightRadius;
-          material.uniforms.uSmallBottomRightRadius.value = settings.smallBottomRightRadius;
-          material.uniforms.uPos1.value.set(cornerHomes[0].x, cornerHomes[0].y);
-          material.uniforms.uPos2.value.set(cornerHomes[1].x, cornerHomes[1].y);
-          material.uniforms.uPos3.value.set(cornerHomes[2].x, cornerHomes[2].y);
-          material.uniforms.uPos4.value.set(cornerHomes[3].x, cornerHomes[3].y);
-          // Re-roll stable homes for center blobs 5-7
-          pos5HomeX = 0.15 + Math.random() * 0.70; pos5HomeY = 0.15 + Math.random() * 0.70;
-          pos6HomeX = 0.25 + Math.random() * 0.50; pos6HomeY = 0.25 + Math.random() * 0.50;
-          pos7HomeX = 0.30 + Math.random() * 0.40; pos7HomeY = 0.30 + Math.random() * 0.40;
-          material.uniforms.uPos5.value.set(pos5HomeX, pos5HomeY);
-          material.uniforms.uPos5Radius.value = 0.35 + Math.random() * 0.65;
-          material.uniforms.uPos6.value.set(pos6HomeX, pos6HomeY);
-          material.uniforms.uPos6Radius.value = 0.3 + Math.random() * 0.6;
-          material.uniforms.uPos7.value.set(pos7HomeX, pos7HomeY);
-          material.uniforms.uPos7Radius.value = 0.4 + Math.random() * 0.4;
-          material.uniforms.uSeed.value = settings.seed;
-        }
-      };
-
       const geometry = new THREE.PlaneGeometry(2, 2);
       const mesh = new THREE.Mesh(geometry, material);
       scene.add(mesh);
@@ -745,33 +751,7 @@ export default function NexusMetaballs({
       setupEventListeners();
 
       // Auto-randomize on every load — runs independently of showUI
-      if (material) {
-        cornerHomes[0] = { x: 0.0 + Math.random() * 0.1, y: 0.9 + Math.random() * 0.1 };
-        cornerHomes[1] = { x: 0.9 + Math.random() * 0.1, y: 0.9 + Math.random() * 0.1 };
-        cornerHomes[2] = { x: 0.1 + Math.random() * 0.8, y: 0.1 + Math.random() * 0.3 };
-        cornerHomes[3] = { x: 0.1 + Math.random() * 0.8, y: 0.1 + Math.random() * 0.3 };
-        
-        material.uniforms.uPos1.value.set(cornerHomes[0].x, cornerHomes[0].y);
-        material.uniforms.uPos2.value.set(cornerHomes[1].x, cornerHomes[1].y);
-        material.uniforms.uPos3.value.set(cornerHomes[2].x, cornerHomes[2].y);
-        material.uniforms.uPos4.value.set(cornerHomes[3].x, cornerHomes[3].y);
-        
-        material.uniforms.uFixedTopLeftRadius.value    = 0.8 + Math.random() * 0.6;
-        material.uniforms.uSmallTopLeftRadius.value    = 0.8 + Math.random() * 0.6;
-        material.uniforms.uFixedBottomRightRadius.value = 0.4 + Math.random() * 1.2;
-        material.uniforms.uSmallBottomRightRadius.value = 0.2 + Math.random() * 0.6;
-        // Stable homes for center blobs
-        pos5HomeX = 0.15 + Math.random() * 0.70;  pos5HomeY = 0.15 + Math.random() * 0.70;
-        pos6HomeX = 0.25 + Math.random() * 0.50;  pos6HomeY = 0.25 + Math.random() * 0.60;
-        pos7HomeX = 0.30 + Math.random() * 0.40;  pos7HomeY = 0.30 + Math.random() * 0.50;
-        material.uniforms.uPos5.value.set(pos5HomeX, pos5HomeY);
-        material.uniforms.uPos5Radius.value = 0.35 + Math.random() * 0.65;
-        material.uniforms.uPos6.value.set(pos6HomeX, pos6HomeY);
-        material.uniforms.uPos6Radius.value = 0.3 + Math.random() * 0.6;
-        material.uniforms.uPos7.value.set(pos7HomeX, pos7HomeY);
-        material.uniforms.uPos7Radius.value = 0.4 + Math.random() * 0.4;
-        material.uniforms.uSeed.value = Math.random() * 1000.0;
-      }
+      randomizeSettings();
 
       // ── Hero-orb-only mode: suppress CORNER + named blobs, keep dynamic spheres
       // orbiting close to the orb surface to create the bubbling illusion.
@@ -921,6 +901,7 @@ export default function NexusMetaballs({
 
     function setupEventListeners() {
       window.addEventListener("resize", onWindowResize, { passive: true });
+      window.addEventListener("nexus-randomize", randomizeSettings);
       // Arena instance: listen for settings pushed from the environment preview tab
       if (!showUI) {
         const onArenaApply = (e: Event) => applyPayload((e as CustomEvent).detail);
@@ -1149,40 +1130,6 @@ export default function NexusMetaballs({
       // ── BLOBS ─────────────────────────────────────────────────────────────
       panel.appendChild(sectionTitle("Blobs / Shape"));
 
-      // ── Randomize: extracted as function so it runs on load too ────────────
-      const randomizeSettings = () => {
-        settings.fixedTopLeftRadius = 0.8 + Math.random() * 0.6;
-        settings.smallTopLeftRadius = 0.8 + Math.random() * 0.6;
-        settings.fixedBottomRightRadius = 0.4 + Math.random() * 1.2;
-        settings.smallBottomRightRadius = 0.2 + Math.random() * 0.6;
-        settings.seed = Math.random() * 1000.0;
-        
-        cornerHomes[0] = { x: 0.0 + Math.random() * 0.1, y: 0.9 + Math.random() * 0.1 };
-        cornerHomes[1] = { x: 0.9 + Math.random() * 0.1, y: 0.9 + Math.random() * 0.1 };
-        cornerHomes[2] = { x: 0.1 + Math.random() * 0.8, y: 0.1 + Math.random() * 0.3 };
-        cornerHomes[3] = { x: 0.1 + Math.random() * 0.8, y: 0.1 + Math.random() * 0.3 };
-
-        if (material) {
-          material.uniforms.uFixedTopLeftRadius.value    = settings.fixedTopLeftRadius;
-          material.uniforms.uSmallTopLeftRadius.value    = settings.smallTopLeftRadius;
-          material.uniforms.uFixedBottomRightRadius.value = settings.fixedBottomRightRadius;
-          material.uniforms.uSmallBottomRightRadius.value = settings.smallBottomRightRadius;
-          material.uniforms.uPos1.value.set(cornerHomes[0].x, cornerHomes[0].y);
-          material.uniforms.uPos2.value.set(cornerHomes[1].x, cornerHomes[1].y);
-          material.uniforms.uPos3.value.set(cornerHomes[2].x, cornerHomes[2].y);
-          material.uniforms.uPos4.value.set(cornerHomes[3].x, cornerHomes[3].y);
-          // Re-roll blobs 5-7 too
-          material.uniforms.uPos5.value.set(0.05 + Math.random() * 0.9, 0.05 + Math.random() * 0.9);
-          material.uniforms.uPos5Radius.value = 0.35 + Math.random() * 0.65;
-          material.uniforms.uPos6.value.set(0.35 + Math.random() * 0.3, 0.35 + Math.random() * 0.3);
-          material.uniforms.uPos6Radius.value = 0.3 + Math.random() * 0.6;
-          material.uniforms.uPos7.value.set(0.3 + Math.random() * 0.4, 0.3 + Math.random() * 0.4);
-          material.uniforms.uPos7Radius.value = 0.4 + Math.random() * 0.4;
-          material.uniforms.uSeed.value = settings.seed;
-        }
-        // Refresh all sliders
-        panel.querySelectorAll('input[type=range]').forEach((el: any) => el.dispatchEvent(new Event('refresh')));
-      };
        // Create the button wired to randomizeSettings
        const randomizeBtn = document.createElement('button');
        randomizeBtn.innerHTML = "🎲 Randomize Positions";
@@ -1374,8 +1321,7 @@ export default function NexusMetaballs({
         fullscreenBtn.onmouseleave = () => fullscreenBtn.style.background = "rgba(10,10,15,0.7)";
         fullscreenBtn.onclick = () => {
           if (!document.fullscreenElement) {
-            const canvas = document.getElementById('website-canvas');
-            if (canvas) canvas.requestFullscreen().catch(err => console.error(err));
+            document.documentElement.requestFullscreen().catch(err => console.error(err));
           } else {
             document.exitFullscreen();
           }
@@ -1478,6 +1424,22 @@ export default function NexusMetaballs({
           const swayX = Math.sin(t * 0.45) * 0.05;
           const swayY = Math.cos(t * 0.30) * 0.04;
           material.uniforms.uCameraSway.value.set(swayX, swayY);
+
+          // ── Lighting Mode Interpolation ───────────────────────────────────────
+          let targetDiffuse = settings.diffuseIntensity;
+          let targetSpecular = settings.specularIntensity;
+          let targetAmbient = settings.ambientIntensity;
+          
+          if (lightingMode === 'dim') {
+            targetDiffuse *= 0.2;
+            targetSpecular *= 0.2;
+            targetAmbient *= 0.4; // Don't make shadows completely pitch black
+          }
+
+          material.uniforms.uDiffuseIntensity.value += (targetDiffuse - material.uniforms.uDiffuseIntensity.value) * 0.05;
+          material.uniforms.uSpecularIntensity.value += (targetSpecular - material.uniforms.uSpecularIntensity.value) * 0.05;
+          material.uniforms.uAmbientIntensity.value += (targetAmbient - material.uniforms.uAmbientIntensity.value) * 0.05;
+
 
           // Middle blob — wide Lissajous so it visibly tours the screen
           const PHI = 1.61803398875;
@@ -1601,9 +1563,15 @@ export default function NexusMetaballs({
       }
     }
 
+    const handleLightingMode = (e: any) => {
+      lightingMode = e.detail?.mode || 'default';
+    };
+    window.addEventListener('nexus-lighting-mode', handleLightingMode);
+
     init();
 
     return () => {
+      window.removeEventListener('nexus-lighting-mode', handleLightingMode);
       window.removeEventListener("resize", onWindowResize);
       if (!showUI && (window as any).__nexusArenaApplyHandler) {
         window.removeEventListener('nexus-arena-apply', (window as any).__nexusArenaApplyHandler);

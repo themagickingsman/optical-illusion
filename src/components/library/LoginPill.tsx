@@ -23,7 +23,7 @@ export default function LoginPill() {
   const springConfig = { type: 'spring' as const, stiffness: 500, damping: 35, mass: 1 };
 
   return (
-    <div style={{ height: '56px', marginBottom: '25px', display: 'flex', justifyContent: 'center', transform: 'translateY(-80px)' }}>
+    <div style={{ height: '56px', marginBottom: '25px', display: 'flex', justifyContent: 'center', transform: 'translateY(-40px)' }}>
       
       <motion.div
         animate={{ 

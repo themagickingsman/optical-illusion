@@ -19,9 +19,9 @@ function GlobalBackgroundInner() {
     return () => window.removeEventListener('preview-state-change', handlePreviewChange);
   }, []);
 
-  // Only render the heavy WebGL metaballs on the exact home page,
-  // AND only when there is no engine selected in the SPA view.
-  if (pathname !== '/' || hasEngineSelected || isPreviewing) {
+  // Only render the heavy WebGL metaballs when there is no engine selected
+  // and we are not in preview mode.
+  if (hasEngineSelected || isPreviewing) {
     return null;
   }
 

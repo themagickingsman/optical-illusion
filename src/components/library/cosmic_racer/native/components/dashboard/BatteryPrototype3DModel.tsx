@@ -112,7 +112,7 @@ export default function BatteryPrototype3DModel() {
 
     const toggleFullscreen = () => {
         if (!document.fullscreenElement) {
-            containerRef.current?.requestFullscreen().then(() => setIsFullscreen(true)).catch(err => {
+            document.documentElement.requestFullscreen().then(() => setIsFullscreen(true)).catch(err => {
                 console.error(`Error attempting to enable full-screen mode: ${err.message}`);
             });
         } else {

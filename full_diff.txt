@@ -1,4 +1,0 @@
-Files backup/src/components/library/TerrainGenerator.tsx and src/components/library/TerrainGenerator.tsx differ
-Only in src/components/library: TerrainGenerator_BACKUP.tsx
-Only in src/components/library: TerrainGenerator_GITHUB.tsx
-Only in src/components/library: TerrainGenerator_ORIGIN.tsx

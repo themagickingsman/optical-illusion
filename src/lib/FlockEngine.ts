@@ -67,7 +67,7 @@ export class FlockEngine {
         const shadowTex = new THREE.CanvasTexture(canvas);
         const sGeo = new THREE.PlaneGeometry(config.size * 1.1, config.size * 1.1);
         sGeo.rotateX(-Math.PI / 2); // lie flat on floor
-        const sMat = new THREE.MeshBasicMaterial({ map: shadowTex, transparent: true, depthWrite: false, opacity: 1.0 });
+        const sMat = new THREE.MeshBasicMaterial({ map: shadowTex, transparent: true, depthWrite: false, opacity: 0.75 });
         
         this.shadowMesh = new THREE.InstancedMesh(sGeo, sMat, config.count);
         this.shadowMesh.frustumCulled = false;
@@ -482,10 +482,15 @@ export class FlockEngine {
             
             this.dummy.updateMatrix();
             this.mesh.setMatrixAt(i, this.dummy.matrix);
-
             // ── Update Shadow Matrix ──
             this.dummy.rotation.set(0, 0, 0); // No tumbling for shadow
-            this.dummy.position.set(pos.x, groundFloor + 0.05, pos.z); // Clamp directly to floor
+            // Because the 2D sheep tilts back 45 degrees to face the camera, its bottom edge (feet) 
+            // is visually projected forward (+X, +Z) in world space relative to its center (pos).
+            // We calculate that exact geometric projection so the shadow sits perfectly under the feet.
+            const feetOffsetX = scale * this.config.size * 0.25;
+            const feetOffsetZ = scale * this.config.size * 0.25;
+            // Apply projection + a tiny subtle stylistic nudge (-0.05) up/left
+            this.dummy.position.set(pos.x + feetOffsetX - 0.05, groundFloor + 0.05, pos.z + feetOffsetZ - 0.02);
             // Shrink shadow if jumping
             const heightDiff = Math.max(0, pos.y - groundFloor);
             const shadowScale = scale * Math.max(0, 1.0 - (heightDiff * 0.2));

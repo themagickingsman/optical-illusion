@@ -117,6 +117,10 @@ export function useWeaponSystem() {
   const laserRadiusRef = useRef(laserRadius);
   useEffect(() => { laserRadiusRef.current = laserRadius; }, [laserRadius]);
 
+  const [laserAoe, setLaserAoe] = useState(8);
+  const laserAoeRef = useRef(laserAoe);
+  useEffect(() => { laserAoeRef.current = laserAoe; }, [laserAoe]);
+
   const [laserDepth, setLaserDepth] = useState(10);
   const laserDepthRef = useRef(laserDepth);
   useEffect(() => { laserDepthRef.current = laserDepth; }, [laserDepth]);
@@ -246,6 +250,7 @@ export function useWeaponSystem() {
           if (data.flyoverPartSpeed !== undefined) setFlyoverPartSpeed(data.flyoverPartSpeed);
 
           if (data.laserRadius !== undefined) setLaserRadius(data.laserRadius);
+          if (data.laserAoe !== undefined) setLaserAoe(data.laserAoe);
           if (data.laserDepth !== undefined) setLaserDepth(data.laserDepth);
           if (data.laserDuration !== undefined) setLaserDuration(data.laserDuration);
           if (data.laserDelay !== undefined) setLaserDelay(data.laserDelay);
@@ -292,7 +297,7 @@ export function useWeaponSystem() {
           scatterCount, scatterRadius, scatterDepth, scatterDelay, scatterProjectiles, scatterSpread, scatterPartSpeed,
           artilleryRadius, artilleryDepth, artilleryDelay, artilleryPartSpeed,
           flyoverRadius, flyoverDepth, flyoverDelay, flyoverLength, flyoverSpacing, flyoverPartSpeed,
-          laserRadius, laserDepth, laserDuration, laserDelay, laserPartSpeed,
+          laserRadius, laserAoe, laserDepth, laserDuration, laserDelay, laserPartSpeed,
           seismicRadius, seismicSpeed, seismicDelay, seismicDepth, seismicCount, seismicPartSpeed,
           carpetCount, carpetDelay, carpetRadius, carpetDepth, carpetRows, carpetCols, carpetSpacing, carpetPartSpeed,
           blackholeDepth, blackholeRadius, blackholeDuration, blackholeDelay, blackholePartSpeed
@@ -303,7 +308,7 @@ export function useWeaponSystem() {
     scatterCount, scatterRadius, scatterDepth, scatterDelay, scatterProjectiles, scatterSpread, scatterPartSpeed,
     artilleryRadius, artilleryDepth, artilleryDelay, artilleryPartSpeed,
     flyoverRadius, flyoverDepth, flyoverDelay, flyoverLength, flyoverSpacing, flyoverPartSpeed,
-    laserRadius, laserDepth, laserDuration, laserDelay, laserPartSpeed,
+    laserRadius, laserAoe, laserDepth, laserDuration, laserDelay, laserPartSpeed,
     seismicRadius, seismicSpeed, seismicDelay, seismicDepth, seismicCount, seismicPartSpeed,
     carpetCount, carpetDelay, carpetRadius, carpetDepth, carpetRows, carpetCols, carpetSpacing, carpetPartSpeed,
     blackholeDepth, blackholeRadius, blackholeDuration, blackholeDelay, blackholePartSpeed
@@ -355,6 +360,7 @@ export function useWeaponSystem() {
     flyoverSpacing, setFlyoverSpacing,
 
     laserRadius, setLaserRadius, laserRadiusRef,
+    laserAoe, setLaserAoe, laserAoeRef,
     laserDepth, setLaserDepth, laserDepthRef,
     laserDuration, setLaserDuration, laserDurationRef,
     laserDelay, setLaserDelay, laserDelayRef,

@@ -323,7 +323,7 @@ export const RRMAnalyzer: React.FC = () => {
 
     const toggleFullscreen = useCallback(() => {
         if (!document.fullscreenElement) {
-            containerRef.current?.requestFullscreen();
+            document.documentElement.requestFullscreen();
             setIsFullscreen(true);
         } else {
             document.exitFullscreen();

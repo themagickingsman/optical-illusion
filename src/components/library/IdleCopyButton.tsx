@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface IdleCopyButtonProps {
   assetKey: string;
 }
 
 export function IdleCopyButton({ assetKey }: IdleCopyButtonProps) {
+  const router = useRouter();
   const [isIdle, setIsIdle] = useState(false);
   const [copied, setCopied] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -34,7 +36,10 @@ export function IdleCopyButton({ assetKey }: IdleCopyButtonProps) {
   const handleCopy = () => {
     navigator.clipboard.writeText(assetKey);
     setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    setTimeout(() => {
+      setCopied(false);
+      router.push('/library');
+    }, 400);
   };
 
   return (

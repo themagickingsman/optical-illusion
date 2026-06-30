@@ -2428,7 +2428,7 @@ export const CosmicClock: React.FC<CosmicClockProps> = ({
                 {/* FULLSCREEN */}
                 <button 
                     onClick={() => {
-                        if (!document.fullscreenElement && containerRef.current) containerRef.current.requestFullscreen();
+                        if (!document.fullscreenElement && containerRef.current) document.documentElement.requestFullscreen();
                         else if (document.fullscreenElement) document.exitFullscreen();
                     }}
                     style={{ width: '100%', padding: '0.45rem', borderRadius: '6px', cursor: 'pointer', background: isFullscreen ? 'rgba(99, 102, 241, 0.4)' : 'rgba(255,255,255,0.1)', color: '#fff', fontSize: '0.6rem', fontWeight: 800, border: '1px solid rgba(255,255,255,0.1)' }}

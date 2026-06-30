@@ -1026,8 +1026,8 @@ export default function CosmicRenderer({
      const currentFullscreen = doc.fullscreenElement || doc.webkitFullscreenElement || doc.mozFullScreenElement || doc.msFullscreenElement;
      
      if (!currentFullscreen) {
-        if (targetEl?.requestFullscreen) {
-            targetEl.requestFullscreen().catch((err: any) => console.error("Fullscreen err:", err));
+        if (document.documentElement.requestFullscreen) {
+            document.documentElement.requestFullscreen().catch((err: any) => console.error("Fullscreen err:", err));
         } else if ((targetEl as any)?.webkitRequestFullscreen) {
             (targetEl as any).webkitRequestFullscreen();
         } else if ((targetEl as any)?.msRequestFullscreen) {
@@ -5220,7 +5220,7 @@ export default function CosmicRenderer({
           onClick={() => {
             if (!document.fullscreenElement) {
               const gameContainer = document.getElementById('cosmic-racers-game-container') || document.documentElement;
-              gameContainer.requestFullscreen().catch(err => console.error("Error attempting to enable fullscreen:", err));
+              document.documentElement.requestFullscreen().catch(err => console.error("Error attempting to enable fullscreen:", err));
             } else {
               if (document.exitFullscreen) document.exitFullscreen();
             }

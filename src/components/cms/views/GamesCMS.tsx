@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom';
 import { useLibraryLogic } from '@/hooks/useLibraryLogic';
 import { useGamepadNavigation } from '@/hooks/useGamepadNavigation';
 import { useQueryState } from '@/hooks/useQueryState';
+import { useRouter } from 'next/navigation';
 import LiveScreensaver from '@/components/library/LiveScreensaver';
 import CosmicFlameAsset from '@/components/library/CosmicFlameAsset';
 import EngineFlameComponent from '@/components/library/EngineFlameComponent';
@@ -70,6 +71,7 @@ const InfoPanel = ({ index, title, description, isHovered }: { index: number, ti
 );
 
 export default function GamesCMS() {
+  const router = useRouter();
   const { engines, isLoading } = useLibraryLogic();
   const [hoveredCardIndex, setHoveredCardIndex] = useState<number | null>(null);
   const [selectedEngineId, setSelectedEngineId] = useQueryState<string | null>('engine', null);
@@ -81,7 +83,18 @@ export default function GamesCMS() {
   const [isScreensaverStarted, setIsScreensaverStarted] = useState(false);
   const [isIdle, setIsIdle] = useState(false);
   const [isButtonVisible, setIsButtonVisible] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const idleTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const getEntranceStyle = (delay: number): React.CSSProperties => ({
+    opacity: mounted ? 1 : 0,
+    transform: mounted ? 'translateY(0)' : 'translateY(40px)',
+    transition: `all 1.0s cubic-bezier(0.16, 1, 0.3, 1) ${delay}s`,
+  });
 
   React.useEffect(() => {
     if (showScreensaver || showCosmicFlame || showTerrainGenerator) {
@@ -179,7 +192,7 @@ export default function GamesCMS() {
       const el = document.getElementById(id);
       if (el) {
         el.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
-        if (showScreensaver || showCosmicFlame || (showTerrainGenerator && !isExitingTerrainGenerator)) {
+        if (showScreensaver || showCosmicFlame) {
           el.style.opacity = '0';
           el.style.pointerEvents = 'none';
           el.style.transform = 'translateY(-20px)';
@@ -249,7 +262,8 @@ export default function GamesCMS() {
       cursor: 'pointer',
       transform: isActive ? 'scale(1.04)' : 'scale(1)',
       outline: 'none',
-      boxShadow: isActive ? '0 60px 40px -20px rgba(0, 0, 0, 0.7)' : '0 4px 12px rgba(0,0,0,0.2)',
+      // Added a strong blue tint (rgba(0, 100, 255)) and increased the blur radius (+10px)
+      boxShadow: isActive ? '0 60px 50px -20px rgba(0, 100, 255, 0.25)' : '0 14px 22px rgba(0, 120, 255, 0.15)',
       background: 'rgba(255,255,255,0.05)',
       backdropFilter: 'blur(8px)',
       display: 'flex',
@@ -265,12 +279,12 @@ export default function GamesCMS() {
   }
 
   return (
-    <div className="w-full min-h-full flex flex-col items-center justify-start pt-[120px] pb-16" style={{ position: 'relative' }}>
+    <div className="w-full min-h-full flex flex-col items-center justify-start pt-0 pb-16" style={{ position: 'relative' }}>
       
       {/* Top Text Container */}
       <div style={{ 
-        marginTop: '0px',
-        marginBottom: '95px', 
+        marginTop: '60px',
+        marginBottom: '60px', 
         textAlign: 'center', 
         zIndex: 60, 
         fontFamily: 'var(--font-rubik), sans-serif',
@@ -279,35 +293,32 @@ export default function GamesCMS() {
         pointerEvents: showScreensaver ? 'none' : 'auto',
         transition: 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)'
       }}>
-        <h1 style={{ fontSize: '50pt', fontWeight: 500, margin: '0 0 20px 0', color: 'white' }}>Co-Development Process</h1>
+        <h1 style={{ fontSize: '74px', fontWeight: 600, margin: '0 0 12px 0', color: 'white', letterSpacing: '-0.03em', lineHeight: '1.1' }}>UI/UX + Game Design + Co-Dev</h1>
         <p style={{ 
-          fontSize: '20px', 
+          fontSize: '28px', 
           margin: 0, 
-          color: 'white',
-          background: 'rgba(255, 255, 255, 0.1)',
-          backdropFilter: 'blur(12px)',
-          WebkitBackdropFilter: 'blur(12px)',
-          border: '1px solid rgba(255, 255, 255, 0.2)',
-          padding: '12px 32px',
-          borderRadius: '9999px',
-          display: 'inline-block'
+          color: 'rgba(255, 255, 255, 0.8)',
+          display: 'inline-block',
+          letterSpacing: '-0.01em',
+          fontWeight: 500
         }}>
-          Copy and paste asset key into any Ai tool to integrate into Unity & Unreal
+          Paste keys into AI for Unity & Unreal integration.
         </p>
       </div>
       
 
 
       {/* Live Screensaver Background */}
-      {showScreensaver && (
+      {showScreensaver && typeof document !== 'undefined' && createPortal(
         <div style={{ position: 'fixed', inset: 0, zIndex: 50 }}>
           <LiveScreensaver onReady={() => setIsScreensaverLoaded(true)} />
           <button
             onClick={() => setShowScreensaver(false)}
             style={{
               position: 'absolute', top: '90px', right: '40px', zIndex: 99999999,
+              width: '180px', display: 'flex', justifyContent: 'center', alignItems: 'center',
               background: 'rgba(52, 199, 89, 0.9)', border: '1px solid rgba(52, 199, 89, 1)',
-              color: 'white', padding: '16px 32px', borderRadius: '9999px', cursor: 'pointer',
+              color: 'white', padding: '16px', borderRadius: '9999px', cursor: 'pointer',
               fontFamily: 'system-ui, -apple-system, sans-serif', fontSize: '16px', fontWeight: '600', letterSpacing: '0.5px',
               backdropFilter: 'blur(8px)', transition: 'all 0.2s ease',
               boxShadow: '0 8px 24px rgba(52, 199, 89, 0.4)'
@@ -317,7 +328,8 @@ export default function GamesCMS() {
           >
             Close Window
           </button>
-        </div>
+        </div>,
+        document.getElementById('website-canvas') || document.body
       )}
 
       {/* Native Cosmic Flame Asset */}
@@ -346,36 +358,43 @@ export default function GamesCMS() {
           />
           {/* Copy Asset Key Button for Terrain Generator (Portaled together) */}
           {!isExitingTerrainGenerator && (
-            <div style={{ position: 'fixed', top: '90px', left: '40px', pointerEvents: 'none', zIndex: 9999 }}>
+            <div style={{ position: 'fixed', top: '152px', right: '40px', pointerEvents: 'none', zIndex: 9999 }}>
               <button 
                 style={{
-                  background: 'rgba(3, 255, 192, 0.8)',
+                  width: '180px',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  background: 'rgba(3, 255, 192, 0.9)',
                   border: '1px solid rgba(3, 255, 192, 1)',
                   color: 'black',
-                  padding: '12px 24px',
+                  padding: '16px',
                   borderRadius: '9999px',
-                  fontWeight: 600,
+                  fontWeight: '600',
                   fontSize: '16px',
                   cursor: 'pointer',
+                  letterSpacing: '0.5px',
                   fontFamily: 'system-ui, -apple-system, sans-serif',
-                  boxShadow: '0 4px 16px rgba(3, 255, 192, 0.3)',
-                  transition: 'all 0.2s, opacity 0.8s ease-in-out',
+                  boxShadow: '0 8px 24px rgba(3, 255, 192, 0.4)',
+                  transition: 'transform 0.2s, box-shadow 0.2s, opacity 0.8s ease-in-out',
                   whiteSpace: 'nowrap',
                   backdropFilter: 'blur(8px)',
                   opacity: (isButtonVisible && !isIdle) ? 1 : 0,
                   pointerEvents: isIdle ? 'none' : 'auto'
                 }}
                 onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.05)'; e.currentTarget.style.background = 'rgba(3, 255, 192, 1)'; }}
-                onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.background = 'rgba(3, 255, 192, 0.8)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.background = 'rgba(3, 255, 192, 0.9)'; }}
                 onMouseDown={e => e.currentTarget.style.transform = 'scale(0.95)'}
                 onMouseUp={e => e.currentTarget.style.transform = 'scale(1.05)'}
                 onClick={(e) => {
                   e.stopPropagation();
-                  navigator.clipboard.writeText("terrain_generator");
+                  navigator.clipboard.writeText("Cosmic_Compass");
                   e.currentTarget.innerText = "Copied!";
                   setTimeout(() => {
                     if (e.currentTarget) e.currentTarget.innerText = "Copy Asset Key";
-                  }, 2000);
+                    setShowTerrainGenerator(false);
+                    router.push('/library');
+                  }, 400);
                 }}
               >
                 Copy Asset Key
@@ -452,20 +471,21 @@ export default function GamesCMS() {
           style={{ 
             width: '2222px', 
             height: '747px', 
-            transform: 'scale(0.5)', 
+            // The master container slides up from 80px down
+            transform: `scale(0.5) ${(showScreensaver || showCosmicFlame) ? '' : (mounted ? 'translateY(0)' : 'translateY(80px)')}`, 
             transformOrigin: 'top left', 
             position: 'absolute',
             top: 0,
             left: 0,
-          opacity: (showScreensaver || showCosmicFlame) ? 0 : 1,
+          opacity: (showScreensaver || showCosmicFlame) ? 0 : (mounted ? 1 : 0),
           pointerEvents: (showScreensaver || showCosmicFlame) ? 'none' : 'auto',
-          transition: 'opacity 1.5s cubic-bezier(0.16, 1, 0.3, 1)'
+          transition: 'opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1), transform 1.2s cubic-bezier(0.16, 1, 0.3, 1)'
         }}
       >
         
         {/* Large Main Box (Index 0) */}
         {engines[0] && (
-          <div style={{ width: '1317px', height: '747px', position: 'relative' }}>
+          <div style={{ width: '1317px', height: '747px', position: 'relative', ...getEntranceStyle(0.1) }}>
             <div
               ref={activeIndex === 0 ? activeCardRef : null}
               style={{ ...getCardStyle(0), zIndex: activeIndex === 0 ? 10 : 1 }}
@@ -481,7 +501,7 @@ export default function GamesCMS() {
               <InfoPanel 
                 index={0}
                 title="Delivering Full Games"
-                description="1:13 trillion exact scale simulation of the solar system integrating NASA JPL data."
+                description="1:13 trillion scale solar system simulation using NASA JPL data."
                 isHovered={hoveredCardIndex === 0}
               />
             </div>
@@ -491,7 +511,7 @@ export default function GamesCMS() {
         {/* Small Stacked Boxes (Indices 1 & 2) */}
         <div style={{ width: '865px', height: '747px', display: 'flex', flexDirection: 'column', gap: '40px' }}>
           {engines[1] && (
-            <div className="flex-1 relative">
+            <div className="flex-1 relative" style={{ ...getEntranceStyle(0.25) }}>
               <div
                 ref={activeIndex === 1 ? activeCardRef : null}
                 style={{ ...getCardStyle(1), zIndex: activeIndex === 1 ? 10 : 1 }}
@@ -507,7 +527,7 @@ export default function GamesCMS() {
                 <InfoPanel 
                   index={1}
                   title="Delivering Full Features"
-                  description="Voxel Mini Game with Weapons System"
+                  description="Voxel mini-games & weapon systems."
                   isHovered={hoveredCardIndex === 1}
                 />
               </div>
@@ -515,7 +535,7 @@ export default function GamesCMS() {
           )}
           
           {engines[2] && (
-            <div className="flex-1 relative">
+            <div className="flex-1 relative" style={{ ...getEntranceStyle(0.4) }}>
               <div
                 ref={activeIndex === 2 ? activeCardRef : null}
                 style={{ ...getCardStyle(2), zIndex: activeIndex === 2 ? 10 : 1 }}
@@ -531,7 +551,7 @@ export default function GamesCMS() {
                 <InfoPanel 
                   index={2}
                   title="Delivering Components"
-                  description="Standalone interactive particle systems"
+                  description="Interactive particle engines."
                   isHovered={hoveredCardIndex === 2}
                 />
               </div>
@@ -547,43 +567,61 @@ export default function GamesCMS() {
         {(() => {
           if (!showScreensaver && !showCosmicFlame) return null;
           
-          return (
-            <button 
-              style={{
-                position: 'absolute',
-                bottom: '100%',
-                marginBottom: '135px',
-                width: 'max-content',
-                background: '#03FFC0',
-                color: 'black',
-                padding: '16px 40px',
-                borderRadius: '9999px',
-                fontWeight: 600,
-                fontSize: '20px',
-                cursor: 'pointer',
-                border: 'none',
-                fontFamily: 'var(--font-rubik), sans-serif',
-                boxShadow: '0 4px 20px rgba(3, 255, 192, 0.4)',
-                transition: 'transform 0.2s, box-shadow 0.2s, opacity 0.8s ease-in-out',
-                whiteSpace: 'nowrap',
-                opacity: (isButtonVisible && !isIdle) ? 1 : 0,
-                pointerEvents: isIdle ? 'none' : 'auto',
-                zIndex: 9999
-              }}
-              onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.05)'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
-              onClick={(e) => {
-                e.stopPropagation();
-                const key = showScreensaver ? "cosmic_racers" : showCosmicFlame ? "cosmic_flame" : "terrain_generator";
-                navigator.clipboard.writeText(key);
-                e.currentTarget.innerText = "Copied!";
-                setTimeout(() => {
-                  if (e.currentTarget) e.currentTarget.innerText = "Copy Asset Key";
-                }, 2000);
-              }}
-            >
-              Copy Asset Key
-            </button>
+          if (typeof document === 'undefined') return null;
+
+          return createPortal(
+            <div style={{ 
+              position: 'fixed', 
+              top: showScreensaver ? '152px' : 'auto', 
+              bottom: showScreensaver ? 'auto' : '135px',
+              right: showScreensaver ? '40px' : 'auto',
+              left: showScreensaver ? 'auto' : '50%',
+              transform: showScreensaver ? 'none' : 'translateX(-50%)',
+              zIndex: 99999, 
+              pointerEvents: 'none' 
+            }}>
+              <button 
+                style={{
+                  width: showScreensaver ? '180px' : 'max-content', 
+                  display: showScreensaver ? 'flex' : 'block', 
+                  justifyContent: showScreensaver ? 'center' : 'normal', 
+                  alignItems: showScreensaver ? 'center' : 'normal',
+                  background: showScreensaver ? 'rgba(3, 255, 192, 0.9)' : '#03FFC0',
+                  border: showScreensaver ? '1px solid rgba(3, 255, 192, 1)' : 'none',
+                  color: 'black',
+                  padding: showScreensaver ? '16px' : '16px 40px',
+                  borderRadius: '9999px',
+                  cursor: 'pointer',
+                  fontFamily: showScreensaver ? 'system-ui, -apple-system, sans-serif' : 'var(--font-rubik), sans-serif',
+                  fontSize: showScreensaver ? '16px' : '20px',
+                  fontWeight: '600',
+                  letterSpacing: showScreensaver ? '0.5px' : 'normal',
+                  backdropFilter: showScreensaver ? 'blur(8px)' : 'none',
+                  boxShadow: showScreensaver ? '0 8px 24px rgba(3, 255, 192, 0.4)' : '0 4px 20px rgba(3, 255, 192, 0.4)',
+                  transition: 'transform 0.2s, box-shadow 0.2s, opacity 0.8s ease-in-out',
+                  whiteSpace: 'nowrap',
+                  opacity: (isButtonVisible && !isIdle) ? 1 : 0,
+                  pointerEvents: isIdle ? 'none' : 'auto',
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.05)'; if (showScreensaver) e.currentTarget.style.background = 'rgba(3, 255, 192, 1)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; if (showScreensaver) e.currentTarget.style.background = 'rgba(3, 255, 192, 0.9)'; else e.currentTarget.style.background = '#03FFC0'; }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  const key = "Cosmic_Compass";
+                  navigator.clipboard.writeText(key);
+                  e.currentTarget.innerText = "Copied!";
+                  setTimeout(() => {
+                    if (e.currentTarget) e.currentTarget.innerText = "Copy Asset Key";
+                    setShowCosmicFlame(false);
+                    setShowScreensaver(false);
+                    router.push('/library');
+                  }, 400);
+                }}
+              >
+                Copy Asset Key
+              </button>
+            </div>,
+            document.getElementById('website-canvas') || document.body
           );
         })()}
 

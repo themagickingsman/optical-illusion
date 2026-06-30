@@ -321,7 +321,7 @@ export const BioResonanceSimulator: React.FC = () => {
         const el = containerRef.current;
         if (!el) return;
         if (!document.fullscreenElement) {
-            el.requestFullscreen().then(() => setIsFullscreen(true)).catch(() => {});
+            document.documentElement.requestFullscreen().then(() => setIsFullscreen(true)).catch(() => {});
         } else {
             document.exitFullscreen().then(() => setIsFullscreen(false)).catch(() => {});
         }

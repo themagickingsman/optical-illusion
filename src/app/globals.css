@@ -25,15 +25,4 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-/* Hide CMS Wrapper in Fullscreen */
-:fullscreen #master-cms-header {
-  display: none !important;
-}
 
-:-webkit-full-screen #master-cms-header {
-  display: none !important;
-}
-
-:-moz-full-screen #master-cms-header {
-  display: none !important;
-}

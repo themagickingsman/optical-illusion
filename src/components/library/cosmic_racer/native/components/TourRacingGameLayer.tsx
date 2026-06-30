@@ -379,9 +379,9 @@ export default function TourRacingGameLayer({ isCinematicMode, flightGradientCon
                             const doc = document as any;
                             const targetEl = document.getElementById('cosmic-racers-game-container') || document.documentElement as any;
                             if (!doc.fullscreenElement && !doc.webkitFullscreenElement && !doc.msFullscreenElement) {
-                                if (targetEl?.requestFullscreen) targetEl.requestFullscreen();
-                                else if (targetEl?.webkitRequestFullscreen) targetEl.webkitRequestFullscreen();
-                                else if (targetEl?.msRequestFullscreen) targetEl.msRequestFullscreen();
+                                if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
+                                else if (document.documentElement.webkitRequestFullscreen) document.documentElement.webkitRequestFullscreen();
+                                else if (document.documentElement.msRequestFullscreen) document.documentElement.msRequestFullscreen();
                             } else {
                                 if (doc.exitFullscreen) doc.exitFullscreen();
                                 else if (doc.webkitExitFullscreen) doc.webkitExitFullscreen();

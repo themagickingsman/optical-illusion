@@ -105,14 +105,38 @@ export default function WebsiteBuildCMS() {
         <div onClick={() => handleNavClick('home')} style={{ position: 'relative', width: '150px', height: '40px', cursor: 'pointer' }}>
           <Image src="/assets/logo/op_logo.png" alt="Logo" fill style={{ objectFit: 'contain', objectPosition: 'left center' }} priority />
         </div>
-        <button onClick={() => handleNavClick('hire')} style={{ marginLeft: '7px', background: previewMode === 'hire' && !selectedEngine ? 'rgba(255,255,255,0.1)' : 'rgba(40,40,50,0.8)', border: previewMode === 'hire' && !selectedEngine ? '1px solid rgba(255,255,255,0.3)' : '1px solid transparent', color: 'white', padding: '8px 16px', borderRadius: '30px', cursor: 'pointer', fontSize: '13px', fontWeight: 600, backdropFilter: 'blur(10px)', transition: 'all 0.2s', textAlign: 'center', width: 'fit-content' }}>Hire Me</button>
+        <button 
+          onClick={() => handleNavClick('hire')} 
+          style={{ 
+            marginLeft: '7px', 
+            background: previewMode === 'hire' && !selectedEngine ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.2)', 
+            border: previewMode === 'hire' && !selectedEngine ? '1px solid rgba(255,255,255,0.4)' : '1px solid transparent', 
+            color: 'white', 
+            padding: '8px 16px', 
+            borderRadius: '30px', 
+            cursor: 'pointer', 
+            fontSize: '13px', 
+            fontWeight: 600, 
+            backdropFilter: 'blur(10px)', 
+            transition: 'all 0.2s', 
+            textAlign: 'center', 
+            width: 'fit-content',
+            display: 'inline-block' 
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.05)'; e.currentTarget.style.background = 'rgba(255,255,255,0.35)'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.background = previewMode === 'hire' && !selectedEngine ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.2)'; }}
+          onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.95)'}
+          onMouseUp={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
+        >
+          Hire Us
+        </button>
       </div>
 
       <div id="build-nav-center" style={{ position: 'absolute', top: '35px', left: '0', right: '0', zIndex: 100, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '30px', pointerEvents: 'none' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0px', pointerEvents: 'auto' }}>
-          <button onClick={() => handleNavClick('home')} style={{ background: 'transparent', border: 'none', color: previewMode === 'home' && !selectedEngine ? 'white' : 'rgba(255,255,255,0.7)', cursor: 'pointer', fontSize: '20px', fontWeight: 600, transition: 'all 0.2s', padding: 0 }}>About Me</button>
+          <button onClick={() => handleNavClick('home')} style={{ background: 'transparent', border: 'none', color: previewMode === 'home' && !selectedEngine ? 'white' : 'rgba(255,255,255,0.7)', cursor: 'pointer', fontSize: '20px', fontWeight: 600, transition: 'all 0.2s', padding: 0 }}>About Us</button>
           <button onClick={() => handleNavClick('games')} style={{ background: 'transparent', border: 'none', color: previewMode === 'games' && !selectedEngine ? 'white' : 'rgba(255,255,255,0.7)', cursor: 'pointer', fontSize: '20px', fontWeight: 600, transition: 'all 0.2s', padding: 0, marginLeft: '50px' }}>Games</button>
-          <button onClick={() => handleNavClick('process')} style={{ background: 'transparent', border: 'none', color: previewMode === 'process' && !selectedEngine ? 'white' : 'rgba(255,255,255,0.7)', cursor: 'pointer', fontSize: '20px', fontWeight: 600, transition: 'all 0.2s', padding: 0, marginLeft: '50px' }}>My Process</button>
+          <button onClick={() => handleNavClick('process')} style={{ background: 'transparent', border: 'none', color: previewMode === 'process' && !selectedEngine ? 'white' : 'rgba(255,255,255,0.7)', cursor: 'pointer', fontSize: '20px', fontWeight: 600, transition: 'all 0.2s', padding: 0, marginLeft: '50px' }}>Our Process</button>
           <button onClick={() => handleNavClick('library')} style={{ background: previewMode === 'library' && !selectedEngine ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.05)', border: previewMode === 'library' && !selectedEngine ? '1px solid rgba(255,255,255,0.3)' : '1px solid rgba(255,255,255,0.1)', color: '#03FFC0', padding: '8px 24px', borderRadius: '30px', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold', backdropFilter: 'blur(10px)', transition: 'all 0.2s', marginLeft: '50px', whiteSpace: 'nowrap' }}>Agentic Game Assets</button>
         </div>
       </div>

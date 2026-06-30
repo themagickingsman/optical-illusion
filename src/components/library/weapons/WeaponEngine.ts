@@ -9,6 +9,7 @@ export interface WeaponProjectile {
   progress: number;
   speed: number;
   radius: number;
+  aoe?: number;
   depth: number;
   delayMs?: number;
   startTime?: number;
@@ -28,6 +29,29 @@ export class WeaponEngine {
   constructor(scene: THREE.Scene, onImpact: (x: number, y: number, z: number, radius: number, depth: number, partSpeed?: number) => void) {
     this.scene = scene;
     this.onImpact = onImpact;
+  }
+
+  public clearProjectiles() {
+    for (let i = this.projectiles.length - 1; i >= 0; i--) {
+        const p = this.projectiles[i];
+        if (p.mesh.parent) p.mesh.parent.remove(p.mesh);
+        if (p.mesh.geometry) p.mesh.geometry.dispose();
+        if (p.mesh.material) {
+           if (Array.isArray(p.mesh.material)) {
+              p.mesh.material.forEach(m => m.dispose());
+           } else {
+              p.mesh.material.dispose();
+           }
+        }
+        if (p.windLines) {
+           for (const wl of p.windLines) {
+               if (wl.mesh.parent) wl.mesh.parent.remove(wl.mesh);
+               wl.mesh.geometry.dispose();
+               (wl.mesh.material as THREE.Material).dispose();
+           }
+        }
+    }
+    this.projectiles = [];
   }
 
   public fire(wpType: string, targetPos: THREE.Vector3, params: any) {
@@ -138,7 +162,7 @@ export class WeaponEngine {
            startX: targetPos.x, startY: targetPos.y + 500, startZ: targetPos.z,
            targetX: targetPos.x, targetY: targetPos.y, targetZ: targetPos.z,
            progress: 0, speed: 0,
-           radius: params.radius, depth: params.depth,
+           radius: params.radius, aoe: params.aoe, depth: params.depth,
            delayMs: params.delay, startTime: Date.now(),
            durationMs: params.duration,
            partSpeed: params.partSpeed
@@ -252,18 +276,24 @@ export class WeaponEngine {
         (p.mesh.material as THREE.MeshBasicMaterial).opacity = 1 - clampedProgress;
         
         if (clampedProgress < 1.0) {
-            const currentRadius = clampedProgress * p.radius;
+            const r = (typeof p.radius === 'number' && !isNaN(p.radius) && p.radius > 0) ? p.radius : 8;
+            const d = (typeof p.depth === 'number' && !isNaN(p.depth) && p.depth > 0) ? p.depth : 3;
+            const ps = (typeof p.partSpeed === 'number' && !isNaN(p.partSpeed)) ? p.partSpeed : 1;
+            
+            const currentRadius = clampedProgress * r;
             if (p.lastImpactRadius === undefined) p.lastImpactRadius = 0;
             
             if (currentRadius - p.lastImpactRadius >= 0.5) {
-                this.onImpact(p.targetX, p.targetY, p.targetZ, currentRadius, p.depth, p.partSpeed);
+                console.log("Seismic Impact!", currentRadius);
+                this.onImpact(p.targetX, p.targetY, p.targetZ, currentRadius, d, ps);
                 p.lastImpactRadius = currentRadius;
             }
         }
       } else if (p.type === 'laser') {
-        p.mesh.scale.x = 1.0 + Math.sin(now * 0.05) * 0.2;
-        p.mesh.scale.z = 1.0 + Math.sin(now * 0.05) * 0.2;
-        (p.mesh.material as THREE.MeshBasicMaterial).opacity = 0.5 + Math.sin(now * 0.05) * 0.5;
+        const freq = 0.122; // ~19.4 Hz (12Hz * 1.618 Golden Ratio)
+        p.mesh.scale.x = 1.0 + Math.sin(now * freq) * 0.1;
+        p.mesh.scale.z = 1.0 + Math.sin(now * freq) * 0.1;
+        (p.mesh.material as THREE.MeshBasicMaterial).opacity = 0.75 + Math.sin(now * freq) * 0.25;
         if (p.startTime && p.durationMs && now - p.startTime > (p.delayMs || 0) + p.durationMs) {
           p.progress = 1.1; 
         }
@@ -333,10 +363,10 @@ export class WeaponEngine {
 
       // Handle continuous impacts
       if ((p.type === 'laser') && p.progress < 1.0) {
-        if (now % 3 === 0) {
+        if (Math.random() < 0.4) {
            if (p.type === 'laser') {
-               // Drill perfectly matching the visual cylinder radius, 1 block deep per tick
-               this.onImpact(p.targetX, p.targetY, p.targetZ, p.radius, 1, p.partSpeed);
+               // Drill perfectly matching the visual cylinder radius (or custom AOE), 1 block deep per tick
+               this.onImpact(p.targetX, p.targetY, p.targetZ, p.aoe !== undefined ? p.aoe : p.radius, 1, p.partSpeed);
            } else {
                const shakeRad = p.radius;
                const ox = (Math.random() - 0.5) * shakeRad;
@@ -351,7 +381,10 @@ export class WeaponEngine {
           this.onImpact(p.targetX, p.targetY, p.targetZ, p.radius, p.depth, p.partSpeed);
         } else if (p.type === 'seismic') {
           // Final cleanup impact to ensure full radius is reached exactly
-          this.onImpact(p.targetX, p.targetY, p.targetZ, p.radius, p.depth, p.partSpeed);
+          const r = (typeof p.radius === 'number' && !isNaN(p.radius) && p.radius > 0) ? p.radius : 8;
+          const d = (typeof p.depth === 'number' && !isNaN(p.depth) && p.depth > 0) ? p.depth : 3;
+          const ps = (typeof p.partSpeed === 'number' && !isNaN(p.partSpeed)) ? p.partSpeed : 1;
+          this.onImpact(p.targetX, p.targetY, p.targetZ, r, d, ps);
         }
         
         if (p.mesh.parent) {

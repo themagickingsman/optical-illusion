@@ -42,7 +42,11 @@ export default function PublicNav() {
   return (
     <>
       <div id="build-nav-left" style={{ position: 'absolute', top: '30px', left: '40px', zIndex: 100, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '35px', pointerEvents: 'auto' }}>
-        <Link href="/about" style={{ position: 'relative', width: '150px', height: '40px', cursor: 'pointer', display: 'block' }}>
+        <Link 
+          href="/about" 
+          style={{ position: 'relative', width: '150px', height: '40px', cursor: 'pointer', display: 'block' }}
+          onPointerDown={(e) => { if (e.button === 0) { e.preventDefault(); router.push('/about'); } }}
+        >
           <Image src="/assets/logo/op_logo.png" alt="Logo" fill style={{ objectFit: 'contain', objectPosition: 'left center' }} priority />
         </Link>
         <Link 
@@ -65,17 +69,18 @@ export default function PublicNav() {
           }}
           onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.05)'; e.currentTarget.style.background = 'rgba(255,255,255,0.35)'; }}
           onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.background = pathname === '/hire' ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.2)'; }}
-          onMouseDown={(e) => { e.currentTarget.style.transform = 'scale(0.95)'; router.push('/hire'); }}
-          onMouseUp={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
+          onPointerDown={(e) => { if (e.button === 0) { e.preventDefault(); e.currentTarget.style.transform = 'scale(0.95)'; router.push('/hire'); } }}
+          onPointerUp={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
         >
           Hire Us
         </Link>
         <button
-          onClick={() => window.dispatchEvent(new Event('nexus-randomize'))}
+          onPointerDown={(e) => { if (e.button === 0) { e.preventDefault(); e.currentTarget.style.transform = 'scale(0.9)'; window.dispatchEvent(new Event('nexus-randomize')); } }}
+          onPointerUp={(e) => e.currentTarget.style.transform = 'scale(1)'}
           title="Randomize Background"
           style={{ 
-            marginTop: '-5px', // 35px flex gap - 5px = 30px spacing from Hire Us
-            marginLeft: '7px', // Match Hire Us alignment
+            marginTop: '-5px',
+            marginLeft: '7px', 
             background: 'rgba(255,255,255,0.1)', 
             border: '1px solid rgba(255,255,255,0.2)', 
             color: 'white', 
@@ -91,7 +96,6 @@ export default function PublicNav() {
           }}
           onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.2)'; e.currentTarget.style.transform = 'rotate(180deg)'; }}
           onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.transform = 'rotate(0deg)'; }}
-          onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.9)'}
         >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="23 4 23 10 17 10"></polyline>
@@ -116,8 +120,8 @@ export default function PublicNav() {
             }}
             onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.color = 'white'; }}
             onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.color = pathname === '/about' ? 'white' : 'rgba(255,255,255,0.7)'; }}
-            onMouseDown={(e) => { e.currentTarget.style.transform = 'translateY(1px)'; router.push('/about'); }}
-            onMouseUp={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
+            onPointerDown={(e) => { if (e.button === 0) { e.preventDefault(); e.currentTarget.style.transform = 'translateY(1px)'; router.push('/about'); } }}
+            onPointerUp={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
           >
             About Us
           </Link>
@@ -135,8 +139,8 @@ export default function PublicNav() {
             }}
             onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.color = 'white'; }}
             onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.color = pathname === '/games' ? 'white' : 'rgba(255,255,255,0.7)'; }}
-            onMouseDown={(e) => { e.currentTarget.style.transform = 'translateY(1px)'; router.push('/games'); }}
-            onMouseUp={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
+            onPointerDown={(e) => { if (e.button === 0) { e.preventDefault(); e.currentTarget.style.transform = 'translateY(1px)'; router.push('/games'); } }}
+            onPointerUp={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
           >
             Games
           </Link>
@@ -154,8 +158,8 @@ export default function PublicNav() {
             }}
             onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.color = 'white'; }}
             onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.color = pathname === '/process' ? 'white' : 'rgba(255,255,255,0.7)'; }}
-            onMouseDown={(e) => { e.currentTarget.style.transform = 'translateY(1px)'; router.push('/process'); }}
-            onMouseUp={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
+            onPointerDown={(e) => { if (e.button === 0) { e.preventDefault(); e.currentTarget.style.transform = 'translateY(1px)'; router.push('/process'); } }}
+            onPointerUp={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
           >
             Our Process
           </Link>
@@ -178,8 +182,8 @@ export default function PublicNav() {
             }}
             onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.05)'; e.currentTarget.style.background = 'rgba(255,255,255,0.15)'; e.currentTarget.style.boxShadow = '0 4px 15px rgba(3, 255, 192, 0.2)'; }}
             onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.background = pathname === '/library' ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.05)'; e.currentTarget.style.boxShadow = 'none'; }}
-            onMouseDown={(e) => { e.currentTarget.style.transform = 'scale(0.95)'; router.push('/library'); }}
-            onMouseUp={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
+            onPointerDown={(e) => { if (e.button === 0) { e.preventDefault(); e.currentTarget.style.transform = 'scale(0.95)'; router.push('/library'); } }}
+            onPointerUp={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
           >
             Agentic Game Assets
           </Link>

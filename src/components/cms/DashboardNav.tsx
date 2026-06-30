@@ -52,7 +52,12 @@ export default function DashboardNav({ tabs, activeTab, onTabChange }: Dashboard
         return (
           <button
             key={tab.id}
-            onClick={() => onTabChange(tab.id)}
+            onPointerDown={(e) => {
+              if (e.button === 0) {
+                e.preventDefault();
+                onTabChange(tab.id);
+              }
+            }}
             className={`dashboard-tab ${isActive ? 'active' : ''}`}
             style={{ position: 'relative' }}
           >

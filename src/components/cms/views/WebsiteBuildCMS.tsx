@@ -110,11 +110,11 @@ export default function WebsiteBuildCMS() {
 
       {/* Read-Only Top Header (Simulating Public View) - Persists! */}
       <div id="build-nav-left" style={{ position: 'absolute', top: '30px', left: '40px', zIndex: 100, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '35px', pointerEvents: 'auto' }}>
-        <div onClick={() => handleNavClick('home')} style={{ position: 'relative', width: '150px', height: '40px', cursor: 'pointer' }}>
+        <div onPointerDown={(e) => { if (e.button === 0) { e.preventDefault(); handleNavClick('home'); } }} style={{ position: 'relative', width: '150px', height: '40px', cursor: 'pointer' }}>
           <Image src="/assets/logo/op_logo.png" alt="Logo" fill style={{ objectFit: 'contain', objectPosition: 'left center' }} priority />
         </div>
         <button 
-          onClick={() => handleNavClick('hire')} 
+          onPointerDown={(e) => { if (e.button === 0) { e.preventDefault(); e.currentTarget.style.transform = 'scale(0.95)'; handleNavClick('hire'); } }}
           style={{ 
             marginLeft: '7px', 
             background: previewMode === 'hire' && !selectedEngine ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.2)', 
@@ -133,19 +133,47 @@ export default function WebsiteBuildCMS() {
           }}
           onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.05)'; e.currentTarget.style.background = 'rgba(255,255,255,0.35)'; }}
           onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.background = previewMode === 'hire' && !selectedEngine ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.2)'; }}
-          onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.95)'}
-          onMouseUp={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
+          onPointerUp={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
         >
           Hire Us
+        </button>
+        <button
+          onPointerDown={(e) => { if (e.button === 0) { e.preventDefault(); e.currentTarget.style.transform = 'scale(0.9)'; window.dispatchEvent(new Event('nexus-randomize')); } }}
+          onPointerUp={(e) => e.currentTarget.style.transform = 'scale(1)'}
+          title="Randomize Background"
+          style={{ 
+            marginTop: '-5px',
+            marginLeft: '7px', 
+            background: 'rgba(255,255,255,0.1)', 
+            border: '1px solid rgba(255,255,255,0.2)', 
+            color: 'white', 
+            width: '42px', 
+            height: '42px', 
+            borderRadius: '50%', 
+            cursor: 'pointer', 
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backdropFilter: 'blur(10px)', 
+            transition: 'all 0.3s ease', 
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.2)'; e.currentTarget.style.transform = 'rotate(180deg)'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.transform = 'rotate(0deg)'; }}
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="23 4 23 10 17 10"></polyline>
+            <polyline points="1 20 1 14 7 14"></polyline>
+            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+          </svg>
         </button>
       </div>
 
       <div id="build-nav-center" style={{ position: 'absolute', top: '35px', left: '0', right: '0', zIndex: 100, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '30px', pointerEvents: 'none' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0px', pointerEvents: 'auto' }}>
-          <button onClick={() => handleNavClick('home')} style={{ background: 'transparent', border: 'none', color: previewMode === 'home' && !selectedEngine ? 'white' : 'rgba(255,255,255,0.7)', cursor: 'pointer', fontSize: '20px', fontWeight: 600, transition: 'all 0.2s', padding: 0 }}>About Us</button>
-          <button onClick={() => handleNavClick('games')} style={{ background: 'transparent', border: 'none', color: previewMode === 'games' && !selectedEngine ? 'white' : 'rgba(255,255,255,0.7)', cursor: 'pointer', fontSize: '20px', fontWeight: 600, transition: 'all 0.2s', padding: 0, marginLeft: '50px' }}>Games</button>
-          <button onClick={() => handleNavClick('process')} style={{ background: 'transparent', border: 'none', color: previewMode === 'process' && !selectedEngine ? 'white' : 'rgba(255,255,255,0.7)', cursor: 'pointer', fontSize: '20px', fontWeight: 600, transition: 'all 0.2s', padding: 0, marginLeft: '50px' }}>Our Process</button>
-          <button onClick={() => handleNavClick('library')} style={{ background: previewMode === 'library' && !selectedEngine ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.05)', border: previewMode === 'library' && !selectedEngine ? '1px solid rgba(255,255,255,0.3)' : '1px solid rgba(255,255,255,0.1)', color: '#03FFC0', padding: '8px 24px', borderRadius: '30px', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold', backdropFilter: 'blur(10px)', transition: 'all 0.2s', marginLeft: '50px', whiteSpace: 'nowrap' }}>Agentic Game Assets</button>
+          <button onPointerDown={(e) => { if (e.button === 0) { e.preventDefault(); handleNavClick('home'); } }} style={{ background: 'transparent', border: 'none', color: previewMode === 'home' && !selectedEngine ? 'white' : 'rgba(255,255,255,0.7)', cursor: 'pointer', fontSize: '20px', fontWeight: 600, transition: 'all 0.2s', padding: 0 }}>About Us</button>
+          <button onPointerDown={(e) => { if (e.button === 0) { e.preventDefault(); handleNavClick('games'); } }} style={{ background: 'transparent', border: 'none', color: previewMode === 'games' && !selectedEngine ? 'white' : 'rgba(255,255,255,0.7)', cursor: 'pointer', fontSize: '20px', fontWeight: 600, transition: 'all 0.2s', padding: 0, marginLeft: '50px' }}>Games</button>
+          <button onPointerDown={(e) => { if (e.button === 0) { e.preventDefault(); handleNavClick('process'); } }} style={{ background: 'transparent', border: 'none', color: previewMode === 'process' && !selectedEngine ? 'white' : 'rgba(255,255,255,0.7)', cursor: 'pointer', fontSize: '20px', fontWeight: 600, transition: 'all 0.2s', padding: 0, marginLeft: '50px' }}>Our Process</button>
+          <button onPointerDown={(e) => { if (e.button === 0) { e.preventDefault(); handleNavClick('library'); } }} style={{ background: previewMode === 'library' && !selectedEngine ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.05)', border: previewMode === 'library' && !selectedEngine ? '1px solid rgba(255,255,255,0.3)' : '1px solid rgba(255,255,255,0.1)', color: '#03FFC0', padding: '8px 24px', borderRadius: '30px', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold', backdropFilter: 'blur(10px)', transition: 'all 0.2s', marginLeft: '50px', whiteSpace: 'nowrap' }}>Agentic Game Assets</button>
         </div>
       </div>
 

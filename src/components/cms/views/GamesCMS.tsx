@@ -293,7 +293,7 @@ export default function GamesCMS() {
         pointerEvents: showScreensaver ? 'none' : 'auto',
         transition: 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)'
       }}>
-        <h1 style={{ fontSize: '74px', fontWeight: 600, margin: '0 0 12px 0', color: 'white', letterSpacing: '-0.03em', lineHeight: '1.1' }}>UI/UX + Game Design + Co-Dev</h1>
+        <h1 style={{ fontSize: '54px', fontWeight: 600, margin: '0 0 12px 0', color: 'white', letterSpacing: '-0.03em', lineHeight: '1.1' }}>UI/UX + Game Design + Co-Dev</h1>
         <p style={{ 
           fontSize: '28px', 
           margin: 0, 
@@ -302,7 +302,7 @@ export default function GamesCMS() {
           letterSpacing: '-0.01em',
           fontWeight: 500
         }}>
-          Paste keys into AI for Unity & Unreal integration.
+          Copy assets keys from components. Login to load the components into Unity/ Unreal
         </p>
       </div>
       

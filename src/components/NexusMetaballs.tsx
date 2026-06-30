@@ -1321,14 +1321,15 @@ export default function NexusMetaballs({
         fullscreenBtn.onmouseleave = () => fullscreenBtn.style.background = "rgba(10,10,15,0.7)";
         fullscreenBtn.onclick = () => {
           const doc = document as any;
-          const docEl = document.documentElement as any;
+          const canvas = document.getElementById('website-canvas');
+          const targetEl = canvas || document.documentElement;
           
-          const requestFullScreen = docEl.requestFullscreen || docEl.webkitRequestFullscreen || docEl.mozRequestFullScreen || docEl.msRequestFullscreen;
+          const requestFullScreen = (targetEl as any).requestFullscreen || (targetEl as any).webkitRequestFullscreen || (targetEl as any).mozRequestFullScreen || (targetEl as any).msRequestFullscreen;
           const exitFullScreen = doc.exitFullscreen || doc.webkitExitFullscreen || doc.mozCancelFullScreen || doc.msExitFullscreen;
           const isFullscreen = doc.fullscreenElement || doc.webkitFullscreenElement || doc.mozFullScreenElement || doc.msFullscreenElement;
 
           if (!isFullscreen) {
-            if (requestFullScreen) requestFullScreen.call(docEl).catch((err: any) => console.error(err));
+            if (requestFullScreen) requestFullScreen.call(targetEl).catch((err: any) => console.error(err));
           } else {
             if (exitFullScreen) exitFullScreen.call(doc);
           }

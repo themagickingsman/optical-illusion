@@ -5219,14 +5219,15 @@ export default function CosmicRenderer({
         <button 
           onClick={() => {
             const doc = document as any;
-            const docEl = document.documentElement as any;
+            const gameContainer = document.getElementById('cosmic-racers-game-container') || document.getElementById('website-canvas');
+            const targetEl = gameContainer || document.documentElement;
             
-            const requestFullScreen = docEl.requestFullscreen || docEl.webkitRequestFullscreen || docEl.mozRequestFullScreen || docEl.msRequestFullscreen;
+            const requestFullScreen = (targetEl as any).requestFullscreen || (targetEl as any).webkitRequestFullscreen || (targetEl as any).mozRequestFullScreen || (targetEl as any).msRequestFullscreen;
             const exitFullScreen = doc.exitFullscreen || doc.webkitExitFullscreen || doc.mozCancelFullScreen || doc.msExitFullscreen;
             const isFullscreen = doc.fullscreenElement || doc.webkitFullscreenElement || doc.mozFullScreenElement || doc.msFullscreenElement;
 
             if (!isFullscreen) {
-              if (requestFullScreen) requestFullScreen.call(docEl).catch((err: any) => console.error("Fullscreen err:", err));
+              if (requestFullScreen) requestFullScreen.call(targetEl).catch((err: any) => console.error("Fullscreen err:", err));
             } else {
               if (exitFullScreen) exitFullScreen.call(doc);
             }

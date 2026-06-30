@@ -1,0 +1,61 @@
+    const allKeys: string[] = [];
+    for (let gy = 0; gy < heights.length; gy++) {
+      for (let gx = 0; gx < (heights[gy]?.length || 0); gx++) {
+        const cellH = heights[gy][gx] ?? 1;
+        if (cellH > 0) allKeys.push(`${gx}_${gy}_${cellH - 1}`);
+      }
+    }
+    const shuffled = [...allKeys];
+    // Proper Fisher-Yates shuffle for true random distribution
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    presetExplodeBlocksRef.current = new Set(shuffled.slice(0, 5));
+  }, []);
+
+  const spawnBlockExplosion = (px: number, py: number, pz: number, color: THREE.Color, count: number, speedMult: number, lifeMult: number, forceVel?: THREE.Vector3[], forcePos?: THREE.Vector3[], weaponRadius: number = 1) => {
+    if (particleSystemRef.current) {
+      // Calculate force based on weapon AOE radius
+      // Radius 1 (Scatter) -> ~3.8 force. Radius 27 (Blackhole) -> ~50 force.
+      const force = 2.0 + (weaponRadius * 1.8);
+      // Scale it cleanly between ~5 to max particles based on radius, capped by user preference
+      const calculatedShards = Math.min(particleRenderAmountRef.current, Math.max(5, Math.floor(weaponRadius * 5.5)));
+
+      particleSystemRef.current.explode(px, py, pz, force, 5.0, color, isTreasureModeRef.current, calculatedShards, bloomParticlesOnlyRef.current);
+    }
+  };
+
+  const triggerWeaponImpact = useCallback((hx: number, hy: number, hz: number, radius: number, depth: number, partSpeedOverride?: number, innerRadius: number = 0) => {
+    // 1. Sheep physical blast wave response
+    if (flockEngineRef.current) {
+      const conf = flockEngineRef.current.config;
+      // Use the larger of the weapon's radius or the UI physics override radius
+      const blastRadius = Math.max(radius * 2.0, conf.explodeRadius);
+      flockEngineRef.current.explode(hx, hz, conf.explodeForce, blastRadius);
+    }
+
+
+
+    // 2. Gather keys
+    const toBreak = new Set<string>();
+    const tr = terrainRef.current;
+    if (!tr || !tr.length) return;
+    const h = tr.length;
+    const w = tr[0]?.length || 0;
+
+    const offsetX = -w / 2;
+    const offsetZ = -h / 2;
+    const gxCenter = Math.round(hx - offsetX);
+    const gzCenter = Math.round(hz - offsetZ);
+
+    const radInt = Math.ceil(radius);
+    for (let dx = -radInt; dx <= radInt; dx++) {
+      for (let dz = -radInt; dz <= radInt; dz++) {
+        const dist = Math.sqrt(dx * dx + dz * dz);
+        if (dist <= radius && dist > innerRadius) {
+          const gxRaw = gxCenter + dx;
+          const gyRaw = gzCenter + dz;
+          const isLargeMap = layoutTabRef.current === 'large_map';
+
+          const gx = isLargeMap ? ((gxRaw % w) + w) % w : gxRaw;

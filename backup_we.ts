@@ -2,7 +2,7 @@ import * as THREE from 'three';
 
 export interface WeaponProjectile {
   id: string;
-  type: 'scatter' | 'artillery' | 'flyover' | 'laser' | 'quake' | 'carpet' | 'blackhole';
+  type: 'scatter' | 'artillery' | 'flyover' | 'laser' | 'seismic' | 'carpet' | 'blackhole';
   mesh: THREE.Object3D;
   startX: number; startY: number; startZ: number;
   targetX: number; targetY: number; targetZ: number;
@@ -22,12 +22,11 @@ export interface WeaponProjectile {
 }
 
 export class WeaponEngine {
+  private scene: THREE.Scene;
+  private onImpact: (x: number, y: number, z: number, radius: number, depth: number, partSpeed?: number) => void;
   private projectiles: WeaponProjectile[] = [];
 
-  private scene: THREE.Scene;
-  private onImpact: (x: number, y: number, z: number, radius: number, depth: number, partSpeed?: number, innerRadius?: number) => void;
-
-  constructor(scene: THREE.Scene, onImpact: (x: number, y: number, z: number, radius: number, depth: number, partSpeed?: number, innerRadius?: number) => void) {
+  constructor(scene: THREE.Scene, onImpact: (x: number, y: number, z: number, radius: number, depth: number, partSpeed?: number) => void) {
     this.scene = scene;
     this.onImpact = onImpact;
   }
@@ -168,31 +167,27 @@ export class WeaponEngine {
            durationMs: params.duration,
            partSpeed: params.partSpeed
       });
-
-    } else if (wpType === 'quake') {
-      const aftershocks = params.count ?? 5;
-      const safeRadius = params.radius ?? 8;
-      const safeDepth = params.depth ?? 3;
-      const safeDelay = params.delay ?? 0;
-      const safeSpeed = params.speed ?? 40;
-      const safePartSpeed = params.partSpeed ?? 1;
-
+    } else if (wpType === 'seismic') {
+      const aftershocks = params.count ?? 1;
       for (let i = 0; i < aftershocks; i++) {
-          // Pure math projectile - no visible mesh, just an empty Object3D to satisfy the type.
-          const pMesh = new THREE.Object3D();
-          pMesh.position.set(targetPos.x, targetPos.y, targetPos.z);
+          const pGeo = new THREE.RingGeometry(0.1, 0.4, 32);
+          const pMat = new THREE.MeshBasicMaterial({ color: 0xffaa00, transparent: true, opacity: 1, side: THREE.DoubleSide });
+          const pMesh = new THREE.Mesh(pGeo, pMat);
+          pMesh.rotation.x = -Math.PI / 2;
+          pMesh.position.set(targetPos.x, targetPos.y + 1, targetPos.z);
+          pMesh.visible = false;
           this.scene.add(pMesh);
           
           this.projectiles.push({
               id: Math.random().toString(),
-              type: 'quake', mesh: pMesh,
-              startX: targetPos.x, startY: targetPos.y, startZ: targetPos.z,
+              type: 'seismic', mesh: pMesh,
+              startX: targetPos.x, startY: targetPos.y + 1, startZ: targetPos.z,
               targetX: targetPos.x, targetY: targetPos.y, targetZ: targetPos.z,
-              progress: 0, speed: safeSpeed / 2000, 
-              radius: safeRadius, depth: safeDepth,
-              delayMs: safeDelay + (i * 300), 
+              progress: 0, speed: params.speed / 1000,
+              radius: params.radius, depth: params.depth,
+              delayMs: params.delay + (i * 300), // 300ms delay between aftershocks
               startTime: Date.now(),
-              partSpeed: safePartSpeed
+              partSpeed: params.partSpeed
           });
       }
     } else if (wpType === 'carpet') {
@@ -259,7 +254,7 @@ export class WeaponEngine {
     for (let i = this.projectiles.length - 1; i >= 0; i--) {
       const p = this.projectiles[i];
       if (p.delayMs && p.startTime && now - p.startTime < p.delayMs) {
-        p.mesh.visible = true;
+        p.mesh.visible = false;
         continue;
       }
       p.mesh.visible = true;
@@ -273,23 +268,19 @@ export class WeaponEngine {
         const y = mt*mt*mt*p.startY + 3*mt*mt*t*p.curvePt1.y + 3*mt*t*t*p.curvePt2.y + t*t*t*p.targetY;
         const z = mt*mt*mt*p.startZ + 3*mt*mt*t*p.curvePt1.z + 3*mt*t*t*p.curvePt2.z + t*t*t*p.targetZ;
         p.mesh.position.set(x, y, z);
-
-      } else if (p.type === 'quake') {
+      } else if (p.type === 'seismic') {
+        p.mesh.visible = false; // Hide the 2D flat cylinder graphic
         const clampedProgress = Math.min(1.0, p.progress);
+        const scale = 1 + clampedProgress * p.radius;
+        p.mesh.scale.set(scale, scale, scale);
+        (p.mesh.material as THREE.MeshBasicMaterial).opacity = 1 - clampedProgress;
         
-        // Start at 1 brick radius, expand to p.radius
-        const currentRadius = 1.0 + clampedProgress * (Math.max(0, p.radius - 1.0));
-        
-        if (p.lastImpactRadius === undefined) {
-            // Initial impact for the center brick
-            this.onImpact(p.targetX, p.targetY, p.targetZ, 1.0, p.depth, p.partSpeed, 0);
-            p.lastImpactRadius = 1.0;
-        }
-
         if (clampedProgress < 1.0) {
+            const currentRadius = clampedProgress * p.radius;
+            if (p.lastImpactRadius === undefined) p.lastImpactRadius = 0;
+            
             if (currentRadius - p.lastImpactRadius >= 0.5) {
-                // Break blocks dynamically as the radius expands
-                this.onImpact(p.targetX, p.targetY, p.targetZ, currentRadius, p.depth, p.partSpeed, p.lastImpactRadius);
+                this.onImpact(p.targetX, p.targetY, p.targetZ, currentRadius, p.depth, p.partSpeed);
                 p.lastImpactRadius = currentRadius;
             }
         }
@@ -381,11 +372,11 @@ export class WeaponEngine {
       }
 
       if (p.progress >= 1.0) {
-        if (p.type !== 'laser' && p.type !== 'quake') {
+        if (p.type !== 'laser' && p.type !== 'seismic') {
           this.onImpact(p.targetX, p.targetY, p.targetZ, p.radius, p.depth, p.partSpeed);
-        } else if (p.type === 'quake') {
+        } else if (p.type === 'seismic') {
           // Final cleanup impact to ensure full radius is reached exactly
-          this.onImpact(p.targetX, p.targetY, p.targetZ, p.radius, p.depth, p.partSpeed, p.lastImpactRadius || 0);
+          this.onImpact(p.targetX, p.targetY, p.targetZ, p.radius, p.depth, p.partSpeed);
         }
         
         if (p.mesh.parent) {

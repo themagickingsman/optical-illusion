@@ -27,7 +27,7 @@ export default function LibraryCMS() {
 
           <h1 style={{ fontSize: '64px', fontWeight: 500, margin: '0 0 5px 0', letterSpacing: '-0.02em', color: 'white', textShadow: '0 0 20px rgba(0,0,0,0.1)' }}>High Resolution Game Assets</h1>
           <p style={{ fontSize: '36px', fontWeight: 500, letterSpacing: '-0.01em', opacity: 0.8, margin: 0, color: 'white' }}>
-            Paste <span style={{ color: '#03FFC0', fontWeight: 'bold' }}>Asset Keys</span> into any Ai prompt to use.
+            Login to use <span style={{ color: '#03FFC0', fontWeight: 'bold' }}>Asset Keys</span> to use with any Ai prompt.
           </p>
           <div style={{ display: 'flex', gap: '75px', justifyContent: 'center', alignItems: 'center', marginTop: '100px' }}>
             <img src="/assets/features/ai_logos/Vector.png" alt="AI Logo" style={{ maxHeight: '35px' }} />

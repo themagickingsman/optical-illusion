@@ -1,0 +1,41 @@
+      p.progress += p.speed;
+
+      if (p.type === 'artillery' && p.curvePt1 && p.curvePt2) {
+        const t = p.progress;
+        const mt = 1 - t;
+        const x = mt*mt*mt*p.startX + 3*mt*mt*t*p.curvePt1.x + 3*mt*t*t*p.curvePt2.x + t*t*t*p.targetX;
+        const y = mt*mt*mt*p.startY + 3*mt*mt*t*p.curvePt1.y + 3*mt*t*t*p.curvePt2.y + t*t*t*p.targetY;
+        const z = mt*mt*mt*p.startZ + 3*mt*mt*t*p.curvePt1.z + 3*mt*t*t*p.curvePt2.z + t*t*t*p.targetZ;
+        p.mesh.position.set(x, y, z);
+      } else if (p.type === 'seismic') {
+        p.mesh.visible = true;
+        const clampedProgress = Math.min(1.0, p.progress);
+        const scale = clampedProgress * p.radius || 0.001;
+        p.mesh.scale.set(scale, scale, scale);
+        (p.mesh.material as THREE.MeshBasicMaterial).opacity = 1 - clampedProgress;
+        
+        if (clampedProgress < 1.0) {
+            const r = (typeof p.radius === 'number' && !isNaN(p.radius) && p.radius > 0) ? p.radius : 8;
+            const d = (typeof p.depth === 'number' && !isNaN(p.depth) && p.depth > 0) ? p.depth : 3;
+            const ps = (typeof p.partSpeed === 'number' && !isNaN(p.partSpeed)) ? p.partSpeed : 1;
+            
+            const currentRadius = clampedProgress * r;
+            if (p.lastImpactRadius === undefined) p.lastImpactRadius = 0;
+            
+            if (currentRadius - p.lastImpactRadius >= 0.5) {
+                console.log("Seismic Impact!", currentRadius);
+                this.onImpact(p.targetX, p.targetY, p.targetZ, currentRadius, d, ps, p.lastImpactRadius);
+                p.lastImpactRadius = currentRadius;
+            }
+        }
+      } else if (p.type === 'laser') {
+        const freq = 0.122; // ~19.4 Hz (12Hz * 1.618 Golden Ratio)
+        p.mesh.scale.x = 1.0 + Math.sin(now * freq) * 0.1;
+        p.mesh.scale.z = 1.0 + Math.sin(now * freq) * 0.1;
+        (p.mesh.material as THREE.MeshBasicMaterial).opacity = 0.75 + Math.sin(now * freq) * 0.25;
+        if (p.startTime && p.durationMs && now - p.startTime > (p.delayMs || 0) + p.durationMs) {
+          p.progress = 1.1; 
+        }
+      } else if (p.type === 'blackhole') {
+        if (p.startTime && p.durationMs) {
+            const elapsed = now - p.startTime;

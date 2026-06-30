@@ -325,7 +325,7 @@ const IconScatter = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="
 const IconArtillery = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 2 11 13" /><path d="M22 2l-7 20-4-9-9-4 20-7z" /></svg>;
 const IconFlyover = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.2-1.1.7l-1.3 2.6c-.2.4-.1 1 .3 1.3L9 14l-4.5 4.5-2.7-.9c-.4-.1-.8.1-1 .5l-.6 1.2c-.2.4 0 .9.4 1.1l4.9 2.5c.3.1.6.1.9 0l2.5-4.9c.2-.4.1-.9-.2-1.1l-1.2-.6c-.4-.2-.6-.6-.5-1l.9-2.7L14 9l3.2 6.3c.3.4.9.5 1.3.3l2.6-1.3c.5-.2.8-.6.7-1.1z" /></svg>;
 const IconLaser = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20" /><path d="M8 22h8" /><path d="M8 2h8" /></svg>;
-const IconQuake = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 14l4-8 4 12 4-12 4 8" /><path d="M2 20h20" /><path d="M2 4h20" /></svg>;
+const IconSeismic = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12h3l3-9 6 18 3-9h5" /></svg>;
 const IconCarpet = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 10a7 7 0 1 0 14 0A7 7 0 0 0 5 10z" /><path d="M12 3v3" /><path d="M14 2.5a2 2 0 0 0-4 0" /></svg>;
 const IconBlackhole = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><path d="M12 2a14.5 14.5 0 0 0 0 20" /><path d="M2 12a14.5 14.5 0 0 0 20 0" /></svg>;
 
@@ -771,7 +771,8 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
         scatterCount: 26, scatterRadius: 2, scatterDepth: 3, scatterDelay: 0, scatterProjectiles: 8, scatterSpread: 2,
         artilleryRadius: 5, artilleryDepth: 7, artilleryDelay: 0,
         flyoverRadius: 7, flyoverDepth: 7, flyoverDelay: 2500, flyoverLength: 10, flyoverSpacing: 1.5,
-
+        laserRadius: 7, laserDepth: 10, laserDuration: 1500, laserDelay: 0,
+        seismicRadius: 9, seismicSpeed: 40, seismicDelay: 0, seismicDepth: 3, seismicCount: 5,
         carpetCount: 12, carpetDelay: 150, carpetRadius: 6, carpetDepth: 1, carpetRows: 3, carpetCols: 3, carpetSpacing: 2,
         blackholeDepth: 10, blackholeRadius: 13, blackholeDuration: 3000, blackholeDelay: 0
       };
@@ -966,13 +967,11 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
     laserDuration, setLaserDuration, laserDurationRef,
     laserDelay, setLaserDelay, laserDelayRef,
 
-
-    quakeRadius, setQuakeRadius, quakeRadiusRef,
-    quakeDepth, setQuakeDepth, quakeDepthRef,
-    quakeSpeed, setQuakeSpeed, quakeSpeedRef,
-    quakeDelay, setQuakeDelay, quakeDelayRef,
-    quakeCount, setQuakeCount, quakeCountRef,
-    quakePartSpeed, setQuakePartSpeed, quakePartSpeedRef,
+    seismicRadius, setSeismicRadius, seismicRadiusRef,
+    seismicDepth, setSeismicDepth, seismicDepthRef,
+    seismicSpeed, setSeismicSpeed, seismicSpeedRef,
+    seismicDelay, setSeismicDelay, seismicDelayRef,
+    seismicCount, setSeismicCount, seismicCountRef,
 
     carpetRadius, setCarpetRadius, carpetRadiusRef,
     carpetDepth, setCarpetDepth, carpetDepthRef,
@@ -1193,6 +1192,11 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
           if (s.laserDepth !== undefined) setLaserDepth(s.laserDepth);
           if (s.laserDuration !== undefined) setLaserDuration(s.laserDuration);
           if (s.laserDelay !== undefined) setLaserDelay(s.laserDelay);
+          if (s.seismicRadius !== undefined) setSeismicRadius(s.seismicRadius);
+          if (s.seismicSpeed !== undefined) setSeismicSpeed(s.seismicSpeed);
+          if (s.seismicDelay !== undefined) setSeismicDelay(s.seismicDelay);
+          if (s.seismicDepth !== undefined) setSeismicDepth(s.seismicDepth);
+          if (s.seismicCount !== undefined) setSeismicCount(s.seismicCount);
           if (s.carpetCount !== undefined) setCarpetCount(s.carpetCount);
           if (s.carpetDelay !== undefined) setCarpetDelay(s.carpetDelay);
           if (s.carpetRadius !== undefined) setCarpetRadius(s.carpetRadius);
@@ -1248,6 +1252,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
             artilleryRadius, artilleryDepth, artilleryDelay,
             flyoverRadius, flyoverDepth, flyoverDelay, flyoverLength, flyoverSpacing,
             laserRadius, laserDepth, laserDuration, laserDelay,
+            seismicRadius, seismicSpeed, seismicDelay, seismicDepth, seismicCount,
             carpetCount, carpetDelay, carpetRadius, carpetDepth, carpetRows, carpetCols, carpetSpacing,
             blackholeDepth, blackholeRadius, blackholeDuration, blackholeDelay,
             renderMode,
@@ -1272,6 +1277,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
     artilleryRadius, artilleryDepth, artilleryDelay,
     flyoverRadius, flyoverDepth, flyoverDelay, flyoverLength, flyoverSpacing,
     laserRadius, laserDepth, laserDuration, laserDelay,
+    seismicRadius, seismicSpeed, seismicDelay, seismicDepth, seismicCount,
     carpetCount, carpetDelay, carpetRadius, carpetDepth, carpetRows, carpetCols, carpetSpacing,
     blackholeDepth, blackholeRadius, blackholeDuration, blackholeDelay,
     renderMode, enabledShapes, isLoaded, LS_KEY]);
@@ -1309,7 +1315,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
     }
   };
 
-  const triggerWeaponImpact = useCallback((hx: number, hy: number, hz: number, radius: number, depth: number, partSpeedOverride?: number, innerRadius: number = 0) => {
+  const triggerWeaponImpact = useCallback((hx: number, hy: number, hz: number, radius: number, depth: number, partSpeedOverride?: number) => {
     // 1. Sheep physical blast wave response
     if (flockEngineRef.current) {
       const conf = flockEngineRef.current.config;
@@ -1335,8 +1341,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
     const radInt = Math.ceil(radius);
     for (let dx = -radInt; dx <= radInt; dx++) {
       for (let dz = -radInt; dz <= radInt; dz++) {
-        const dist = Math.sqrt(dx * dx + dz * dz);
-        if (dist <= radius && dist >= innerRadius) {
+        if (Math.sqrt(dx * dx + dz * dz) <= radius) {
           const gxRaw = gxCenter + dx;
           const gyRaw = gzCenter + dz;
           const isLargeMap = layoutTabRef.current === 'large_map';
@@ -2317,7 +2322,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
       }
 
       const cdNow = Date.now();
-      const wpnList = ['scatter', 'artillery', 'flyover', 'laser', 'quake', 'carpet', 'blackhole'];
+      const wpnList = ['scatter', 'artillery', 'flyover', 'laser', 'seismic', 'carpet', 'blackhole'];
       for (let i = 0; i < wpnList.length; i++) {
         const w = wpnList[i];
         const cd = WEAPON_COOLDOWNS[w];
@@ -2705,21 +2710,17 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
             return;
           }
 
-          // Always trigger a rapid one-time heal for all craters at the end of the round!
-          // This prevents unhealed craters from occluding ground-level weapon effects like Quake.
-          for (const k of Array.from(brokenBlocksRef.current)) {
-            regeneratingBlocksRef.current.set(k, { scale: 0.01, fast: true });
-            if (energonPlacedRef.current.has(k)) {
-              const eMesh = energonPlacedRef.current.get(k);
-              if (eMesh && sceneRef.current) sceneRef.current.remove(eMesh);
-              energonPlacedRef.current.delete(k);
+          // If Auto-Heal is OFF, we trigger a rapid one-time heal for all craters at the end of the round!
+          if (!isHealingRef.current) {
+            for (const k of Array.from(brokenBlocksRef.current)) {
+              regeneratingBlocksRef.current.set(k, { scale: 0.01, fast: true });
+              if (energonPlacedRef.current.has(k)) {
+                const eMesh = energonPlacedRef.current.get(k);
+                if (eMesh && sceneRef.current) sceneRef.current.remove(eMesh);
+                energonPlacedRef.current.delete(k);
+              }
             }
-          }
-          brokenBlocksRef.current.clear();
-          
-          // Force any currently slow-healing blocks into rapid heal
-          for (const [k, state] of Array.from(regeneratingBlocksRef.current.entries())) {
-            state.fast = true;
+            brokenBlocksRef.current.clear();
           }
 
           // CLEAR ACTIVE PROJECTILES SO THEY DON'T INSTANTLY CLEAR THE NEXT WAVE!
@@ -2742,8 +2743,8 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
           flyoverRadiusRef.current = params.flyover.radius;
           flyoverDepthRef.current = params.flyover.depth;
 
-          quakeRadiusRef.current = params.quake.radius;
-          quakeDepthRef.current = params.quake.depth;
+          seismicRadiusRef.current = params.seismic.radius;
+          seismicDepthRef.current = params.seismic.depth;
 
           carpetRadiusRef.current = params.carpet.radius;
           carpetDepthRef.current = params.carpet.depth;
@@ -2757,8 +2758,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
           WEAPON_COOLDOWNS.scatter = params.scatter.cooldown;
           WEAPON_COOLDOWNS.artillery = params.artillery.cooldown;
           WEAPON_COOLDOWNS.flyover = params.flyover.cooldown;
-
-          WEAPON_COOLDOWNS.quake = params.quake.cooldown;
+          WEAPON_COOLDOWNS.seismic = params.seismic.cooldown;
           WEAPON_COOLDOWNS.carpet = params.carpet.cooldown;
           WEAPON_COOLDOWNS.laser = params.laser.cooldown;
           WEAPON_COOLDOWNS.blackhole = params.blackhole.cooldown;
@@ -3052,9 +3052,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
             else if (wpType === 'artillery') params = { radius: artilleryRadiusRef.current, depth: artilleryDepthRef.current, delay: artilleryDelayRef.current, partSpeed: artilleryPartSpeedRef.current };
             else if (wpType === 'flyover') params = { radius: flyoverRadiusRef.current, depth: flyoverDepthRef.current, delay: flyoverDelayRef.current, hitObject: hit.object, instanceId: hit.instanceId, hoverPoolRef: hoverPoolRef.current, partSpeed: flyoverPartSpeedRef.current };
             else if (wpType === 'laser') params = { radius: laserRadiusRef.current, aoe: laserAoeRef.current, depth: laserDepthRef.current, delay: laserDelayRef.current, duration: laserDurationRef.current, partSpeed: laserPartSpeedRef.current };
-            else if (wpType === 'quake') {
-              params = { count: quakeCountRef.current, radius: quakeRadiusRef.current, depth: quakeDepthRef.current, delay: quakeDelayRef.current, speed: quakeSpeedRef.current, partSpeed: quakePartSpeedRef.current };
-            }
+            else if (wpType === 'seismic') params = { radius: seismicRadiusRef.current, depth: seismicDepthRef.current, delay: seismicDelayRef.current, speed: seismicSpeedRef.current, partSpeed: seismicPartSpeedRef.current, count: seismicCountRef.current };
             else if (wpType === 'carpet') params = { count: carpetCountRef.current, radius: carpetRadiusRef.current, depth: carpetDepthRef.current, delay: carpetDelayRef.current, partSpeed: carpetPartSpeedRef.current };
             else if (wpType === 'blackhole') params = { radius: blackholeRadiusRef.current, depth: blackholeDepthRef.current, delay: blackholeDelayRef.current, duration: blackholeDurationRef.current, partSpeed: blackholePartSpeedRef.current };
 
@@ -3828,7 +3826,6 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
           position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none',
           opacity: (isLoaded && !isGameboardExited) ? 1 : 0, transition: 'opacity 0.8s ease-out', zIndex: 100
         }}>
-          {/* Pink box removed */}
           {/* Close Game Button */}
           <button
             onClick={handleClose}
@@ -4262,15 +4259,13 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
                   </div>
                 )}
 
-
-                
-                {settingsWeapon === 'quake' && (
+                {settingsWeapon === 'seismic' && (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                    <CfgSlider label="Destruction Radius" min={2} max={16} step={1} value={quakeRadius} baseline={8} onChange={setQuakeRadius} accent="#ff9900" />
-                    <CfgSlider label="Shatter Depth" min={1} max={10} step={1} value={quakeDepth} baseline={3} onChange={setQuakeDepth} accent="#ff9900" />
-                    <CfgSlider label="Wave Speed" min={10} max={100} step={5} value={quakeSpeed} baseline={40} onChange={setQuakeSpeed} accent="#ff9900" />
-                    <CfgSlider label="Tremors" min={0} max={10} step={1} value={quakeCount} baseline={5} onChange={setQuakeCount} accent="#ff9900" />
-                    <CfgSlider label="Particle Speed" min={0.1} max={10} step={0.1} value={quakePartSpeed} baseline={1} onChange={setQuakePartSpeed} accent="#ff9900" />
+                    <CfgSlider label="Shockwave Radius" min={2} max={16} step={1} value={seismicRadius} baseline={8} onChange={setSeismicRadius} accent="#ffcc00" />
+                    <CfgSlider label="Fissure Depth" min={1} max={10} step={1} value={seismicDepth} baseline={3} onChange={setSeismicDepth} accent="#ffcc00" />
+                    <CfgSlider label="Wave Speed" min={10} max={100} step={5} value={seismicSpeed} baseline={40} onChange={setSeismicSpeed} accent="#ffcc00" />
+                    <CfgSlider label="Aftershocks" min={0} max={10} step={1} value={seismicCount} baseline={5} onChange={setSeismicCount} accent="#ffcc00" />
+                    <CfgSlider label="Particle Speed" min={0.1} max={10} step={0.1} value={seismicPartSpeed} baseline={1} onChange={setSeismicPartSpeed} accent="#ffcc00" />
                   </div>
                 )}
 
@@ -4346,9 +4341,8 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
                 <div style={{ opacity: unlockedWeapons.includes('flyover') ? 1 : 0.3, pointerEvents: unlockedWeapons.includes('flyover') ? 'auto' : 'none' }}>
                   <WeaponButton weaponId="flyover" active={selectedWeapon === 'flyover'} onClick={() => { if (settingsWeapon !== 'flyover') setSelectedWeapon(selectedWeapon === 'flyover' ? null : 'flyover'); }} onSecondaryClick={() => { const open = settingsWeapon !== 'flyover'; setSettingsWeapon(open ? 'flyover' : null); if (open) setSelectedWeapon('flyover'); }} icon={<IconFlyover />} label="FLYOVER" />
                 </div>
-
-                <div style={{ opacity: unlockedWeapons.includes('quake') ? 1 : 0.3, pointerEvents: unlockedWeapons.includes('quake') ? 'auto' : 'none' }}>
-                  <WeaponButton weaponId="quake" active={selectedWeapon === 'quake'} onClick={() => { if (settingsWeapon !== 'quake') setSelectedWeapon(selectedWeapon === 'quake' ? null : 'quake'); }} onSecondaryClick={() => { const open = settingsWeapon !== 'quake'; setSettingsWeapon(open ? 'quake' : null); if (open) setSelectedWeapon('quake'); }} icon={<IconQuake />} label="QUAKE" />
+                <div style={{ opacity: unlockedWeapons.includes('seismic') ? 1 : 0.3, pointerEvents: unlockedWeapons.includes('seismic') ? 'auto' : 'none' }}>
+                  <WeaponButton weaponId="seismic" active={selectedWeapon === 'seismic'} onClick={() => { if (settingsWeapon !== 'seismic') setSelectedWeapon(selectedWeapon === 'seismic' ? null : 'seismic'); }} onSecondaryClick={() => { const open = settingsWeapon !== 'seismic'; setSettingsWeapon(open ? 'seismic' : null); if (open) setSelectedWeapon('seismic'); }} icon={<IconSeismic />} label="SEISMIC" />
                 </div>
                 <div style={{ opacity: unlockedWeapons.includes('carpet') ? 1 : 0.3, pointerEvents: unlockedWeapons.includes('carpet') ? 'auto' : 'none' }}>
                   <WeaponButton weaponId="carpet" active={selectedWeapon === 'carpet'} onClick={() => { if (settingsWeapon !== 'carpet') setSelectedWeapon(selectedWeapon === 'carpet' ? null : 'carpet'); }} onSecondaryClick={() => { const open = settingsWeapon !== 'carpet'; setSettingsWeapon(open ? 'carpet' : null); if (open) setSelectedWeapon('carpet'); }} icon={<IconCarpet />} label="CARPET" />
@@ -4366,7 +4360,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
                     if (unlockedWeapons.length > 1) {
                       setUnlockedWeapons(['scatter']);
                     } else {
-                      setUnlockedWeapons(['scatter', 'artillery', 'flyover', 'quake', 'carpet', 'laser', 'blackhole']);
+                      setUnlockedWeapons(['scatter', 'artillery', 'flyover', 'seismic', 'carpet', 'laser', 'blackhole']);
                     }
                     setSelectedWeapon('scatter');
                   }}
@@ -4422,7 +4416,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
         right: 40,
         zIndex: 2000,
         width: isSidebarMin ? 160 : 320,
-        height: isSidebarMin ? 44 : 'calc(100vh - 260px)',
+        height: isSidebarMin ? 44 : 'calc(100vh - 160px)',
         borderRadius: isSidebarMin ? 22 : 24,
         background: 'rgba(18, 18, 22, 0.85)',
         border: '1px solid rgba(255,255,255,0.12)',
@@ -4861,32 +4855,20 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
         <AnimatedVictoryScreen
           stats={victoryStats}
           onRestart={() => {
-            const { sheepCount, unlockedWeapons } = getWaveParams(1, difficultyRef.current);
-
             setVictoryStats(null);
             waveNumberRef.current = 1;
             shotsFiredRef.current = 0;
             sheepScoreRef.current = 0;
             totalKillsRef.current = 0;
-            totalTimeRef.current = 0;
             gameStartTimeRef.current = Date.now();
             isTransitioningWaveRef.current = false;
             isGameOverRef.current = false;
-
-            setUnlockedWeapons(unlockedWeapons);
-            setSelectedWeapon(unlockedWeapons[0]);
 
             // Force a complete board heal!
             const emptySet = new Set<string>();
             brokenBlocksRef.current.clear();
             regeneratingBlocksRef.current.clear();
 
-            if (weaponEngineRef.current) {
-              weaponEngineRef.current.clearProjectiles();
-            }
-
-            // Start countdown via announceWave instead of instant spawn
-            announceWave(1, sheepCount);
 
             if (renderMode === 'glass') {
               rebuildMeshes(terrainRef.current, bevel, glowInt, opacity, terrainTint, layerColors, matTransmit, matThickness, matIor, matRoughness, cubeJitter, emptySet);

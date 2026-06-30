@@ -7,7 +7,7 @@ export const WEAPON_COOLDOWNS: Record<string, number> = {
   artillery: 900,
   flyover: 1460,
   laser: 2360,
-  seismic: 3820,
+  quake: 3820,
   carpet: 6180,
   blackhole: 10000
 };
@@ -39,12 +39,12 @@ export const DEFAULT_WEAPON_SETTINGS = {
   laserDelay: 0,
   laserPartSpeed: 6,
 
-  seismicRadius: 8,
-  seismicSpeed: 40,
-  seismicDelay: 0,
-  seismicDepth: 3,
-  seismicCount: 5,
-  seismicPartSpeed: 1,
+  quakeRadius: 8,
+  quakeSpeed: 40,
+  quakeDelay: 0,
+  quakeDepth: 3,
+  quakeCount: 5,
+  quakePartSpeed: 1,
 
   carpetCount: 12,
   carpetDelay: 150,
@@ -58,8 +58,8 @@ export const DEFAULT_WEAPON_SETTINGS = {
   blackholeDepth: 10,
   blackholeRadius: 8,
   blackholeDuration: 3000,
-  blackholeDelay: 0,
-  blackholePartSpeed: 1
+  blackholeDelay: 1000,
+  blackholePartSpeed: 2
 };
 
 export function useWeaponSystem() {
@@ -133,17 +133,7 @@ export function useWeaponSystem() {
   const laserDelayRef = useRef(laserDelay);
   useEffect(() => { laserDelayRef.current = laserDelay; }, [laserDelay]);
 
-  const [seismicRadius, setSeismicRadius] = useState(8);
-  const seismicRadiusRef = useRef(seismicRadius);
-  useEffect(() => { seismicRadiusRef.current = seismicRadius; }, [seismicRadius]);
 
-  const [seismicSpeed, setSeismicSpeed] = useState(40);
-  const seismicSpeedRef = useRef(seismicSpeed);
-  useEffect(() => { seismicSpeedRef.current = seismicSpeed; }, [seismicSpeed]);
-
-  const [seismicDelay, setSeismicDelay] = useState(0);
-  const seismicDelayRef = useRef(seismicDelay);
-  useEffect(() => { seismicDelayRef.current = seismicDelay; }, [seismicDelay]);
 
   const [carpetCount, setCarpetCount] = useState(12);
   const carpetCountRef = useRef(carpetCount);
@@ -153,9 +143,7 @@ export function useWeaponSystem() {
   const carpetDelayRef = useRef(carpetDelay);
   useEffect(() => { carpetDelayRef.current = carpetDelay; }, [carpetDelay]);
 
-  const [seismicDepth, setSeismicDepth] = useState(3);
-  const seismicDepthRef = useRef(seismicDepth);
-  useEffect(() => { seismicDepthRef.current = seismicDepth; }, [seismicDepth]);
+
 
   const [carpetRadius, setCarpetRadius] = useState(4);
   const carpetRadiusRef = useRef(carpetRadius);
@@ -186,9 +174,7 @@ export function useWeaponSystem() {
   const [scatterSpread, setScatterSpread] = useState(2);
   const [flyoverLength, setFlyoverLength] = useState(10);
   const [flyoverSpacing, setFlyoverSpacing] = useState(1.5);
-  const [seismicCount, setSeismicCount] = useState(5);
-  const seismicCountRef = useRef(seismicCount);
-  useEffect(() => { seismicCountRef.current = seismicCount; }, [seismicCount]);
+
   const [carpetRows, setCarpetRows] = useState(3);
   const [carpetCols, setCarpetCols] = useState(3);
   const [carpetSpacing, setCarpetSpacing] = useState(2);
@@ -205,9 +191,7 @@ export function useWeaponSystem() {
   const flyoverPartSpeedRef = useRef(flyoverPartSpeed);
   useEffect(() => { flyoverPartSpeedRef.current = flyoverPartSpeed; }, [flyoverPartSpeed]);
 
-  const [seismicPartSpeed, setSeismicPartSpeed] = useState(1);
-  const seismicPartSpeedRef = useRef(seismicPartSpeed);
-  useEffect(() => { seismicPartSpeedRef.current = seismicPartSpeed; }, [seismicPartSpeed]);
+
 
   const [carpetPartSpeed, setCarpetPartSpeed] = useState(2);
   const carpetPartSpeedRef = useRef(carpetPartSpeed);
@@ -220,6 +204,30 @@ export function useWeaponSystem() {
   const [blackholePartSpeed, setBlackholePartSpeed] = useState(DEFAULT_WEAPON_SETTINGS.blackholePartSpeed);
   const blackholePartSpeedRef = useRef(blackholePartSpeed);
   useEffect(() => { blackholePartSpeedRef.current = blackholePartSpeed; }, [blackholePartSpeed]);
+
+  const [quakeRadius, setQuakeRadius] = useState(DEFAULT_WEAPON_SETTINGS.quakeRadius);
+  const quakeRadiusRef = useRef(quakeRadius);
+  useEffect(() => { quakeRadiusRef.current = quakeRadius; }, [quakeRadius]);
+
+  const [quakeSpeed, setQuakeSpeed] = useState(DEFAULT_WEAPON_SETTINGS.quakeSpeed);
+  const quakeSpeedRef = useRef(quakeSpeed);
+  useEffect(() => { quakeSpeedRef.current = quakeSpeed; }, [quakeSpeed]);
+
+  const [quakeDelay, setQuakeDelay] = useState(DEFAULT_WEAPON_SETTINGS.quakeDelay);
+  const quakeDelayRef = useRef(quakeDelay);
+  useEffect(() => { quakeDelayRef.current = quakeDelay; }, [quakeDelay]);
+
+  const [quakeDepth, setQuakeDepth] = useState(DEFAULT_WEAPON_SETTINGS.quakeDepth);
+  const quakeDepthRef = useRef(quakeDepth);
+  useEffect(() => { quakeDepthRef.current = quakeDepth; }, [quakeDepth]);
+
+  const [quakeCount, setQuakeCount] = useState(DEFAULT_WEAPON_SETTINGS.quakeCount);
+  const quakeCountRef = useRef(quakeCount);
+  useEffect(() => { quakeCountRef.current = quakeCount; }, [quakeCount]);
+
+  const [quakePartSpeed, setQuakePartSpeed] = useState(DEFAULT_WEAPON_SETTINGS.quakePartSpeed);
+  const quakePartSpeedRef = useRef(quakePartSpeed);
+  useEffect(() => { quakePartSpeedRef.current = quakePartSpeed; }, [quakePartSpeed]);
 
   // Load / Save Logic
   const isLoadedRef = useRef(false);
@@ -256,12 +264,14 @@ export function useWeaponSystem() {
           if (data.laserDelay !== undefined) setLaserDelay(data.laserDelay);
           if (data.laserPartSpeed !== undefined) setLaserPartSpeed(data.laserPartSpeed);
 
-          if (data.seismicRadius !== undefined) setSeismicRadius(data.seismicRadius);
-          if (data.seismicSpeed !== undefined) setSeismicSpeed(data.seismicSpeed);
-          if (data.seismicDelay !== undefined) setSeismicDelay(data.seismicDelay);
-          if (data.seismicDepth !== undefined) setSeismicDepth(data.seismicDepth);
-          if (data.seismicCount !== undefined) setSeismicCount(data.seismicCount);
-          if (data.seismicPartSpeed !== undefined) setSeismicPartSpeed(data.seismicPartSpeed);
+
+
+          if (data.quakeRadius !== undefined) setQuakeRadius(data.quakeRadius);
+          if (data.quakeSpeed !== undefined) setQuakeSpeed(data.quakeSpeed);
+          if (data.quakeDelay !== undefined) setQuakeDelay(data.quakeDelay);
+          if (data.quakeDepth !== undefined) setQuakeDepth(data.quakeDepth);
+          if (data.quakeCount !== undefined) setQuakeCount(data.quakeCount);
+          if (data.quakePartSpeed !== undefined) setQuakePartSpeed(data.quakePartSpeed);
 
           if (data.carpetCount !== undefined) setCarpetCount(data.carpetCount);
           if (data.carpetDelay !== undefined) setCarpetDelay(data.carpetDelay);
@@ -298,7 +308,7 @@ export function useWeaponSystem() {
           artilleryRadius, artilleryDepth, artilleryDelay, artilleryPartSpeed,
           flyoverRadius, flyoverDepth, flyoverDelay, flyoverLength, flyoverSpacing, flyoverPartSpeed,
           laserRadius, laserAoe, laserDepth, laserDuration, laserDelay, laserPartSpeed,
-          seismicRadius, seismicSpeed, seismicDelay, seismicDepth, seismicCount, seismicPartSpeed,
+          quakeRadius, quakeSpeed, quakeDelay, quakeDepth, quakeCount, quakePartSpeed,
           carpetCount, carpetDelay, carpetRadius, carpetDepth, carpetRows, carpetCols, carpetSpacing, carpetPartSpeed,
           blackholeDepth, blackholeRadius, blackholeDuration, blackholeDelay, blackholePartSpeed
         })
@@ -309,7 +319,7 @@ export function useWeaponSystem() {
     artilleryRadius, artilleryDepth, artilleryDelay, artilleryPartSpeed,
     flyoverRadius, flyoverDepth, flyoverDelay, flyoverLength, flyoverSpacing, flyoverPartSpeed,
     laserRadius, laserAoe, laserDepth, laserDuration, laserDelay, laserPartSpeed,
-    seismicRadius, seismicSpeed, seismicDelay, seismicDepth, seismicCount, seismicPartSpeed,
+    quakeRadius, quakeSpeed, quakeDelay, quakeDepth, quakeCount, quakePartSpeed,
     carpetCount, carpetDelay, carpetRadius, carpetDepth, carpetRows, carpetCols, carpetSpacing, carpetPartSpeed,
     blackholeDepth, blackholeRadius, blackholeDuration, blackholeDelay, blackholePartSpeed
   ]);
@@ -337,9 +347,9 @@ export function useWeaponSystem() {
     scatterPartSpeed, setScatterPartSpeed, scatterPartSpeedRef,
     artilleryPartSpeed, setArtilleryPartSpeed, artilleryPartSpeedRef,
     flyoverPartSpeed, setFlyoverPartSpeed, flyoverPartSpeedRef,
-    seismicPartSpeed, setSeismicPartSpeed, seismicPartSpeedRef,
-    carpetPartSpeed, setCarpetPartSpeed, carpetPartSpeedRef,
     laserPartSpeed, setLaserPartSpeed, laserPartSpeedRef,
+    quakePartSpeed, setQuakePartSpeed, quakePartSpeedRef,
+    carpetPartSpeed, setCarpetPartSpeed, carpetPartSpeedRef,
     blackholePartSpeed, setBlackholePartSpeed, blackholePartSpeedRef,
     
     scatterCount, setScatterCount, scatterCountRef,
@@ -365,11 +375,11 @@ export function useWeaponSystem() {
     laserDuration, setLaserDuration, laserDurationRef,
     laserDelay, setLaserDelay, laserDelayRef,
 
-    seismicRadius, setSeismicRadius, seismicRadiusRef,
-    seismicDepth, setSeismicDepth, seismicDepthRef,
-    seismicSpeed, setSeismicSpeed, seismicSpeedRef,
-    seismicDelay, setSeismicDelay, seismicDelayRef,
-    seismicCount, setSeismicCount, seismicCountRef,
+    quakeRadius, setQuakeRadius, quakeRadiusRef,
+    quakeDepth, setQuakeDepth, quakeDepthRef,
+    quakeSpeed, setQuakeSpeed, quakeSpeedRef,
+    quakeDelay, setQuakeDelay, quakeDelayRef,
+    quakeCount, setQuakeCount, quakeCountRef,
 
     carpetRadius, setCarpetRadius, carpetRadiusRef,
     carpetDepth, setCarpetDepth, carpetDepthRef,

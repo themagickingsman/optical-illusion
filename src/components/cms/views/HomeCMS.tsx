@@ -241,7 +241,7 @@ export default function HomeCMS() {
         zIndex: 10
       }}>
         
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '40px', transform: 'translateY(-75px)' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '40px', transform: 'translateY(-50px)' }}>
           <button style={{
             background: '#03FFC0',
             color: 'black',
@@ -272,7 +272,7 @@ export default function HomeCMS() {
 
         <h1 style={{ fontSize: '128px', fontWeight: 500, margin: 0, letterSpacing: '-0.02em', color: 'white', lineHeight: 1 }}>OpticalIllusions</h1>
         {/* Logo Image */}
-        <div style={{ marginTop: '40px', transform: 'translateY(-10px)', display: 'flex', justifyContent: 'center' }}>
+        <div style={{ marginTop: '40px', transform: 'translateY(15px)', display: 'flex', justifyContent: 'center' }}>
           <img 
             src="/assets/logo/Royal_Monogram_of_Queen_Sophie_of_the_Netherlands.svg.png" 
             alt="Royal Monogram of Queen Sophie" 
@@ -313,7 +313,7 @@ export default function HomeCMS() {
         position: 'relative',
         zIndex: 10,
       }}>
-        <div style={{ textAlign: 'center', marginBottom: '80px', transform: 'translateY(-50px)' }}>
+        <div style={{ textAlign: 'center', marginBottom: '80px', transform: 'translateY(-25px)' }}>
           <h2 style={{ fontWeight: 700, fontSize: '72px', margin: '0 0 16px 0', letterSpacing: '-0.03em', lineHeight: 1, color: '#fff' }}>Co-Development</h2>
           <p style={{ fontWeight: 500, fontSize: '24px', margin: 0, color: 'rgba(255, 255, 255, 0.8)', letterSpacing: '-0.01em' }}>Generative UI + MCP = Autonomous Game Integration</p>
         </div>

@@ -46,7 +46,7 @@
 
 export type Difficulty = 'easy' | 'medium' | 'hard';
 
-export const WEAPONS_IN_ORDER = ['scatter', 'artillery', 'flyover', 'seismic', 'carpet', 'laser', 'blackhole'] as const;
+export const WEAPONS_IN_ORDER = ['scatter', 'artillery', 'flyover', 'quake', 'carpet', 'laser', 'blackhole'] as const;
 export type WeaponStats = {
   count: number;
   radius: number;
@@ -83,7 +83,7 @@ export function getWaveParams(waveNumber: number, difficulty: Difficulty) {
   const unlockedWeapons: WeaponType[] = ['scatter'];
   if (waveNumber >= 3) unlockedWeapons.push('artillery');
   if (waveNumber >= 5) unlockedWeapons.push('flyover');
-  if (waveNumber >= 7) unlockedWeapons.push('seismic');
+  if (waveNumber >= 7) { unlockedWeapons.push('quake'); }
   if (waveNumber >= 9) unlockedWeapons.push('carpet');
   if (waveNumber >= 11) unlockedWeapons.push('laser');
   if (waveNumber >= 13) unlockedWeapons.push('blackhole');
@@ -112,7 +112,8 @@ export function getWaveParams(waveNumber: number, difficulty: Difficulty) {
       cooldown: getFibonacci(13) * 10, // 2330
       clickThreshold: 5
     },
-    seismic: { 
+
+    quake: { 
       count: 1, 
       radius: 9 * difficultyScale, 
       depth: 4 * difficultyScale, 

@@ -80,6 +80,14 @@ export default function WebsiteBuildCMS() {
     router.push(`?tab=build&preview=${tab}`);
   };
 
+  // Reset scroll position when switching tabs
+  useEffect(() => {
+    const container = document.getElementById('build-scroll-container');
+    if (container) {
+      container.scrollTo({ top: 0, behavior: 'instant' });
+    }
+  }, [previewMode]);
+
   if (isLoading || engines.length === 0) {
     return <div style={{ minHeight: '100%', background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>Loading Cosmic Architecture...</div>;
   }
@@ -154,25 +162,25 @@ export default function WebsiteBuildCMS() {
           <div style={{ maxWidth: '1075px', margin: '0 auto' }}>
             
             {previewMode === 'home' && (
-              <AnimatedPage>
+              <AnimatedPage style={{ paddingTop: '100px' }}>
                 <HomeCMS />
               </AnimatedPage>
             )}
 
             {previewMode === 'games' && (
-              <AnimatedPage>
+              <AnimatedPage style={{ paddingTop: '100px' }}>
                 <GamesCMS />
               </AnimatedPage>
             )}
 
             {previewMode === 'library' && (
-              <AnimatedPage>
+              <AnimatedPage style={{ paddingTop: '100px' }}>
                 <LibraryCMS />
               </AnimatedPage>
             )}
 
             {previewMode === 'process' && (
-              <div style={{ position: 'absolute', inset: 0, zIndex: 20 }}>
+              <div style={{ position: 'absolute', inset: 0, zIndex: 20, paddingTop: '100px' }}>
                 <ProcessCMS onTryItNow={() => handleNavClick('games')} />
               </div>
             )}

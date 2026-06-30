@@ -1,0 +1,131 @@
+  const pickPresetBlocks = useCallback((heights: number[][], currentSeed: number) => {
+    const allKeys: string[] = [];
+    for (let gy = 0; gy < heights.length; gy++) {
+      for (let gx = 0; gx < (heights[gy]?.length || 0); gx++) {
+        const cellH = heights[gy][gx] ?? 1;
+        if (cellH > 0) allKeys.push(`${gx}_${gy}_${cellH - 1}`);
+      }
+    }
+    const shuffled = [...allKeys];
+    // Proper Fisher-Yates shuffle for true random distribution
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    presetExplodeBlocksRef.current = new Set(shuffled.slice(0, 5));
+  }, []);
+
+  const spawnBlockExplosion = (px: number, py: number, pz: number, color: THREE.Color, count: number, speedMult: number, lifeMult: number, forceVel?: THREE.Vector3[], forcePos?: THREE.Vector3[], weaponRadius: number = 1) => {
+    if (particleSystemRef.current) {
+        // Calculate force based on weapon AOE radius
+        // Radius 1 (Scatter) -> ~3.8 force. Radius 27 (Blackhole) -> ~50 force.
+        const force = 2.0 + (weaponRadius * 1.8);
+        // Cap visual shard count to prevent "shit is all over the place"
+        // Scale it cleanly between ~5 to 150 shards per block based on radius
+        const calculatedShards = Math.min(150, Math.max(5, Math.floor(weaponRadius * 5.5)));
+        
+        particleSystemRef.current.explode(px, py, pz, force, 5.0, color, isTreasureModeRef.current);
+    }
+  };
+
+  const triggerWeaponImpact = useCallback((hx: number, hy: number, hz: number, radius: number, depth: number, partSpeedOverride?: number) => {
+    // 1. Sheep physical blast wave response
+    if (flockEngineRef.current) {
+         const conf = flockEngineRef.current.config;
+         // Use the larger of the weapon's radius or the UI physics override radius
+         const blastRadius = Math.max(radius * 2.0, conf.explodeRadius);
+         flockEngineRef.current.explode(hx, hz, conf.explodeForce, blastRadius);
+    }
+
+
+    
+    // 2. Gather keys
+    const toBreak = new Set<string>();
+    const tr = terrainRef.current;
+    if (!tr || !tr.length) return;
+    const h = tr.length;
+    const w = tr[0]?.length || 0;
+    
+    const offsetX = -w / 2;
+    const offsetZ = -h / 2;
+    const gxCenter = Math.round(hx - offsetX);
+    const gzCenter = Math.round(hz - offsetZ);
+
+    const radInt = Math.ceil(radius);
+    for (let dx = -radInt; dx <= radInt; dx++) {
+      for (let dz = -radInt; dz <= radInt; dz++) {
+        if (Math.sqrt(dx*dx + dz*dz) <= radius) {
+          const gxRaw = gxCenter + dx;
+          const gyRaw = gzCenter + dz;
+          const isLargeMap = layoutTabRef.current === 'large_map';
+          
+          const gx = isLargeMap ? ((gxRaw % w) + w) % w : gxRaw;
+          const gy = isLargeMap ? ((gyRaw % h) + h) % h : gyRaw;
+
+          if (gy >= 0 && gy < h && gx >= 0 && gx < w) {
+            const cellH = tr[gy][gx] ?? 1;
+            // Find the highest UNBROKEN block
+            let topUnbrokenH = -1;
+            for (let hTest = cellH - 1; hTest >= 0; hTest--) {
+               const targetKey = isLargeMap ? `${gxRaw}_${gyRaw}_${hTest}` : `${gx}_${gy}_${hTest}`;
+               if (!brokenBlocksRef.current.has(targetKey)) {
+                  topUnbrokenH = hTest;
+                  break;
+               }
+            }
+            
+            // Break downward 'depth' blocks starting from the actual top surface
+            if (topUnbrokenH >= 0) {
+               for (let dy = 0; dy < depth; dy++) {
+                 const bH = topUnbrokenH - dy;
+                 if (bH >= 0) {
+                   toBreak.add(isLargeMap ? `${gxRaw}_${gyRaw}_${bH}` : `${gx}_${gy}_${bH}`);
+                 }
+               }
+            }
+            if (topUnbrokenH >= 0) {
+               for (let dy = 0; dy < depth; dy++) {
+                 const bH = topUnbrokenH - dy;
+                 if (bH >= 0) {
+                    const targetKey = isLargeMap ? `${gxRaw}_${gyRaw}_${bH}` : `${gx}_${gy}_${bH}`;
+                    toBreak.add(targetKey);
+                 }
+               }
+            }
+          }
+        }
+      }
+    }
+    
+
+
+    setBrokenBlocks(prev => {
+      const next = new Set(prev);
+      toBreak.forEach(k => next.add(k));
+      return next;
+    });
+
+    const targetGroup = renderModeRef.current === 'glass' ? meshGroupRef.current : mixedGrpRef.current;
+
+    // Check auto-win cheat block!
+    for (const k of toBreak) {
+      if (k === cheatBlockRef.current) {
+        // Auto-win triggered!
+        if (cheatBlockMeshRef.current && targetGroup) {
+            targetGroup.remove(cheatBlockMeshRef.current);
+            cheatBlockMeshRef.current = null;
+        }
+        isGameOverRef.current = true;
+        const cheatBase = 50 * 25000;
+        const shotsPen = shotsFiredRef.current * 5000;
+        const timePen = totalTimeRef.current * 15000;
+        setVictoryStats({
+            score: Math.max(0, cheatBase - shotsPen - timePen),
+            kills: 50,
+            shots: shotsFiredRef.current,
+            time: totalTimeRef.current,
+            base: cheatBase
+        });
+        cheatBlockRef.current = null;
+        return;
+      }

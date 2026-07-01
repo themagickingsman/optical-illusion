@@ -121,7 +121,10 @@ export default function HireMeView() {
               type="text"
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
+              onKeyDown={(e) => {
+                e.stopPropagation();
+                if (e.key === "Enter") handleSendMessage();
+              }}
               placeholder="Type your message..."
               style={{ flex: 1, background: "transparent", border: "none", color: "#fff", fontSize: "28px", padding: "20px 28px", outline: "none" }}
             />

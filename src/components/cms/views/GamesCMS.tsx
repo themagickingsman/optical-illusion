@@ -10,6 +10,7 @@ import LiveScreensaver from '@/components/library/LiveScreensaver';
 import CosmicFlameAsset from '@/components/library/CosmicFlameAsset';
 import EngineFlameComponent from '@/components/library/EngineFlameComponent';
 import TerrainGenerator from '@/components/library/TerrainGenerator';
+import { BehindTheScenes } from '@/components/library/BehindTheScenes';
 
 const InfoPanel = ({ index, title, description, isHovered }: { index: number, title: string, description: string, isHovered: boolean }) => (
   <div style={{
@@ -84,6 +85,7 @@ export default function GamesCMS() {
   const [isIdle, setIsIdle] = useState(false);
   const [isButtonVisible, setIsButtonVisible] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [showBTS, setShowBTS] = useState(false);
   const idleTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
   React.useEffect(() => {
@@ -119,6 +121,7 @@ export default function GamesCMS() {
         setShowScreensaver(false);
         setIsExitingTerrainGenerator(true); // Trigger fade out for TerrainGenerator
         setShowCosmicFlame(false);
+        setShowBTS(false);
       }
     };
     window.addEventListener('keydown', onEsc);
@@ -389,12 +392,7 @@ export default function GamesCMS() {
                 onClick={(e) => {
                   e.stopPropagation();
                   navigator.clipboard.writeText("Cosmic_Compass");
-                  e.currentTarget.innerText = "Copied!";
-                  setTimeout(() => {
-                    if (e.currentTarget) e.currentTarget.innerText = "Copy Asset Key";
-                    setShowTerrainGenerator(false);
-                    router.push('/library');
-                  }, 400);
+                  setShowBTS(true);
                 }}
               >
                 Copy Asset Key
@@ -609,13 +607,7 @@ export default function GamesCMS() {
                   e.stopPropagation();
                   const key = "Cosmic_Compass";
                   navigator.clipboard.writeText(key);
-                  e.currentTarget.innerText = "Copied!";
-                  setTimeout(() => {
-                    if (e.currentTarget) e.currentTarget.innerText = "Copy Asset Key";
-                    setShowCosmicFlame(false);
-                    setShowScreensaver(false);
-                    router.push('/library');
-                  }, 400);
+                  setShowBTS(true);
                 }}
               >
                 Copy Asset Key
@@ -637,6 +629,7 @@ export default function GamesCMS() {
         />
       </div>
 
+      <BehindTheScenes show={showBTS} onClose={() => setShowBTS(false)} />
     </div>
   );
 }

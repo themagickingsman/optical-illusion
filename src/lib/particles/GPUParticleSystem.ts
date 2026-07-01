@@ -7,6 +7,9 @@ const MAX_LIFETIME = 5.0; // seconds
 
 const vertexShader3D = `
     uniform float uTime;
+    uniform float uSize;
+    uniform float uLifeMult;
+    uniform float uSpeedMult;
     attribute vec3 aOrigin;
     attribute vec3 aVelocity;
     attribute float aStartTime;
@@ -18,11 +21,11 @@ const vertexShader3D = `
     void main() {
         vColor = aColor;
         
-        float age = max(0.0, uTime - aStartTime);
-        vLife = max(0.0, 1.0 - (age / 5.0));
+        float age = max(0.0, (uTime - aStartTime)) * uSpeedMult;
+        vLife = max(0.0, 1.0 - (age / (5.0 * uLifeMult)));
 
         // If not born yet or dead, shrink to 0
-        float scale = (age > 0.0 && vLife > 0.0) ? vLife : 0.0;
+        float scale = (age > 0.0 && vLife > 0.0) ? (vLife * uSize) : 0.0;
         
         vec3 pos = aOrigin + aVelocity * age;
         pos.y -= 0.5 * 1.5 * age * age;
@@ -55,6 +58,9 @@ const vertexShader3D = `
 
 const vertexShader2D = `
     uniform float uTime;
+    uniform float uSize;
+    uniform float uLifeMult;
+    uniform float uSpeedMult;
     attribute vec3 aOrigin;
     attribute vec3 aVelocity;
     attribute float aStartTime;
@@ -66,10 +72,10 @@ const vertexShader2D = `
     void main() {
         vColor = aColor;
         
-        float age = max(0.0, uTime - aStartTime);
-        vLife = max(0.0, 1.0 - (age / 5.0));
+        float age = max(0.0, (uTime - aStartTime)) * uSpeedMult;
+        vLife = max(0.0, 1.0 - (age / (5.0 * uLifeMult)));
 
-        float scale = (age > 0.0 && vLife > 0.0) ? vLife : 0.0;
+        float scale = (age > 0.0 && vLife > 0.0) ? (vLife * uSize) : 0.0;
         
         vec3 pos = aOrigin + aVelocity * age;
         pos.y -= 0.5 * 1.5 * age * age;
@@ -125,7 +131,10 @@ export class GPUParticleSystem implements IParticleSystem {
             fragmentShader,
             uniforms: {
                 uTime: { value: 0.0 },
-                uEmissiveMult: { value: 1.5 }
+                uEmissiveMult: { value: 1.5 },
+                uSize: { value: 1.0 },
+                uLifeMult: { value: 1.0 },
+                uSpeedMult: { value: 1.0 }
             },
             transparent: true,
             depthWrite: this.dimensionType === '3D',
@@ -240,6 +249,12 @@ export class GPUParticleSystem implements IParticleSystem {
         // We don't have an easy way to read back active explosion count from GPU without WebGL readPixels, 
         // so we'll just return a fake number or 1 so the UI knows we are active.
         return 1;
+    }
+
+    public setSettings(size: number, life: number, speed: number): void {
+        this.material.uniforms.uSize.value = size;
+        this.material.uniforms.uLifeMult.value = life;
+        this.material.uniforms.uSpeedMult.value = speed;
     }
 
     public dispose(): void {

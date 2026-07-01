@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import { BehindTheScenes } from './BehindTheScenes';
 
 interface IdleCopyButtonProps {
   assetKey: string;
 }
 
 export function IdleCopyButton({ assetKey }: IdleCopyButtonProps) {
-  const router = useRouter();
   const [isIdle, setIsIdle] = useState(false);
-  const [copied, setCopied] = useState(false);
+  const [showBTS, setShowBTS] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -35,14 +35,11 @@ export function IdleCopyButton({ assetKey }: IdleCopyButtonProps) {
 
   const handleCopy = () => {
     navigator.clipboard.writeText(assetKey);
-    setCopied(true);
-    setTimeout(() => {
-      setCopied(false);
-      router.push('/library');
-    }, 400);
+    setShowBTS(true);
   };
 
   return (
+    <>
     <button
       onClick={handleCopy}
       onMouseEnter={(e) => {
@@ -75,7 +72,9 @@ export function IdleCopyButton({ assetKey }: IdleCopyButtonProps) {
         boxShadow: '0 8px 24px rgba(0, 229, 255, 0.4)'
       }}
     >
-      {copied ? 'Copied to Clipboard!' : 'Copy Asset Key'}
+      Copy Asset Key
     </button>
+    <BehindTheScenes show={showBTS} onClose={() => setShowBTS(false)} />
+    </>
   );
 }

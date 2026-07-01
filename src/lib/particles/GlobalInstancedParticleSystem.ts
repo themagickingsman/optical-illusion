@@ -62,6 +62,7 @@ export class GlobalInstancedParticleSystem implements IParticleSystem {
             });
             
             this.mesh = new THREE.Points(pointGeo, pointMat);
+            this.mesh.frustumCulled = false;
         }
         
         this.group.add(this.mesh);

@@ -7,16 +7,44 @@
  * - "Bake" exports a PNG snapshot
  * - Terrain heightmap is saved to localStorage so 3D Studio can offset buildings
  */
-import React, { useRef, useEffect, useState, useCallback } from 'react';
+import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react';
+
+function SmoothHeight({ children }: { children: React.ReactNode }) {
+  const [height, setHeight] = useState<number | 'auto'>('auto');
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!contentRef.current) return;
+    const obs = new ResizeObserver((entries) => {
+      setHeight(entries[0].borderBoxSize[0].blockSize);
+    });
+    obs.observe(contentRef.current);
+    return () => obs.disconnect();
+  }, []);
+
+  return (
+    <div style={{ height, transition: 'height 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)', overflow: 'hidden' }}>
+      <div ref={contentRef}>
+        {children}
+      </div>
+    </div>
+  );
+}
+
 import * as THREE from 'three';
 import { CylinderGeometry } from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+import { GameStateControls } from './GameStateControls';
+
+import { BehindTheScenes } from './BehindTheScenes';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { sliderToFrustumHalf, applyShadowSoftness } from './PCSSHelper';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
+import { HorizontalBlurShader } from 'three/addons/shaders/HorizontalBlurShader.js';
+import { VerticalBlurShader } from 'three/addons/shaders/VerticalBlurShader.js';
 import { FlockEngine } from '@/lib/FlockEngine';
 import { lcg, buildNoise } from '@/lib/TerrainMath';
 import { getWaveParams, Difficulty, WeaponType, WEAPONS_IN_ORDER } from '../../data/progression';
@@ -350,7 +378,7 @@ function WeaponButton({ active, onClick, onSecondaryClick, icon, label, weaponId
         didLongPress.current = true;
         onSecondaryClick();
         setIsPressed(false);
-      }, 1000);
+      }, 300);
     }
   };
 
@@ -396,7 +424,6 @@ function WeaponButton({ active, onClick, onSecondaryClick, icon, label, weaponId
         transition: 'all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1)',
       }}
     >
-      <div id={`cooldown-${weaponId}`} className="wpn-cooldown-bar" style={{ position: 'absolute', bottom: 0, left: 0, height: '0%', background: 'rgba(255, 255, 255, 0.15)', width: '100%', transition: 'none', zIndex: 1 }} />
       <span style={{ fontSize: 24, position: 'relative', zIndex: 2, transform: active ? 'scale(1.1) translateY(-2px)' : isHovered ? 'translateY(-2px)' : 'none', transition: 'transform 0.2s' }}>{icon}</span>
       <span style={{ fontSize: 12, fontWeight: 700, position: 'relative', zIndex: 2, letterSpacing: 0.5, fontFamily: '-apple-system, BlinkMacSystemFont, "Inter", sans-serif' }}>{label}</span>
     </button>
@@ -486,16 +513,32 @@ const createGoldenRatioShadowTexture = () => {
 };
 
 
-
-function AnimatedVictoryScreen({ stats, onRestart }: { stats: { score: number, kills: number, shots: number, time: number, base: number }, onRestart: () => void }) {
-  const [phase, setPhase] = useState(-1);
+function AnimatedVictoryScreen({ stats, onRestart, triggerFirework }: { stats: { score: number, kills: number, shots: number, time: number, base: number }, onRestart: () => void, triggerFirework: () => void }) {
+  const [phase, setPhase] = useState(-2);
+  const [leavePhase, setLeavePhase] = useState(-1);
   const [displayBase, setDisplayBase] = useState(0);
+  const [displayKills, setDisplayKills] = useState(0);
   const [displayShotsPen, setDisplayShotsPen] = useState(0);
+  const [displayShots, setDisplayShots] = useState(0);
   const [displayTimePen, setDisplayTimePen] = useState(0);
+  const [displayTime, setDisplayTime] = useState(0);
   const [displayScore, setDisplayScore] = useState(0);
 
+  const [viewState, setViewState] = useState<'stats' | 'name' | 'leaderboard'>('stats');
+  const [playerName, setPlayerName] = useState('');
+  const [leaderboardData, setLeaderboardData] = useState<any[]>([]);
+  const [sessionId] = useState(() => Math.random().toString(36).substring(2, 9));
+
+
   useEffect(() => {
-    if (phase === -1) {
+    if (phase === -2) {
+      // 1800ms cinematic pause: 
+      // - 800ms for UI to fade and camera to smoothly center the board
+      // - 800ms for the WebGL blur to smoothly ramp up
+      // - 200ms extra dramatic beat before dropping text
+      const t = setTimeout(() => setPhase(-1), 1800);
+      return () => clearTimeout(t);
+    } else if (phase === -1) {
       const t = setTimeout(() => setPhase(0), 100);
       return () => clearTimeout(t);
     }
@@ -504,169 +547,443 @@ function AnimatedVictoryScreen({ stats, onRestart }: { stats: { score: number, k
   useEffect(() => {
     if (phase < 0) return;
 
-    const animateNum = (target: number, setter: (v: number) => void, onComplete: () => void) => {
+    const animateNum = (targets: { val: number, set: (v: number) => void }[], onComplete: () => void) => {
       const frames = 30;
       let f = 0;
       const t = setInterval(() => {
         f++;
-        setter(Math.floor((target / frames) * f));
+        const progress = f / frames;
+        targets.forEach(tgt => tgt.set(Math.floor(tgt.val * progress)));
         if (f >= frames) {
-          setter(target);
+          targets.forEach(tgt => tgt.set(tgt.val));
           clearInterval(t);
-          setTimeout(onComplete, 300);
+          setTimeout(onComplete, 800); // Pause so the user can read the final counted number
         }
-      }, 800 / frames);
+      }, 500 / frames);
     };
 
+    let timeout: NodeJS.Timeout;
+
+    // --- PHASE STATE MACHINE ---
     if (phase === 0) {
-      animateNum(stats.kills * 25000, setDisplayBase, () => setPhase(1));
+      // Sheep Label
+      timeout = setTimeout(() => setPhase(1), 1100);
     } else if (phase === 1) {
-      animateNum(stats.shots * 5000, setDisplayShotsPen, () => setPhase(2));
+      // Sheep Stat
+      setTimeout(() => setLeavePhase(0), 0);
+      timeout = setTimeout(() => {
+        animateNum([{ val: stats.kills, set: setDisplayKills }], () => setPhase(2));
+      }, 250); 
     } else if (phase === 2) {
-      animateNum(stats.time * 15000, setDisplayTimePen, () => setPhase(3));
+      // "SCORE" Label
+      setTimeout(() => setLeavePhase(1), 0);
+      timeout = setTimeout(() => setPhase(3), 1100);
     } else if (phase === 3) {
-      animateNum(stats.score, setDisplayScore, () => setPhase(4));
+      // Sheep Score
+      setTimeout(() => setLeavePhase(2), 0);
+      timeout = setTimeout(() => {
+        animateNum([{ val: stats.kills * 25000, set: setDisplayBase }], () => setPhase(4));
+      }, 250);
+    } else if (phase === 4) {
+      // Time Label
+      setTimeout(() => setLeavePhase(3), 0);
+      timeout = setTimeout(() => setPhase(5), 1100);
+    } else if (phase === 5) {
+      // Time Stat
+      setTimeout(() => setLeavePhase(4), 0);
+      timeout = setTimeout(() => {
+        animateNum([{ val: stats.time, set: setDisplayTime }], () => setPhase(6));
+      }, 250);
+    } else if (phase === 6) {
+      // "PENALTY" Label
+      setTimeout(() => setLeavePhase(5), 0);
+      timeout = setTimeout(() => setPhase(7), 1100);
+    } else if (phase === 7) {
+      // Time Score
+      setTimeout(() => setLeavePhase(6), 0);
+      timeout = setTimeout(() => {
+        animateNum([{ val: stats.time * 15000, set: setDisplayTimePen }], () => setPhase(8));
+      }, 250);
+    } else if (phase === 8) {
+      // Shots Label
+      setTimeout(() => setLeavePhase(7), 0);
+      timeout = setTimeout(() => setPhase(9), 1100);
+    } else if (phase === 9) {
+      // Shots Stat
+      setTimeout(() => setLeavePhase(8), 0);
+      timeout = setTimeout(() => {
+        animateNum([{ val: stats.shots, set: setDisplayShots }], () => setPhase(10));
+      }, 250);
+    } else if (phase === 10) {
+      // "PENALTY" Label
+      setTimeout(() => setLeavePhase(9), 0);
+      timeout = setTimeout(() => setPhase(11), 1100);
+    } else if (phase === 11) {
+      // Shots Score
+      setTimeout(() => setLeavePhase(10), 0);
+      timeout = setTimeout(() => {
+        animateNum([{ val: stats.shots * 5000, set: setDisplayShotsPen }], () => setPhase(12));
+      }, 250);
+    } else if (phase === 12) {
+      // Final Score Label
+      setTimeout(() => setLeavePhase(11), 0);
+      timeout = setTimeout(() => setPhase(13), 1100);
+    } else if (phase === 13) {
+      // Final Score Value
+      setTimeout(() => setLeavePhase(12), 0);
+      timeout = setTimeout(() => {
+        animateNum([{ val: stats.score, set: setDisplayScore }], () => setPhase(14));
+      }, 400);
     }
+
+    return () => clearTimeout(timeout);
   }, [phase, stats]);
 
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (phase >= 13) {
+      // Fire a random explosion every ~150-300ms to simulate fireworks
+      const fire = () => {
+        triggerFirework();
+        interval = setTimeout(fire, 40 + Math.random() * 50);
+      };
+      fire();
+    }
+    return () => clearTimeout(interval);
+  }, [phase, triggerFirework]);
+
+  const getScoreMessage = (score: number, base: number) => {
+    if (base === 0) return "Did you even try?";
+    
+    const pct = score / base;
+    
+    if (pct >= 0.85) {
+      return (
+        <>
+          If you made it this far and you didn't have fun, then what's the point of the journey?<br/>
+          <span style={{ fontSize: '0.8em', opacity: 0.8 }}>Enjoy the figuring it out as much as the figured it out. - Opticalllliusions</span>
+        </>
+      );
+    }
+    if (pct >= 0.50) {
+      return (
+        <>
+          Try closing your eyes and see if<br/>
+          there is any improvements.
+        </>
+      );
+    }
+    if (pct >= 0.20) {
+      return (
+        <>
+          Based on this score you must have<br/>
+          accidentally hit something.
+        </>
+      );
+    }
+    return (
+      <>
+        If you're going to kill sheep,<br/>
+        you should at least be good.
+      </>
+    );
+  };
+
   const fmt = (n: number) => new Intl.NumberFormat().format(n);
+  const fmtTime = (seconds: number) => {
+    const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+    const s = (seconds % 60).toString().padStart(2, '0');
+    return `${m}:${s}`;
+  };
+
+  const submitScore = async () => {
+    try {
+      const res = await fetch('/api/leaderboard', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: sessionId,
+          name: (playerName || 'AAA').toUpperCase().substring(0, 3),
+          score: stats.score
+        })
+      });
+      const data = await res.json();
+      setLeaderboardData(data);
+      setViewState('leaderboard');
+    } catch(e) {
+      console.error(e);
+      setViewState('leaderboard');
+    }
+  };
+
+  const gtaStyle: React.CSSProperties = {
+    fontFamily: 'system-ui, -apple-system, sans-serif',
+    fontWeight: 800,
+    fontSize: '10vw',
+    letterSpacing: '-4px',
+    whiteSpace: 'nowrap',
+    textTransform: 'uppercase',
+    color: '#fff',
+    lineHeight: 0.85,
+    margin: 0
+  };
+
+  const getKnockoutStyle = (myPhase: number, currentPhase: number, isPersistent = false): React.CSSProperties => {
+    const isWaiting = currentPhase < myPhase;
+    const isGone = leavePhase >= myPhase && !isPersistent;
+    const isActive = !isWaiting && !isGone;
+
+    let transform = 'translate(-50%, -50%)';
+    let opacity = viewState === 'stats' ? 1 : 0;
+    let transition = 'opacity 0.3s';
+
+    if (isWaiting) {
+      transform = 'translate(-50%, -150vh)';
+      opacity = 0;
+      transition = 'none';
+    } else if (isActive) {
+      transform = 'translate(-50%, -50%)';
+      opacity = viewState === 'stats' ? 1 : 0;
+      transition = 'transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.2s'; 
+    } else if (isGone) {
+      transform = 'translate(-50%, 150vh)';
+      opacity = 0;
+      // No easing curve, instant constant velocity
+      transition = 'transform 0.2s linear, opacity 0.2s linear'; 
+    }
+
+    return {
+      position: 'absolute',
+      top: '50%',
+      left: '50%', // Centered horizontally
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center', // Center everything
+      justifyContent: 'center',
+      transform,
+      opacity,
+      transition
+    };
+  };
 
   return (
     <div style={{
       position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
       background: 'transparent',
-      display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-      zIndex: 9999, color: '#fff', fontFamily: '"Rubik", system-ui, -apple-system, sans-serif',
+      overflow: 'hidden',
+      zIndex: 9999, color: '#fff',
       pointerEvents: 'auto',
       opacity: phase >= -1 ? 1 : 0, transition: 'opacity 0.6s'
     }}>
-      <div style={{
-        background: 'linear-gradient(180deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 100%)',
-        backdropFilter: 'blur(24px) saturate(150%)',
-        WebkitBackdropFilter: 'blur(24px) saturate(150%)',
-        border: '1px solid rgba(255, 255, 255, 0.1)',
-        borderTop: '1px solid rgba(255, 255, 255, 0.25)',
-        borderRadius: 24,
-        padding: '32px',
-        width: '640px',
-        height: 'auto',
-        minHeight: '480px',
-        display: 'flex',
-        flexDirection: 'column',
-        boxShadow: '0 30px 60px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1)'
-      }}>
 
-        {/* Header */}
-        <div style={{ marginBottom: 24, textAlign: 'center' }}>
-          <h1 style={{
-            fontSize: 40, fontWeight: 900, letterSpacing: '-1px', margin: '0 0 8px 0',
-            background: 'linear-gradient(180deg, #fff 0%, #a1a1aa 100%)',
-            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'
-          }}>SECTOR CLEARED</h1>
-          <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', margin: 0, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase' }}>Wave Defeated</p>
+      <style>{`
+        /* Removed colored text classes since everything is white now */
+        @keyframes leaderboardDrop {
+          0% { transform: translateY(-100vh); opacity: 0; }
+          100% { transform: translateY(0); opacity: 1; }
+        }
+      `}</style>
+
+      <div style={{ zIndex: 10002, position: 'absolute', inset: 0 }}>
+
+        <div style={getKnockoutStyle(0, phase)}>
+          <span style={gtaStyle}>SHEEP DEFEATED</span>
         </div>
-        {/* Receipt Grid */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, flex: 1, justifyContent: 'center' }}>
-
-          {/* Sheep Row */}
-          <div style={{
-            display: 'flex', alignItems: 'center',
-            background: 'rgba(0,0,0,0.4)', borderRadius: 16, padding: '12px 20px',
-            border: '1px solid rgba(255,255,255,0.05)',
-            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05), 0 4px 12px rgba(0,0,0,0.3)',
-            opacity: phase >= 0 ? 1 : 0, transform: phase >= 0 ? 'translateX(0)' : 'translateX(-20px)', transition: 'all 0.5s'
-          }}>
-            <span style={{ fontSize: 16, color: '#fff', fontWeight: 600, flex: 1 }}>Sheep Defeated</span>
-            <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', fontWeight: 600, letterSpacing: 1, flex: 1, textAlign: 'center' }}>
-              {fmt(stats.kills)} × [ 25,000 ]
-            </span>
-            <span style={{ fontSize: 24, fontWeight: 800, color: '#32d74b', flex: 1, textAlign: 'right', textShadow: '0 0 20px rgba(50, 215, 75, 0.4)' }}>
-              +{fmt(displayBase)}
-            </span>
-          </div>
-
-          {/* Shots Row */}
-          <div style={{
-            display: 'flex', alignItems: 'center',
-            background: 'rgba(0,0,0,0.4)', borderRadius: 16, padding: '12px 20px',
-            border: '1px solid rgba(255,255,255,0.05)',
-            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05), 0 4px 12px rgba(0,0,0,0.3)',
-            opacity: phase >= 1 ? 1 : 0, transform: phase >= 1 ? 'translateX(0)' : 'translateX(-20px)', transition: 'all 0.5s'
-          }}>
-            <span style={{ fontSize: 16, color: '#fff', fontWeight: 600, flex: 1 }}>Shots Fired</span>
-            <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', fontWeight: 600, letterSpacing: 1, flex: 1, textAlign: 'center' }}>
-              {fmt(stats.shots)} × [ 5,000 ]
-            </span>
-            <span style={{ fontSize: 24, fontWeight: 800, color: '#ff453a', flex: 1, textAlign: 'right', textShadow: '0 0 20px rgba(255, 69, 58, 0.4)' }}>
-              -{fmt(displayShotsPen)}
-            </span>
-          </div>
-
-          {/* Time Row */}
-          <div style={{
-            display: 'flex', alignItems: 'center',
-            background: 'rgba(0,0,0,0.4)', borderRadius: 16, padding: '12px 20px',
-            border: '1px solid rgba(255,255,255,0.05)',
-            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05), 0 4px 12px rgba(0,0,0,0.3)',
-            opacity: phase >= 2 ? 1 : 0, transform: phase >= 2 ? 'translateX(0)' : 'translateX(-20px)', transition: 'all 0.5s'
-          }}>
-            <span style={{ fontSize: 16, color: '#fff', fontWeight: 600, flex: 1 }}>Time Elapsed</span>
-            <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', fontWeight: 600, letterSpacing: 1, flex: 1, textAlign: 'center' }}>
-              {fmt(stats.time)}s × [ 15,000 ]
-            </span>
-            <span style={{ fontSize: 24, fontWeight: 800, color: '#ff453a', flex: 1, textAlign: 'right', textShadow: '0 0 20px rgba(255, 69, 58, 0.4)' }}>
-              -{fmt(displayTimePen)}
-            </span>
-          </div>
-
+        <div style={getKnockoutStyle(1, phase)}>
+          <span style={gtaStyle}>{fmt(displayKills)}</span>
+        </div>
+        <div style={getKnockoutStyle(2, phase)}>
+          <span style={gtaStyle}>BONUS</span>
+        </div>
+        <div style={getKnockoutStyle(3, phase)}>
+          <span style={gtaStyle}>+{fmt(displayBase)}</span>
         </div>
 
-        {/* Footer (Score Left, Action Right) */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 24, borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: 24 }}>
-          <div style={{
-            display: 'flex', flexDirection: 'column', alignItems: 'flex-start',
-            opacity: phase >= 3 ? 1 : 0, transform: phase >= 3 ? 'scale(1)' : 'scale(0.95)', transition: 'all 0.7s cubic-bezier(0.34, 1.56, 0.64, 1)'
-          }}>
-            <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.6)', fontWeight: 700, letterSpacing: '4px', textTransform: 'uppercase', marginBottom: 4 }}>Total Score</span>
-            <span style={{
-              fontSize: 48, fontWeight: 800, letterSpacing: '-2px', color: '#32d74b', lineHeight: 1,
-              textShadow: '0 0 40px rgba(50, 215, 75, 0.6), 0 0 10px rgba(50, 215, 75, 0.4)'
-            }}>{fmt(displayScore)}</span>
-          </div>
+        <div style={getKnockoutStyle(4, phase)}>
+          <span style={gtaStyle}>TIME TAKEN</span>
+        </div>
+        <div style={getKnockoutStyle(5, phase)}>
+          <span style={gtaStyle}>{fmtTime(displayTime)}</span>
+        </div>
+        <div style={getKnockoutStyle(6, phase)}>
+          <span style={gtaStyle}>PENALTY</span>
+        </div>
+        <div style={getKnockoutStyle(7, phase)}>
+          <span style={gtaStyle}>-{fmt(displayTimePen)}</span>
+        </div>
 
+        <div style={getKnockoutStyle(8, phase)}>
+          <span style={gtaStyle}>SHOTS FIRED</span>
+        </div>
+        <div style={getKnockoutStyle(9, phase)}>
+          <span style={gtaStyle}>{fmt(displayShots)}</span>
+        </div>
+        <div style={getKnockoutStyle(10, phase)}>
+          <span style={gtaStyle}>PENALTY</span>
+        </div>
+        <div style={getKnockoutStyle(11, phase)}>
+          <span style={gtaStyle}>-{fmt(displayShotsPen)}</span>
+        </div>
+
+        {/* Final Score (Label knocks out, Value persists) */}
+        <div style={getKnockoutStyle(12, phase)}>
+          <span style={gtaStyle}>FINAL SCORE</span>
+        </div>
+        <div style={getKnockoutStyle(13, phase, true)}>
+          <div style={{ position: 'absolute', bottom: '100%', paddingBottom: 'calc(20vh - 100px)', fontFamily: 'var(--font-rubik), sans-serif', fontWeight: 700, fontSize: '3.5vw', color: '#fff', textAlign: 'center', width: '90vw', lineHeight: 1.2 }}>
+            {getScoreMessage(stats.score, stats.base)}
+          </div>
+          <span style={{ ...gtaStyle, fontSize: '14vw' }}>{fmt(displayScore)}</span>
+        </div>
+
+        {/* Phase 4: Action Buttons (Persistent at bottom) */}
+        <div style={{
+           position: 'absolute',
+           bottom: 'calc(8vh + 30px)',
+           left: '50%',
+           transform: phase >= 14 && viewState !== 'name' ? 'translate(-50%, 0)' : 'translate(-50%, 20px)',
+           opacity: phase >= 14 && viewState !== 'name' ? 1 : 0,
+           transition: 'all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1)',
+           pointerEvents: phase >= 14 && viewState !== 'name' ? 'auto' : 'none',
+           zIndex: 10003,
+           display: 'flex',
+           gap: '2vw' // Space them out since they are floating
+        }}>
+          {[
+            { label: 'REPLAY', action: onRestart },
+            { label: 'LEADERS', action: () => { if(viewState !== 'leaderboard') setViewState('name'); } },
+            { label: 'EXIT', action: () => window.location.reload() }
+          ].map(btn => (
+            <button
+              key={btn.label}
+              onClick={btn.action}
+              style={{
+                background: 'rgba(255,255,255,0.1)',
+                backdropFilter: 'blur(16px)', // Glass effect directly on the button
+                border: '1px solid rgba(255,255,255,0.05)', 
+                color: 'white',
+                borderRadius: 999, 
+                padding: '1vw 3vw', 
+                cursor: 'pointer',
+                fontFamily: 'system-ui, -apple-system, sans-serif', 
+                fontSize: '2.5vw', 
+                fontWeight: 700, 
+                textTransform: 'uppercase', 
+                letterSpacing: 0.5,
+                transition: 'all 0.2s'
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.background = 'rgba(255,255,255,0.2)';
+                e.currentTarget.style.border = '1px solid rgba(255,255,255,0.2)';
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.transform = 'scale(1)';
+                e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
+                e.currentTarget.style.border = '1px solid rgba(255,255,255,0.05)';
+              }}
+              onMouseDown={e => e.currentTarget.style.transform = 'scale(0.95)'}
+              onMouseUp={e => e.currentTarget.style.transform = 'scale(1)'}
+            >
+              {btn.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Name Entry State */}
+        <div style={{
+          position: 'absolute', inset: 0,
+          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+          opacity: viewState === 'name' ? 1 : 0,
+          pointerEvents: viewState === 'name' ? 'auto' : 'none',
+          transition: 'opacity 0.3s'
+        }}>
+          <span style={{ ...gtaStyle, fontSize: '6vw', color: '#a1a1aa' }}>NEW HIGH SCORE!</span>
+          <span style={{ ...gtaStyle, fontSize: '4vw', marginBottom: '4vh' }}>ENTER 3 INITIALS</span>
+          <input 
+            maxLength={3} 
+            value={playerName} 
+            onChange={e => setPlayerName(e.target.value.toUpperCase())}
+            placeholder="AAA"
+            style={{ 
+              ...gtaStyle, 
+              background: 'transparent', 
+              border: 'none', 
+              borderBottom: '4px solid #fff', 
+              textAlign: 'center', 
+              width: '40vw', 
+              outline: 'none' 
+            }} 
+          />
           <button
-            onClick={onRestart}
+            onClick={submitScore}
             style={{
-              padding: '12px 32px',
-              height: 'fit-content',
-              background: 'linear-gradient(180deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 100%)',
-              border: '1px solid rgba(255,255,255,0.2)',
-              borderRadius: 999,
-              color: '#fff',
-              fontSize: 14,
-              fontWeight: 600,
-              cursor: 'pointer',
-              transition: 'all 0.3s',
-              opacity: phase === 4 ? 1 : 0,
-              transform: phase === 4 ? 'translateY(0)' : 'translateY(15px)',
-              pointerEvents: phase === 4 ? 'auto' : 'none',
-              boxShadow: '0 8px 24px rgba(0,0,0,0.2)'
+              marginTop: '6vh',
+              padding: '1vw 4vw',
+              background: '#fff',
+              border: 'none',
+              borderRadius: '999px',
+              color: '#000',
+              fontFamily: 'system-ui, -apple-system, sans-serif',
+              fontWeight: 800,
+              fontSize: '3vw',
+              cursor: 'pointer'
             }}
-            onMouseEnter={e => {
-              e.currentTarget.style.background = 'linear-gradient(180deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.1) 100%)';
-              e.currentTarget.style.transform = 'translateY(-2px)';
-              e.currentTarget.style.boxShadow = '0 12px 32px rgba(0,0,0,0.3)';
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.background = 'linear-gradient(180deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 100%)';
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.2)';
-            }}
-            onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.95)' }}
-            onMouseUp={e => { e.currentTarget.style.transform = 'scale(1)' }}
           >
-            Continue
+            SUBMIT
           </button>
+        </div>
+
+        {/* Leaderboard State */}
+        <div style={{
+          position: 'absolute', inset: 0,
+          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+          opacity: viewState === 'leaderboard' ? 1 : 0,
+          pointerEvents: viewState === 'leaderboard' ? 'auto' : 'none',
+          transition: 'opacity 0.3s'
+        }}>
+          {viewState === 'leaderboard' && (
+            <div style={{
+              display: 'flex', flexDirection: 'column', width: '60vw',
+            }}>
+              <div style={{ 
+                ...gtaStyle, 
+                fontSize: '5.3vw', 
+                width: '100%',
+                textAlign: 'center', 
+                whiteSpace: 'nowrap',
+                marginBottom: '4vh', 
+                color: '#fff',
+                animation: 'leaderboardDrop 0.4s ease-out both',
+                animationDelay: '0s'
+              }}>TOP SHEEP PROCESSORS</div>
+              {Array.from({ length: 5 }).map((_, i) => {
+                const row = leaderboardData[i];
+                const isMe = row?.id === sessionId;
+                const color = isMe ? '#ffffff' : '#a1a1aa';
+                
+                // Ranks drop one by one, bottom (4) first, top (0) last
+                const delay = (4 - i) * 0.15;
+                
+                return (
+                  <div key={i} style={{ 
+                    display: 'flex', 
+                    justifyContent: 'space-between', 
+                    marginBottom: '3vh',
+                    animation: 'leaderboardDrop 0.4s ease-out both',
+                    animationDelay: `${delay + 0.3}s` // wait 0.3s after title drops in
+                  }}>
+                    <span style={{ ...gtaStyle, fontSize: '3vw', color, minWidth: '8vw' }}>{i + 1}.</span>
+                    <span style={{ ...gtaStyle, fontSize: '3vw', color, flex: 1, textAlign: 'left', paddingLeft: '2vw' }}>
+                      {row ? row.name : '___'}
+                    </span>
+                    <span style={{ ...gtaStyle, fontSize: '3vw', color }}>
+                      {row ? fmt(row.score) : '---'}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -679,6 +996,10 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const composerRef = useRef<EffectComposer | null>(null);
   const bloomPassRef = useRef<UnrealBloomPass | null>(null);
+  const hBlurPassRef = useRef<ShaderPass | null>(null);
+  const vBlurPassRef = useRef<ShaderPass | null>(null);
+  const victoryBlurActiveRef = useRef(false);
+  const victoryCameraCenterRef = useRef(false);
   const sceneRef = useRef<THREE.Scene | null>(null);
   const cameraRef = useRef<THREE.OrthographicCamera | null>(null);
   const cinematicZoomRef = useRef<number | null>(null);
@@ -699,6 +1020,23 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
   const cheatBlockRef = useRef<string | null>(null);
   const cheatBlockMeshRef = useRef<THREE.Mesh | null>(null);
   const [victoryStats, setVictoryStats] = useState<{ score: number, kills: number, shots: number, time: number, base: number } | null>(null);
+
+  // Sync victory state for camera centering and delayed blur
+  useEffect(() => {
+    if (victoryStats) {
+      // 1. Immediately start centering the camera and fading UI
+      victoryCameraCenterRef.current = true;
+      
+      // 2. Wait for UI to finish fading (800ms), THEN start the WebGL blur
+      const t = setTimeout(() => {
+        victoryBlurActiveRef.current = true;
+      }, 800);
+      return () => clearTimeout(t);
+    } else {
+      victoryCameraCenterRef.current = false;
+      victoryBlurActiveRef.current = false;
+    }
+  }, [victoryStats]);
   const waveUIRef = useRef<HTMLDivElement>(null);
   const mixedGrpRef = useRef<THREE.Group | null>(null); // for mixed-geo mode
   const hexWorldGrpRef = useRef<THREE.Group | null>(null);
@@ -920,6 +1258,20 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
   const partLifeRef = useRef(partLife); useEffect(() => { partLifeRef.current = partLife; }, [partLife]);
   const partSizeRef = useRef(partSize); useEffect(() => { partSizeRef.current = partSize; }, [partSize]);
 
+  // Behind the Scenes State
+  const [isBehindScenesActive, setIsBehindScenesActive] = useState(false);
+  const behindScenesBlurActiveRef = useRef(false);
+  useEffect(() => {
+    const handleToggle = (e: any) => {
+      setIsBehindScenesActive(e.detail.active);
+      behindScenesBlurActiveRef.current = e.detail.active;
+    };
+    window.addEventListener('toggle-webgl-blur', handleToggle);
+    return () => window.removeEventListener('toggle-webgl-blur', handleToggle);
+  }, []);
+
+
+
   const [regenSpeed, setRegenSpeed] = useState<number>(0);
   const [regenFadeSpeed, setRegenFadeSpeed] = useState<number>(0.08);
   const regenSpeedRef = useRef(regenSpeed); useEffect(() => { regenSpeedRef.current = regenSpeed; }, [regenSpeed]);
@@ -995,6 +1347,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
   const [selectedEnergon, setSelectedEnergon] = useState<number | null>(null);
   const [slotsFilled, setSlotsFilled] = useState<boolean[][]>(() => Array(7).fill(null).map(() => Array(5).fill(false)));
 
+
   // ── Treasure Hunters Mode State ────────────────────────────────────────
   const [isTreasureMode, setIsTreasureMode] = useState(false);
   const isTreasureModeRef = useRef(false);
@@ -1017,16 +1370,16 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
   const difficultyRef = useRef<Difficulty>('medium');
   useEffect(() => { difficultyRef.current = difficulty; }, [difficulty]);
 
-  const [renderEngine, setRenderEngine] = useState<RenderEngine>('multimesh');
-  const renderEngineRef = useRef<RenderEngine>('multimesh');
+  const [renderEngine, setRenderEngine] = useState<RenderEngine>(_defaultPreset.renderEngine ?? 'multimesh');
+  const renderEngineRef = useRef<RenderEngine>(renderEngine);
   useEffect(() => { renderEngineRef.current = renderEngine; }, [renderEngine]);
 
-  const [particleDimensionType, setParticleDimensionType] = useState<'2D' | '3D'>('2D');
+  const [particleDimensionType, setParticleDimensionType] = useState<'2D' | '3D'>(_defaultPreset.particleDimensionType ?? '3D');
   const particleDimensionTypeRef = useRef(particleDimensionType); 
   useEffect(() => { particleDimensionTypeRef.current = particleDimensionType; }, [particleDimensionType]);
   
-  const [particlePoolSize, setParticlePoolSize] = useState<number>(200);
-  const particlePoolSizeRef = useRef<number>(200);
+  const [particlePoolSize, setParticlePoolSize] = useState<number>(_defaultPreset.particlePoolSize ?? 200);
+  const particlePoolSizeRef = useRef<number>(particlePoolSize);
   const brokenBlocksRef = useRef<Set<string>>(new Set());
   useEffect(() => { particlePoolSizeRef.current = particlePoolSize; }, [particlePoolSize]);
 
@@ -1042,9 +1395,20 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
       if (sceneRef.current) sceneRef.current.add(particleSystemRef.current.group);
   };
 
-  const [particleRenderAmount, setParticleRenderAmount] = useState<number>(50);
-  const particleRenderAmountRef = useRef<number>(50);
+  const [particleRenderAmount, setParticleRenderAmount] = useState<number>(_defaultPreset.particleRenderAmount ?? 50);
+  const particleRenderAmountRef = useRef<number>(particleRenderAmount);
   useEffect(() => { particleRenderAmountRef.current = particleRenderAmount; }, [particleRenderAmount]);
+
+  const [gpuPartSize, setGpuPartSize] = useState<number>(_defaultPreset.gpuPartSize ?? 1.0);
+  const [gpuPartLife, setGpuPartLife] = useState<number>(_defaultPreset.gpuPartLife ?? 1.0);
+  const [gpuPartSpeed, setGpuPartSpeed] = useState<number>(_defaultPreset.gpuPartSpeed ?? 1.0);
+
+  // Sync OP settings to GPUParticleSystem
+  useEffect(() => {
+      if (renderEngine === 'gpu' && particleSystemRef.current instanceof GPUParticleSystem) {
+          particleSystemRef.current.setSettings(gpuPartSize, gpuPartLife, gpuPartSpeed);
+      }
+  }, [renderEngine, gpuPartSize, gpuPartLife, gpuPartSpeed]);
 
 
   const [isHealingMode, setIsHealingMode] = useState(false);
@@ -1251,6 +1615,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
             carpetCount, carpetDelay, carpetRadius, carpetDepth, carpetRows, carpetCols, carpetSpacing,
             blackholeDepth, blackholeRadius, blackholeDuration, blackholeDelay,
             renderMode,
+            renderEngine, particleDimensionType, particlePoolSize, particleRenderAmount, gpuPartSize, gpuPartLife, gpuPartSpeed,
             enabledShapes: [...enabledShapes],
             brokenBlocks: [...brokenBlocksRef.current],
           }
@@ -1274,7 +1639,8 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
     laserRadius, laserDepth, laserDuration, laserDelay,
     carpetCount, carpetDelay, carpetRadius, carpetDepth, carpetRows, carpetCols, carpetSpacing,
     blackholeDepth, blackholeRadius, blackholeDuration, blackholeDelay,
-    renderMode, enabledShapes, isLoaded, LS_KEY]);
+    renderMode, renderEngine, particleDimensionType, particlePoolSize, particleRenderAmount, gpuPartSize, gpuPartLife, gpuPartSpeed,
+    enabledShapes, isLoaded, LS_KEY]);
 
   // Terrain data (heightmap)
   const terrainRef = useRef<number[][]>([]);
@@ -1308,6 +1674,24 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
       particleSystemRef.current.explode(px, py, pz, force, 5.0, color, isTreasureModeRef.current, calculatedShards, bloomParticlesOnlyRef.current);
     }
   };
+  const triggerFirework = useCallback(() => {
+    if (particleSystemRef.current) {
+      // Spawn randomly in the sky over the terrain
+      const px = (Math.random() - 0.5) * 60;
+      const pz = (Math.random() - 0.5) * 60;
+      const py = 15 + Math.random() * 25; 
+      
+      // Random vibrant firework color
+      const color = new THREE.Color().setHSL(Math.random(), 1.0, 0.6);
+      
+      // Use a larger radius for even bigger explosions
+      const weaponRadius = 6.0;
+      const force = 2.0 + (weaponRadius * 1.8);
+      const calculatedShards = Math.min(particleRenderAmountRef.current, Math.max(5, Math.floor(weaponRadius * 5.5)));
+      
+      particleSystemRef.current.explode(px, py, pz, force, 5.0, color, isTreasureModeRef.current, calculatedShards, bloomParticlesOnlyRef.current);
+    }
+  }, []);
 
   const triggerWeaponImpact = useCallback((hx: number, hy: number, hz: number, radius: number, depth: number, partSpeedOverride?: number, innerRadius: number = 0) => {
     // 1. Sheep physical blast wave response
@@ -2165,8 +2549,19 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
     // TiltShift: blurs edges, keeps center sharp
     const tiltPass = new ShaderPass(RadialDOFShader);
     composer.addPass(tiltPass);
+
+    // Dynamic Fullscreen Blur for Victory Screen
+    const hBlurPass = new ShaderPass(HorizontalBlurShader);
+    const vBlurPass = new ShaderPass(VerticalBlurShader);
+    hBlurPass.uniforms.h.value = 0;
+    vBlurPass.uniforms.v.value = 0;
+    composer.addPass(hBlurPass);
+    composer.addPass(vBlurPass);
+
     composerRef.current = composer;
     bloomPassRef.current = bloom;
+    hBlurPassRef.current = hBlurPass;
+    vBlurPassRef.current = vBlurPass;
     tiltPassRef.current = tiltPass;
 
     const controls = new OrbitControls(camera, renderer.domElement);
@@ -2255,6 +2650,8 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
       shadowPlane.rotation.x = -Math.PI / 2;
       shadowPlane.position.y = -0.5; // Just below the lowest blocks
       scene.add(shadowPlane);
+      
+
       shadowPlaneRef.current = shadowPlane; // Save for 7.83Hz pulsing
     }
 
@@ -2303,6 +2700,32 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
       rafRef.current = requestAnimationFrame(loop);
       controls.update();
 
+      // Animate Camera Centering for Victory Screen
+      if (victoryCameraCenterRef.current && cameraRef.current) {
+        // Smoothly pan camera target to exact center of the board
+        controls.target.lerp(new THREE.Vector3(0, 0, 0), 0.04);
+        needsRenderRef.current = true;
+      }
+
+      // Animate WebGL Blur for Victory Screen OR Behind the Scenes
+      if (hBlurPassRef.current && vBlurPassRef.current) {
+        // Blur activates only after UI has faded, or immediately for Behind the Scenes
+        const blurActive = victoryBlurActiveRef.current || behindScenesBlurActiveRef.current;
+        const targetBlurH = blurActive ? 1.5 / window.innerWidth : 0;
+        const targetBlurV = blurActive ? 1.5 / window.innerHeight : 0;
+        const currentBlurH = hBlurPassRef.current.uniforms.h.value;
+        const currentBlurV = vBlurPassRef.current.uniforms.v.value;
+        
+        if (Math.abs(currentBlurH - targetBlurH) > 0.0001) {
+          hBlurPassRef.current.uniforms.h.value += (targetBlurH - currentBlurH) * 0.1;
+          vBlurPassRef.current.uniforms.v.value += (targetBlurV - currentBlurV) * 0.1;
+          needsRenderRef.current = true;
+        } else if (currentBlurH !== targetBlurH) {
+          hBlurPassRef.current.uniforms.h.value = targetBlurH;
+          vBlurPassRef.current.uniforms.v.value = targetBlurV;
+        }
+      }
+
       if (cinematicZoomRef.current !== null && cameraRef.current) {
         const diff = cinematicZoomRef.current - cameraRef.current.zoom;
         if (Math.abs(diff) > 0.001) {
@@ -2316,6 +2739,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
         }
       }
 
+
       const cdNow = Date.now();
       const wpnList = ['scatter', 'artillery', 'flyover', 'laser', 'quake', 'carpet', 'blackhole'];
       for (let i = 0; i < wpnList.length; i++) {
@@ -2323,14 +2747,6 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
         const cd = WEAPON_COOLDOWNS[w];
         const lastFired = weaponCooldownsRef.current[w] || 0;
         const elapsed = cdNow - lastFired;
-        const el = document.getElementById(`cooldown-${w}`);
-        if (el) {
-          if (elapsed < cd) {
-            el.style.height = `${(1 - (elapsed / cd)) * 100}%`;
-          } else {
-            el.style.height = '0%';
-          }
-        }
 
         // Update mouse cursor cooldown circle for the currently selected weapon
         if (selectedWeaponRef.current === w) {
@@ -2510,29 +2926,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
         if (activeExplosionCount > 0) anyParticleAlive = true;
       }
 
-      // ── UI Cooldown Progress Bar Update ──
-      if (document.getElementsByClassName) {
-        const bars = document.getElementsByClassName('wpn-cooldown-bar');
-        if (bars.length > 0) {
-          let pendingExplosions = 0;
-          const wPrjs = weaponEngineRef.current ? weaponEngineRef.current.getProjectiles() : [];
-          for (let p = 0; p < wPrjs.length; p++) {
-            const wpt = wPrjs[p].type;
-            if (wpt === 'scatter') pendingExplosions += scatterCountRef.current;
-            else if (wpt === 'artillery') pendingExplosions += 1;
-            else if (wpt === 'flyover') pendingExplosions += 8;
-            else if (wpt === 'laser') pendingExplosions += 20;
-            else if (wpt === 'seismic') pendingExplosions += 15;
-            else if (wpt === 'carpet') pendingExplosions += 25;
-            else if (wpt === 'blackhole') pendingExplosions += 12;
-          }
-          const ratio = Math.min(1.0, (activeExplosionCount + pendingExplosions) / 150);
-          const wStr = `${(ratio * 100).toFixed(1)}%`;
-          for (let idx = 0; idx < bars.length; idx++) {
-            (bars[idx] as HTMLElement).style.width = wStr;
-          }
-        }
-      }
+
 
       if (anyParticleAlive) needsRenderRef.current = true;
 
@@ -3812,7 +4206,6 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
   return (
     <div style={{ display: 'flex', width: '100vw', height: '100vh', position: 'relative', overflow: 'hidden', background: 'radial-gradient(ellipse at 50% 55%, #5ba4ff 0%, #2a319c 35%, #16003b 75%, #0d0024 100%)', touchAction: 'none', opacity: isGameboardExited ? 0 : 1, transition: 'opacity 0.5s ease' }}>
 
-
       {/* ── Three.js canvas ───────────────────────────────────────── */}
       <div ref={mountRef} className="game-canvas-wrapper" style={{ flex: 1, position: 'relative', display: 'flex', flexDirection: 'column' }}>
         <style>{`
@@ -3823,10 +4216,13 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
           }
         `}</style>
 
+        {/* ── Behind the Scenes Crawl ── */}
+
+
         {/* ── UI Elements Overlay (Fades in, fades out separately) ── */}
         <div style={{
           position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none',
-          opacity: (isLoaded && !isGameboardExited) ? 1 : 0, transition: 'opacity 0.8s ease-out', zIndex: 100
+          opacity: (isLoaded && !isGameboardExited && !victoryStats && !isBehindScenesActive) ? 1 : 0, transition: 'opacity 0.8s ease-out', zIndex: 100
         }}>
           {/* Pink box removed */}
           {/* Close Game Button */}
@@ -4165,6 +4561,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
                     />
                   </div>
                 </div>
+
               </div>
             </div>
           </div>
@@ -4212,6 +4609,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
                   <div onClick={() => setSettingsWeapon(null)} style={{ cursor: 'pointer', opacity: 0.5 }}>✕</div>
                 </div>
 
+                <SmoothHeight>
                 {settingsWeapon === 'scatter' && (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                     <CfgSlider label="Blast Radius" min={1} max={10} step={1} value={scatterRadius} baseline={3} onChange={setScatterRadius} accent="#ff3b30" />
@@ -4219,16 +4617,6 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
                     <CfgSlider label="Scatter Depth" min={1} max={8} step={1} value={scatterDepth} baseline={3} onChange={setScatterDepth} accent="#ff3b30" />
                     <CfgSlider label="Delay (ms)" min={0} max={1000} step={50} value={scatterDelay} baseline={0} onChange={setScatterDelay} accent="#ff3b30" />
                     <CfgSlider label="Particle Speed" min={0.5} max={10} step={0.5} value={scatterPartSpeed} baseline={2} onChange={setScatterPartSpeed} accent="#ff3b30" />
-                    <div style={{
-                      fontSize: 11,
-                      color: 'rgba(255,255,255,0.4)',
-                      textAlign: 'center',
-                      textTransform: 'uppercase',
-                      letterSpacing: 1,
-                      marginTop: 12
-                    }}>
-                      Hold weapon for balance adjustments
-                    </div>
                   </div>
                 )}
 
@@ -4294,6 +4682,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
                     <CfgSlider label="Particle Speed" min={0.1} max={10} step={0.1} value={blackholePartSpeed} baseline={1} onChange={setBlackholePartSpeed} accent="#af52de" />
                   </div>
                 )}
+                </SmoothHeight>
                 {/* Global Weapon Post-Processing removed by user request */}
               </div>
 
@@ -4323,7 +4712,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
                 transition: 'opacity 0.3s',
                 opacity: settingsWeapon ? 0 : 1 // Hide when drawer is open so it doesn't clutter
               }}>
-                Press and hold weapon for 1 sec to balance system
+                Press and hold weapon to balance system
               </div>
 
 
@@ -4416,6 +4805,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
           text-transform: capitalize;
         }
       `}</style>
+
       <div className="apple-pref-panel" style={{
         position: 'absolute',
         bottom: 40,
@@ -4429,10 +4819,11 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
         padding: isSidebarMin ? 0 : '24px 20px',
         display: 'flex', flexDirection: 'column',
         overflow: 'hidden', backdropFilter: 'blur(40px) saturate(150%)', flexShrink: 0,
-        transition: 'all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1)',
+        transition: 'all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1)',
         boxShadow: '0 24px 48px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.05) inset',
         color: '#ffffff',
-        pointerEvents: 'auto',
+        pointerEvents: (victoryStats || isBehindScenesActive) ? 'none' : 'auto',
+        opacity: (victoryStats || isBehindScenesActive) ? 0 : 1,
       }}>
         {!isSidebarMin ? (
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: 16, marginBottom: 16, borderBottom: '1px solid rgba(255,255,255,0.1)', flexShrink: 0 }}>
@@ -4464,6 +4855,29 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
           {/* Mode Selection Removed as per request */}
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12, flex: 1, overflowY: 'auto', paddingRight: 4, paddingBottom: 60 }}>
+
+            {renderEngine === 'gpu' && (
+              <div className="apple-card">
+                <div className="apple-card-title">OP Optimized Settings</div>
+                <>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, padding: '6px 12px', marginTop: 4 }}>
+                    <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.6)', fontWeight: 600 }}>Size</span>
+                    <input type="range" min="0.1" max="5" step="0.1" value={gpuPartSize} onChange={(e) => setGpuPartSize(Number(e.target.value))} style={{ width: 60 }} />
+                    <span style={{ fontSize: 11, color: '#0a84ff', fontWeight: 700, width: 24, textAlign: 'right' }}>{gpuPartSize.toFixed(1)}</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, padding: '6px 12px', marginTop: 4 }}>
+                    <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.6)', fontWeight: 600 }}>Life</span>
+                    <input type="range" min="0.1" max="5" step="0.1" value={gpuPartLife} onChange={(e) => setGpuPartLife(Number(e.target.value))} style={{ width: 60 }} />
+                    <span style={{ fontSize: 11, color: '#0a84ff', fontWeight: 700, width: 24, textAlign: 'right' }}>{gpuPartLife.toFixed(1)}</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, padding: '6px 12px', marginTop: 4 }}>
+                    <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.6)', fontWeight: 600 }}>Speed</span>
+                    <input type="range" min="0.1" max="5" step="0.1" value={gpuPartSpeed} onChange={(e) => setGpuPartSpeed(Number(e.target.value))} style={{ width: 60 }} />
+                    <span style={{ fontSize: 11, color: '#0a84ff', fontWeight: 700, width: 24, textAlign: 'right' }}>{gpuPartSpeed.toFixed(1)}</span>
+                  </div>
+                </>
+              </div>
+            )}
 
             {layoutTab === 'custom' && (<>
               {/* ── HEX ALTAR WORLD ── */}
@@ -4859,7 +5273,8 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
       {/* ── Victory Screen ── */}
       {victoryStats && (
         <AnimatedVictoryScreen
-          stats={victoryStats}
+            stats={victoryStats}
+            triggerFirework={triggerFirework}
           onRestart={() => {
             const { sheepCount, unlockedWeapons } = getWaveParams(1, difficultyRef.current);
 
@@ -4895,7 +5310,8 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
             }
           }}
         />
-      )}    {/* ── Mouse Cooldown Overlay ── */}
+      )}
+      {/* ── Mouse Cooldown Overlay ── */}
       <div
         id="mouse-cooldown-overlay"
         style={{

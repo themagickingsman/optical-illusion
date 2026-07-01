@@ -941,6 +941,7 @@ function AnimatedVictoryScreen({ stats, onRestart, triggerFirework }: { stats: {
             placeholder="AAA"
             style={{ 
               ...gtaStyle, 
+              fontSize: '8vw',
               background: 'transparent', 
               border: 'none', 
               borderBottom: '4px solid #fff', 

@@ -11,10 +11,46 @@ export interface LeaderboardEntry {
 
 const DATA_FILE = path.join(process.cwd(), 'src', 'data', 'leaderboard.json');
 
+async function getScores(): Promise<LeaderboardEntry[]> {
+  if (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
+    try {
+      const res = await fetch(`${process.env.KV_REST_API_URL}/get/leaderboard`, {
+        headers: { Authorization: `Bearer ${process.env.KV_REST_API_TOKEN}` },
+        cache: 'no-store'
+      });
+      const data = await res.json();
+      if (data.result) {
+        return JSON.parse(data.result);
+      }
+    } catch (e) {
+      console.error('KV get failed', e);
+    }
+    return [];
+  } else {
+    try {
+      const data = await fs.readFile(DATA_FILE, 'utf-8');
+      return JSON.parse(data) as LeaderboardEntry[];
+    } catch (error) {
+      return [];
+    }
+  }
+}
+
+async function setScores(scores: LeaderboardEntry[]) {
+  if (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
+    await fetch(`${process.env.KV_REST_API_URL}/set/leaderboard`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${process.env.KV_REST_API_TOKEN}` },
+      body: JSON.stringify(JSON.stringify(scores)) // Upstash REST requires the value to be stringified as the body
+    });
+  } else {
+    await fs.writeFile(DATA_FILE, JSON.stringify(scores, null, 2), 'utf-8');
+  }
+}
+
 export async function GET() {
   try {
-    const data = await fs.readFile(DATA_FILE, 'utf-8');
-    const scores = JSON.parse(data) as LeaderboardEntry[];
+    const scores = await getScores();
     return NextResponse.json(scores);
   } catch (error) {
     return NextResponse.json([]);
@@ -25,13 +61,7 @@ export async function POST(request: Request) {
   try {
     const body = await request.json() as LeaderboardEntry;
     
-    let scores: LeaderboardEntry[] = [];
-    try {
-      const data = await fs.readFile(DATA_FILE, 'utf-8');
-      scores = JSON.parse(data);
-    } catch (e) {
-      // File might not exist yet, ignore
-    }
+    let scores = await getScores();
 
     // Ensure we only add valid scores
     if (body.name && typeof body.score === 'number' && body.id) {
@@ -49,7 +79,7 @@ export async function POST(request: Request) {
     // Keep top 5
     scores = scores.slice(0, 5);
 
-    await fs.writeFile(DATA_FILE, JSON.stringify(scores, null, 2), 'utf-8');
+    await setScores(scores);
 
     return NextResponse.json(scores);
   } catch (error) {

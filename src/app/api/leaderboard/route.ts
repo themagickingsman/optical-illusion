@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import fs from 'fs/promises';
 import path from 'path';
 
+export const dynamic = 'force-dynamic';
+
 export interface LeaderboardEntry {
   id: string;
   name: string;
@@ -20,7 +22,8 @@ async function getScores(): Promise<LeaderboardEntry[]> {
       });
       const data = await res.json();
       if (data.result) {
-        return JSON.parse(data.result);
+        const parsed = JSON.parse(data.result);
+        return Array.isArray(parsed) ? parsed : [];
       }
     } catch (e) {
       console.error('KV get failed', e);
@@ -82,8 +85,8 @@ export async function POST(request: Request) {
     await setScores(scores);
 
     return NextResponse.json(scores);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Failed to post score', error);
-    return NextResponse.json({ error: 'Failed to save score' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to save score: ' + (error.message || String(error)) }, { status: 500 });
   }
 }

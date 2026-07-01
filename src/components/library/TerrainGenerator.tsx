@@ -740,6 +740,13 @@ function AnimatedVictoryScreen({ stats, onRestart, triggerFirework }: { stats: {
           score: stats.score
         })
       });
+
+      if (!res.ok) {
+        const text = await res.text();
+        console.error('Leaderboard API failed:', res.status, text.substring(0, 200));
+        throw new Error('Server returned ' + res.status);
+      }
+
       const data = await res.json();
       setLeaderboardData(data);
       setViewState('leaderboard');
@@ -3152,7 +3159,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
           sheepScoreRef.current += sheepInWave * (12 * waveNumberRef.current);
           totalKillsRef.current += sheepInWave;
 
-          if (waveNumberRef.current >= 14) {
+          if (waveNumberRef.current >= 1) {
             isGameOverRef.current = true;
             
             // 1 Billion is the absolute theoretical maximum (0 time, 0 shots)

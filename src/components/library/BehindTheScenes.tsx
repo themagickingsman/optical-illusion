@@ -208,8 +208,8 @@ export function BehindTheScenes({ show, onClose }: { show: boolean; onClose: () 
       }} />
 
       {show && showHireForm && (
-        <div style={{ position: 'absolute', inset: 0, zIndex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          <div style={{ position: 'absolute', top: 40, right: 40, zIndex: 10 }}>
+        <div style={{ position: 'absolute', inset: 0, zIndex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+          <div style={{ marginBottom: 50, zIndex: 10 }}>
             <button onClick={onClose} style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.3)', color: '#fff', padding: '12px 24px', borderRadius: 30, cursor: 'pointer', fontSize: 18, transition: 'background 0.2s' }} onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>Close</button>
           </div>
           <HireMeView />
@@ -257,7 +257,7 @@ export function BehindTheScenes({ show, onClose }: { show: boolean; onClose: () 
               
               <FocusParagraph style={{ minHeight: '80vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
                 <h2 style={{ fontSize: 64, fontWeight: 700, color: '#fff', textAlign: 'center', letterSpacing: '-0.03em', lineHeight: 1.2, maxWidth: 900, margin: '0' }}>
-                  What we designed is 100% real,<br/>mathematically sound, and incredibly powerful.
+                  What we designed is 100% real, mathematically sound,<br/>and incredibly powerful.
                 </h2>
               </FocusParagraph>
 
@@ -265,9 +265,9 @@ export function BehindTheScenes({ show, onClose }: { show: boolean; onClose: () 
                 <h2 style={{ fontSize: 64, fontWeight: 700, color: '#03FFC0', textAlign: 'center', letterSpacing: '-0.03em', lineHeight: 1.1, margin: '0' }}>
                   Asset Key
                 </h2>
-                <p style={{ fontSize: 32, fontWeight: 400, color: 'rgba(255,255,255,0.8)', textAlign: 'center', lineHeight: 1.5, maxWidth: 900, marginTop: 32 }}>
-                  When you click <strong style={{color:'#fff'}}>“Copy Asset Key”</strong>, we are distilling the entire state of that procedural engine—the noise seeds, the exact colors, the octaves, the post-processing variables—into a highly compressed, base64-encoded JSON string.
-                </p>
+                <h2 style={{ fontSize: 48, fontWeight: 700, color: '#fff', textAlign: 'center', letterSpacing: '-0.03em', lineHeight: 1.3, maxWidth: 1100, margin: '32px 0 0 0' }}>
+                  When you click <strong style={{color:'#03FFC0'}}>“Copy Asset Key”</strong>, we are distilling the entire state of that procedural engine—the noise seeds, the exact colors, the octaves, the post-processing variables—into a highly compressed, base64-encoded JSON string.
+                </h2>
               </FocusParagraph>
 
               <FocusParagraph style={{ minHeight: '80vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>

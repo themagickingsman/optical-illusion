@@ -2794,6 +2794,12 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
           const backdrop = document.getElementById('mouse-cooldown-backdrop');
           
           if (cursorCircle && overlayContainer && bgTrack && backdrop) {
+            // Fast fade out if game ended
+            if (victoryCameraCenterRef.current) {
+              overlayContainer.style.opacity = '0';
+              continue;
+            }
+
             if (elapsed < cd) {
               overlayContainer.style.opacity = '1';
               if (elapsed < 80) {

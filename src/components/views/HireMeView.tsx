@@ -5,7 +5,16 @@ import { useChatLogic } from "@/hooks/useChatLogic";
 import GameMosaic from "./GameMosaic";
 
 export default function HireMeView() {
-  const [sessionId] = useState(() => "session_" + Date.now() + "_" + Math.floor(Math.random() * 1000));
+  const [sessionId, setSessionId] = useState("");
+
+  useEffect(() => {
+    let sid = document.cookie.split('; ').find(row => row.startsWith('chat_session='))?.split('=')[1];
+    if (!sid) {
+      sid = "session_" + Date.now() + "_" + Math.floor(Math.random() * 1000);
+      document.cookie = `chat_session=${sid}; path=/; max-age=31536000`;
+    }
+    setSessionId(sid);
+  }, []);
   
   // NDA State
   const [ndaLink, setNdaLink] = useState("");
@@ -35,7 +44,7 @@ export default function HireMeView() {
   ]);
 
   // Merge local tutorial messages with DB messages
-  const allMessages = tutorialStep < 1 ? localMessages : [...localMessages, ...dbMessages];
+  const allMessages = (tutorialStep < 1 && dbMessages.length === 0) ? localMessages : [...localMessages, ...dbMessages];
 
   // Auto-scroll to bottom
   useEffect(() => {

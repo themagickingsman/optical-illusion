@@ -86,7 +86,7 @@ export function useChatLogic(sessionId: string) {
         id: (Date.now() + 1).toString(),
         profileId: sessionId,
         sender: 'admin',
-        text: "Thank you for reaching out.\nLeave your email address and you'll get an email notification when I respond.\nCurrent response time: 1 hour",
+        text: "Message Received\nCurrent response time: 1 hour",
         timestamp: new Date().toISOString()
       };
       await fetch('/api/chat', {

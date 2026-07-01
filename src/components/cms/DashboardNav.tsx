@@ -58,9 +58,8 @@ export default function DashboardNav({ tabs, activeTab, onTabChange }: Dashboard
             onPointerDown={(e) => {
               if (e.button === 0) {
                 e.preventDefault();
-                // We use shallow routing if possible, but actually we want the URL to change 
-                // cleanly to the rewrite path so the user can copy it.
-                router.push(`/cms/${tab.id}`);
+                // We just use standard query parameters instead of fighting Next.js App Router's client-side rewrite limitations.
+                router.push(`?tab=${tab.id}`, { scroll: false });
                 onTabChange(tab.id); // visually update immediately
               }
             }}

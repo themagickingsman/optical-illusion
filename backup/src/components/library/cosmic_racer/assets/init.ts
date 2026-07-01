@@ -1,1 +1,0 @@
-// UGCS Assets Directory Initialization

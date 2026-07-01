@@ -1,1 +1,0 @@
-// UGCS Sync Directory Initialization

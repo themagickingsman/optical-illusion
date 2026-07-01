@@ -53,7 +53,7 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
 
   return {
     title,
-    description: 'Explore the universe of web-based optical illusions and interactive WebGL experiences.',
+    description: 'We architect front-end UI/UX for seamless Unity and Unreal integration via AI and secure MCP protocols.',
   };
 }
 

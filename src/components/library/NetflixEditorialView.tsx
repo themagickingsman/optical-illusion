@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import Image from 'next/image';
 import { Key } from 'lucide-react';
 import { useGamepadNavigation } from '@/hooks/useGamepadNavigation';
+import { useAnalytics } from '@/hooks/useAnalytics';
 
 interface NetflixEditorialViewProps {
   app: any;
@@ -11,6 +12,7 @@ interface NetflixEditorialViewProps {
 }
 
 export default function NetflixEditorialView({ app, activeItem, setActiveItem, onGetClick }: NetflixEditorialViewProps) {
+  const { trackEvent } = useAnalytics();
   const roster = [app, ...(app.components || [])];
 
   const { activeIndex, setMouseActiveIndex } = useGamepadNavigation({
@@ -68,7 +70,10 @@ export default function NetflixEditorialView({ app, activeItem, setActiveItem, o
           return (
             <button
               key={item.id}
-              onClick={() => setActiveItem(item)}
+              onClick={() => {
+                setActiveItem(item);
+                trackEvent('carousel_item_clicked', { item_index: index, item_id: item.id, item_title: itemTitle });
+              }}
               onMouseEnter={() => setMouseActiveIndex(index)}
               className={`relative group flex-shrink-0 w-32 md:w-36 aspect-[3/4] rounded-xl overflow-hidden transition-all duration-300 ease-out ${
                 isSelected 

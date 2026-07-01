@@ -54,6 +54,7 @@ import { GlobalInstancedParticleSystem } from '../../lib/particles/GlobalInstanc
 import { GPUParticleSystem } from '../../lib/particles/GPUParticleSystem';
 import { useWeaponSystem, WEAPON_COOLDOWNS } from './weapons/useWeaponSystem';
 import { WeaponEngine } from './weapons/WeaponEngine';
+import { useAnalytics } from '@/hooks/useAnalytics';
 
 export type RenderEngine = 'multimesh' | 'global' | 'gpu';
 
@@ -1027,8 +1028,13 @@ function AnimatedVictoryScreen({ stats, onRestart, triggerFirework }: { stats: {
 }
 
 export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExit, onLoadComplete }: { lsKey?: string, onClose?: () => void, onStartExit?: () => void, onLoadComplete?: () => void } = {}) {
+  const { trackEvent } = useAnalytics();
   const [inspectorTab, setInspectorTab] = useState<'geometry' | 'lighting' | 'materials' | 'effects' | 'presets'>('geometry');
   const mountRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    trackEvent('game_started', { game_name: 'raid_defense' });
+  }, []);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const composerRef = useRef<EffectComposer | null>(null);
   const bloomPassRef = useRef<UnrealBloomPass | null>(null);
@@ -1060,6 +1066,13 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
   // Sync victory state for camera centering and delayed blur
   useEffect(() => {
     if (victoryStats) {
+      trackEvent('game_milestone_reached', { 
+        game_name: 'raid_defense',
+        milestone_type: 'victory',
+        score: victoryStats.score,
+        kills: victoryStats.kills
+      });
+
       // 1. Immediately start centering the camera and fading UI
       victoryCameraCenterRef.current = true;
       

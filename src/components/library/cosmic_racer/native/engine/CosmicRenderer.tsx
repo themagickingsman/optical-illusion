@@ -2197,6 +2197,10 @@ export default function CosmicRenderer({
              paramsRef.current.cruiseMode = false;
          }
          isIdleScreensaverActive = false;
+         if (typeof window !== 'undefined' && window.gtag && !(window as any)._trackedShipInput) {
+             window.gtag('event', 'ship_control_first_input', { input_type: 'keyboard' });
+             (window as any)._trackedShipInput = true;
+         }
          e.preventDefault();
       }
     };

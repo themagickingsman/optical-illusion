@@ -1,4 +1,5 @@
 import React from "react";
+import { useRouter } from "next/navigation";
 
 export interface DashboardTab {
   id: string;
@@ -13,6 +14,8 @@ interface DashboardNavProps {
 }
 
 export default function DashboardNav({ tabs, activeTab, onTabChange }: DashboardNavProps) {
+  const router = useRouter();
+  
   return (
     <nav style={{
       display: "flex",
@@ -55,7 +58,10 @@ export default function DashboardNav({ tabs, activeTab, onTabChange }: Dashboard
             onPointerDown={(e) => {
               if (e.button === 0) {
                 e.preventDefault();
-                onTabChange(tab.id);
+                // We use shallow routing if possible, but actually we want the URL to change 
+                // cleanly to the rewrite path so the user can copy it.
+                router.push(`/cms/${tab.id}`);
+                onTabChange(tab.id); // visually update immediately
               }
             }}
             className={`dashboard-tab ${isActive ? 'active' : ''}`}

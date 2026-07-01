@@ -6,8 +6,16 @@ export type SortOption = 'Popularity' | 'Rating' | 'A-Z' | 'Newest';
 
 export function useLibraryLogic() {
   const [items, setItems] = useState<any[]>([]);
-  const [activeCategory, setActiveCategory] = useQueryState<string>('category', 'All');
+  const [activeCategoryState, setActiveCategoryState] = useQueryState<string>('category', 'All');
   const [sortOption, setSortOption] = useQueryState<SortOption>('sort', 'Popularity');
+
+  const setActiveCategory = (cat: string) => {
+    setActiveCategoryState(cat);
+    setTimeout(() => {
+      const cleanPath = cat === 'All' ? '/library/all' : `/library/${cat.toLowerCase()}`;
+      window.history.replaceState(null, '', cleanPath);
+    }, 50);
+  };
 
   // Load initial data
   useEffect(() => {
@@ -33,8 +41,8 @@ export function useLibraryLogic() {
     let result = [...items];
 
     // Filter by category
-    if (activeCategory !== 'All') {
-      result = result.filter(item => item.category === activeCategory);
+    if (activeCategoryState !== 'All') {
+      result = result.filter(item => item.category === activeCategoryState);
     }
 
     // Sort
@@ -55,7 +63,7 @@ export function useLibraryLogic() {
     });
 
     return result;
-  }, [items, activeCategory, sortOption]);
+  }, [items, activeCategoryState, sortOption]);
 
   // Keep compatibility with the previous useEngines where possible
   const addEngine = async (newEngine: any) => {
@@ -73,7 +81,7 @@ export function useLibraryLogic() {
   return {
     engines: filteredAndSortedItems, // Return as 'engines' for backward compatibility
     isLoading: false,
-    activeCategory,
+    activeCategory: activeCategoryState,
     setActiveCategory,
     categories,
     sortOption,

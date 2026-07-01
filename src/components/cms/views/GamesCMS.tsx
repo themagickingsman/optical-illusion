@@ -246,7 +246,11 @@ export default function GamesCMS() {
     }
 
     if (engines[index]) {
-      setSelectedEngineId(engines[index].id);
+      const selected = engines[index];
+      setSelectedEngineId(selected.id);
+      setTimeout(() => {
+        window.history.replaceState(null, '', `/games/${selected.id}`);
+      }, 50);
     }
   };
 

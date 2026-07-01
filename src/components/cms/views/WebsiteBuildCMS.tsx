@@ -77,7 +77,14 @@ export default function WebsiteBuildCMS() {
     // To cleanly navigate and simultaneously clear any open project engines, 
     // we use a single atomic router.push. Calling setPreviewMode simultaneously 
     // causes Next.js router race conditions.
-    router.push(`?tab=build&preview=${tab}`);
+    router.push(`?tab=build&preview=${tab}`, { scroll: false });
+    
+    // Visually update the URL bar to the clean path for SEO/Sharing
+    // (We do this after a micro-delay to let Next.js finish its query string routing)
+    setTimeout(() => {
+      const cleanPath = tab === 'home' ? '/about' : `/${tab}`;
+      window.history.replaceState(null, '', cleanPath);
+    }, 50);
   };
 
   // Reset scroll position when switching tabs

@@ -25,6 +25,7 @@ export const metadata: Metadata = {
 
 import { MasterControllerProvider } from "@/core/MasterController";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
+import { Suspense } from "react";
 
 export default function RootLayout({
   children,
@@ -43,7 +44,9 @@ export default function RootLayout({
           </main>
         </MasterControllerProvider>
         {process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID && (
-          <GoogleAnalytics GA_MEASUREMENT_ID={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID} />
+          <Suspense fallback={null}>
+            <GoogleAnalytics GA_MEASUREMENT_ID={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID} />
+          </Suspense>
         )}
       </body>
     </html>

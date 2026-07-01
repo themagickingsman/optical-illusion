@@ -305,7 +305,7 @@ export default function GamesCMS() {
           letterSpacing: '-0.01em',
           fontWeight: 500
         }}>
-          Copy assets keys from components. Login to load the components into Unity/ Unreal
+          Creative Direction + Tech Art + Integration
         </p>
       </div>
       

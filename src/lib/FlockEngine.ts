@@ -33,6 +33,15 @@ export class FlockEngine {
     private dummy = new THREE.Object3D();
     public config: FlockConfig;
 
+    // ── Reusable Vectors for Zero-Allocation Loop ──
+    private static _align = new THREE.Vector3();
+    private static _coh = new THREE.Vector3();
+    private static _sep = new THREE.Vector3();
+    private static _diff = new THREE.Vector3();
+    private static _fleeVec = new THREE.Vector3();
+    private static _nextPos = new THREE.Vector3();
+    private static _velDelta = new THREE.Vector3();
+
     constructor(config: FlockConfig) {
         this.config = config;
 
@@ -269,9 +278,9 @@ export class FlockEngine {
 
             // ── Boids Calculation (Only for ground walking) ──
             if (this.states[i] !== 4 && this.states[i] !== 5) {
-                const align = new THREE.Vector3();
-                const coh = new THREE.Vector3();
-                const sep = new THREE.Vector3();
+                FlockEngine._align.set(0, 0, 0);
+                FlockEngine._coh.set(0, 0, 0);
+                FlockEngine._sep.set(0, 0, 0);
                 let total = 0;
 
                 // Optimization: Random sampling for Boids instead of O(N^2)
@@ -282,13 +291,14 @@ export class FlockEngine {
                     const j = Math.floor(Math.random() * this.mesh.count);
                     if (i !== j && this.states[j] !== 6 && this.states[j] !== 4 && this.states[j] !== 5) {
                         const otherPos = this.positions[j];
-                        const d = pos.distanceTo(otherPos);
+                        const dSq = pos.distanceToSquared(otherPos);
                         
-                        if (d > 0 && d < perceptionRadius) {
-                            align.add(this.velocities[j]);
-                            coh.add(otherPos);
-                            const diff = pos.clone().sub(otherPos).normalize().divideScalar(d);
-                            sep.add(diff);
+                        if (dSq > 0 && dSq < perceptionRadius * perceptionRadius) {
+                            FlockEngine._align.add(this.velocities[j]);
+                            FlockEngine._coh.add(otherPos);
+                            const d = Math.sqrt(dSq);
+                            FlockEngine._diff.subVectors(pos, otherPos).normalize().divideScalar(d);
+                            FlockEngine._sep.add(FlockEngine._diff);
                             total++;
                         }
                     }
@@ -299,12 +309,12 @@ export class FlockEngine {
                 let currentTargetSpeed = c.speed;
                 
                 if (this.scarePoint) {
-                    const distToScare = pos.distanceTo(this.scarePoint);
-                    if (distToScare < this.scareRadius) {
+                    const distToScareSq = pos.distanceToSquared(this.scarePoint);
+                    if (distToScareSq < this.scareRadius * this.scareRadius) {
                         isFleeing = true;
                         // Flee hard away from point
-                        const fleeVec = pos.clone().sub(this.scarePoint).normalize().multiplyScalar(c.speed * 3.0);
-                        vel.add(fleeVec);
+                        FlockEngine._fleeVec.subVectors(pos, this.scarePoint).normalize().multiplyScalar(c.speed * 3.0);
+                        vel.add(FlockEngine._fleeVec);
                         currentTargetSpeed = c.speed * 3.0; // temporary boost
                         this.states[i] = 3; // Fleeing
                         this.stateTimers[i] = 2.0; // panic for 2 seconds
@@ -336,11 +346,11 @@ export class FlockEngine {
                 if (this.states[i] === 0 || this.states[i] === 1) {
                     vel.multiplyScalar(0.9); // slow down to a stop
                 } else if (total > 0 && !isFleeing) {
-                    align.divideScalar(total).normalize().multiplyScalar(c.speed).sub(vel).clampLength(0, maxForce).multiplyScalar(c.alignment);
-                    coh.divideScalar(total).sub(pos).normalize().multiplyScalar(c.speed).sub(vel).clampLength(0, maxForce).multiplyScalar(c.cohesion);
-                    sep.divideScalar(total).normalize().multiplyScalar(c.speed).sub(vel).clampLength(0, maxForce).multiplyScalar(c.separation);
+                    FlockEngine._align.divideScalar(total).normalize().multiplyScalar(c.speed).sub(vel).clampLength(0, maxForce).multiplyScalar(c.alignment);
+                    FlockEngine._coh.divideScalar(total).sub(pos).normalize().multiplyScalar(c.speed).sub(vel).clampLength(0, maxForce).multiplyScalar(c.cohesion);
+                    FlockEngine._sep.divideScalar(total).normalize().multiplyScalar(c.speed).sub(vel).clampLength(0, maxForce).multiplyScalar(c.separation);
                     
-                    vel.add(align).add(coh).add(sep);
+                    vel.add(FlockEngine._align).add(FlockEngine._coh).add(FlockEngine._sep);
                 }
 
                 // ── Edge Avoidance (Steer back towards center) ──
@@ -360,7 +370,8 @@ export class FlockEngine {
             }
 
             // Apply Horizontal Velocity (with cliff avoidance for walkers)
-            const nextPos = pos.clone().add(vel.clone().multiplyScalar(delta));
+            FlockEngine._velDelta.copy(vel).multiplyScalar(delta);
+            const nextPos = FlockEngine._nextPos.copy(pos).add(FlockEngine._velDelta);
             
             // Prevent walkers from stepping into the abyss
             if (this.states[i] !== 4 && this.states[i] !== 5) {

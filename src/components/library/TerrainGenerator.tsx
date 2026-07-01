@@ -657,12 +657,24 @@ function AnimatedVictoryScreen({ stats, onRestart, triggerFirework }: { stats: {
     
     const pct = score / base;
     
-    if (pct >= 0.85) {
+    if (pct >= 0.99) {
       return (
-        <>
-          If you made it this far and you didn't have fun, then what's the point of the journey?<br/>
-          <span style={{ fontSize: '0.8em', opacity: 0.8 }}>Enjoy the figuring it out as much as the figured it out. - Opticalllliusions</span>
-        </>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5vh', alignItems: 'center', marginTop: '175px' }}>
+          <div style={{ fontWeight: 700, lineHeight: 1.2, textAlign: 'center' }}>
+            <span style={{ fontSize: '4.5vw' }}>You did it!</span><br/>
+            <span style={{ fontSize: '2.5vw' }}>You have mastered one more thing on your journey in life.</span>
+          </div>
+        </div>
+      );
+    }
+    if (pct >= 0.90) {
+      return (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5vh', alignItems: 'center', marginTop: '175px' }}>
+          <div style={{ fontWeight: 700, lineHeight: 1.2, textAlign: 'center' }}>
+            <span style={{ fontSize: '4.5vw' }}>You did it!</span><br/>
+            <span style={{ fontSize: '2.5vw' }}>Since you've made it this far, there is nothing you can't do.</span>
+          </div>
+        </div>
       );
     }
     if (pct >= 0.50) {
@@ -687,6 +699,26 @@ function AnimatedVictoryScreen({ stats, onRestart, triggerFirework }: { stats: {
         you should at least be good.
       </>
     );
+  };
+
+  const getScoreQuote = (score: number, base: number) => {
+    if (base === 0) return null;
+    const pct = score / base;
+    if (pct >= 0.99) {
+      return (
+        <div style={{ fontSize: '1.4vw', fontWeight: 400, fontStyle: 'italic', opacity: 0.8, padding: '15px' }}>
+          "The next level is enjoying the figuring it out as much as the figured it out."
+        </div>
+      );
+    }
+    if (pct >= 0.90) {
+      return (
+        <div style={{ fontSize: '1.8vw', fontWeight: 400, fontStyle: 'italic', opacity: 0.8 }}>
+          "Enjoy the figuring it out as much as the figured it out."
+        </div>
+      );
+    }
+    return null;
   };
 
   const fmt = (n: number) => new Intl.NumberFormat().format(n);
@@ -834,6 +866,9 @@ function AnimatedVictoryScreen({ stats, onRestart, triggerFirework }: { stats: {
             {getScoreMessage(stats.score, stats.base)}
           </div>
           <span style={{ ...gtaStyle, fontSize: '14vw' }}>{fmt(displayScore)}</span>
+          <div style={{ position: 'absolute', top: '100%', paddingTop: '75px', fontFamily: 'var(--font-rubik), sans-serif', textAlign: 'center', width: '90vw', color: '#fff', display: 'flex', justifyContent: 'center' }}>
+            {getScoreQuote(stats.score, stats.base)}
+          </div>
         </div>
 
         {/* Phase 4: Action Buttons (Persistent at bottom) */}
@@ -1644,6 +1679,8 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
 
   // Terrain data (heightmap)
   const terrainRef = useRef<number[][]>([]);
+  const currentHeightsRef = useRef<number[][]>([]);
+  const lastBrokenCountRef = useRef<number>(-1);
   const [terrain, setTerrain] = useState<number[][]>([]);
 
   const pickPresetBlocks = useCallback((heights: number[][], currentSeed: number) => {
@@ -3028,20 +3065,32 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
           const h = terrainRef.current.length, w = terrainRef.current[0]?.length ?? 0;
           const offsetX = -w / 2;
           const offsetZ = -h / 2;
+
+          // Rebuild current heights map if terrain changed or blocks were broken/healed
+          if (lastBrokenCountRef.current !== brokenBlocksRef.current.size || currentHeightsRef.current.length !== h) {
+             currentHeightsRef.current = [];
+             for (let y = 0; y < h; y++) {
+                currentHeightsRef.current[y] = [];
+                for (let x = 0; x < w; x++) {
+                   const cellH = terrainRef.current[y][x] ?? 1;
+                   let foundH = -100;
+                   for (let hTest = cellH - 1; hTest >= 0; hTest--) {
+                      if (!brokenBlocksRef.current.has(`${x}_${y}_${hTest}`)) {
+                         foundH = hTest + 1;
+                         break;
+                      }
+                   }
+                   currentHeightsRef.current[y][x] = foundH;
+                }
+             }
+             lastBrokenCountRef.current = brokenBlocksRef.current.size;
+          }
+
           const gx = Math.round(px - offsetX);
           const gy = Math.round(pz - offsetZ);
 
           if (gx >= 0 && gx < w && gy >= 0 && gy < h) {
-            const cellH = terrainRef.current[gy][gx] ?? 1;
-            for (let hTest = cellH - 1; hTest >= 0; hTest--) {
-              const isLargeMap = layoutTabRef.current === 'large_map';
-              // Sheep engine strictly clamps positions to bounds, so no complex wrapping needed
-              const targetKey = `${gx}_${gy}_${hTest}`;
-              if (!brokenBlocksRef.current.has(targetKey)) {
-                return hTest + 1;
-              }
-            }
-            return -100; // Empty crater floor
+             return currentHeightsRef.current[gy][gx];
           }
           return -100;
         };
@@ -3083,11 +3132,16 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
           sheepScoreRef.current += sheepInWave * (12 * waveNumberRef.current);
           totalKillsRef.current += sheepInWave;
 
-          if (waveNumberRef.current >= 18) {
+          if (waveNumberRef.current >= 14) {
             isGameOverRef.current = true;
-            const basePoints = totalKillsRef.current * 25000;
-            const shotsPen = shotsFiredRef.current * 5000;
-            const timePen = totalTimeRef.current * 15000;
+            
+            // 1 Billion is the absolute theoretical maximum (0 time, 0 shots)
+            const basePoints = 1000000000;
+            // 100k penalty per shot
+            const shotsPen = shotsFiredRef.current * 100000;
+            // 200k penalty per second (so 10 mins = -120m)
+            const timePen = totalTimeRef.current * 200000;
+            
             const finalScore = Math.max(0, basePoints - shotsPen - timePen);
             setVictoryStats({
               score: finalScore,

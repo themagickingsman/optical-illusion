@@ -213,7 +213,7 @@
   "damageEmissive": 0,
   "damageHalo": 0,
   "renderEngine": "multimesh",
-  "particleDimensionType": "2D",
+  "particleDimensionType": "3D",
   "particlePoolSize": 200,
   "particleRenderAmount": 50,
   "gpuPartSize": 1,

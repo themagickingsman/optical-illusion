@@ -6700,7 +6700,8 @@ export default function CosmicRenderer({
             border: '1px solid rgba(255,255,255,0.2)',
             color: '#fff', padding: '8px 14px', borderRadius: 8, cursor: 'pointer',
             fontSize: 12, fontWeight: 'bold', fontFamily: '"Rubik", sans-serif', letterSpacing: 1,
-            backdropFilter: 'blur(10px)', transition: 'all 0.2s ease'
+            backdropFilter: 'blur(10px)', transition: 'all 0.2s ease',
+            display: 'none'
           }}
         >
           {showNews ? '✕ NEWS' : 'NEWS'}

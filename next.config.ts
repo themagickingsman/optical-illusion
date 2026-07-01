@@ -7,6 +7,13 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  async rewrites() {
+    return [
+      { source: '/cms/:tab', destination: '/cms?tab=:tab' },
+      { source: '/games/:engine', destination: '/games?engine=:engine' },
+      { source: '/library/:category', destination: '/library?category=:category' }
+    ];
+  },
 };
 
 export default nextConfig;

@@ -2,10 +2,20 @@ import React, { Suspense } from 'react';
 import GamesCMS from '@/components/cms/views/GamesCMS';
 import { Metadata } from 'next';
 
-export const metadata: Metadata = {
-  title: 'Games | Optical Illusions',
-  description: 'Explore our latest game development projects.',
+type Props = {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 };
+
+export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
+  const resolvedParams = await searchParams;
+  const engine = resolvedParams?.engine;
+  const titleStr = engine ? `Games | ${String(engine).replace(/-/g, ' ')}` : 'Games | Optical Illusions';
+  
+  return {
+    title: titleStr,
+    description: 'Explore our latest game development projects and interactive experiences.',
+  };
+}
 
 export default function GamesPage() {
   return (

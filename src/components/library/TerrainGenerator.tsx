@@ -3159,7 +3159,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
           sheepScoreRef.current += sheepInWave * (12 * waveNumberRef.current);
           totalKillsRef.current += sheepInWave;
 
-          if (waveNumberRef.current >= 1) {
+          if (waveNumberRef.current >= 14) {
             isGameOverRef.current = true;
             
             // 1 Billion is the absolute theoretical maximum (0 time, 0 shots)

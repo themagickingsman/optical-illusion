@@ -282,7 +282,7 @@ export default function GamesCMS() {
   };
 
   if (isLoading || engines.length === 0) {
-    return <div className="text-white text-center mt-32">Loading Games...</div>;
+    return <div style={{ minHeight: '100%', background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontFamily: 'var(--font-rubik)', fontSize: '23pt' }}>Loading Optical Illusions</div>;
   }
 
   return (

@@ -79,7 +79,7 @@ export default function PS5Menu() {
   };
 
   if (isLoading || localEngines.length === 0) {
-    return <div style={{ minHeight: '100vh', background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>Loading Cosmic Architecture...</div>;
+    return <div style={{ minHeight: '100vh', background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontFamily: 'var(--font-rubik)', fontSize: '23pt' }}>Loading Optical Illusions</div>;
   }
 
   return (

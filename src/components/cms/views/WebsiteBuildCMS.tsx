@@ -96,7 +96,7 @@ export default function WebsiteBuildCMS() {
   }, [previewMode]);
 
   if (isLoading || engines.length === 0) {
-    return <div style={{ minHeight: '100%', background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>Loading Cosmic Architecture...</div>;
+    return <div style={{ minHeight: '100%', background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontFamily: 'var(--font-rubik)', fontSize: '23pt' }}>Loading Optical Illusions</div>;
   }
 
   // Find the selected engine object if one is selected

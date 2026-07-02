@@ -128,6 +128,13 @@ export default function WebsiteBuildCMS() {
         color: '#fff', 
         overflow: 'hidden'
       }}>
+        <style>{`
+          #nexus-fps-badge, #nexus-fullscreen-btn {
+            transition: opacity 0.5s ease-in-out !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+          }
+        `}</style>
         {/* Header in normal document flow */}
         <div style={{ padding: '40px 20px 20px', zIndex: 50, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px' }}>
           <div 
@@ -163,6 +170,13 @@ export default function WebsiteBuildCMS() {
 
   return (
     <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}>
+      <style>{`
+        #nexus-fps-badge, #nexus-fullscreen-btn {
+          transition: opacity 0.5s ease-in-out !important;
+          opacity: 1 !important;
+          pointer-events: auto !important;
+        }
+      `}</style>
       
       {/* Zen Mode Overlay to restore UI */}
       {uiHidden && (

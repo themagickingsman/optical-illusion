@@ -22,6 +22,7 @@ interface DiscordFeedUIProps {
 export default function DiscordFeedUI({ channelType }: DiscordFeedUIProps) {
   const [messages, setMessages] = useState<DiscordMessage[]>([]);
   const [loading, setLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [inputValue, setInputValue] = useState('');
   const [isSending, setIsSending] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -30,11 +31,15 @@ export default function DiscordFeedUI({ channelType }: DiscordFeedUIProps) {
     try {
       const res = await fetch(`/api/discord/messages?channel=${channelType}`);
       const data = await res.json();
-      if (Array.isArray(data)) {
+      if (res.ok && Array.isArray(data)) {
         setMessages(data);
+        setErrorMsg(null);
+      } else {
+        setErrorMsg(data.error || 'Unknown error occurred while fetching Discord messages.');
       }
     } catch (e) {
       console.error("Failed to load discord messages", e);
+      setErrorMsg(e instanceof Error ? e.message : 'Network error');
     } finally {
       setLoading(false);
     }
@@ -98,15 +103,25 @@ export default function DiscordFeedUI({ channelType }: DiscordFeedUIProps) {
       <PhysicsScroll className="discord-feed-scroll">
         {loading && <div style={{ textAlign: 'center', marginTop: '40px', fontWeight: 'bold', color: 'rgba(255,255,255,0.5)' }}>Connecting to Discord...</div>}
         
-        {!loading && messages.length === 0 && (
+        {errorMsg && (
           <div style={{ textAlign: 'center', marginTop: '40px', padding: '20px', background: 'rgba(0,0,0,0.85)', border: '1px solid rgba(255,50,50,0.2)', borderRadius: '15px', color: 'white', display: 'flex', flexDirection: 'column', gap: '10px', backdropFilter: 'blur(10px)' }}>
-            <div style={{ fontWeight: 'bold', fontSize: '16px', color: '#ff4444' }}>Data Not Loading</div>
+            <div style={{ fontWeight: 'bold', fontSize: '16px', color: '#ff4444' }}>API Error</div>
+            <div style={{ fontSize: '13px', opacity: 0.8, color: '#ffaaaa' }}>
+              {errorMsg}
+            </div>
+            <div style={{ fontSize: '12px', opacity: 0.6, marginTop: '10px' }}>
+              Check your Vercel logs or network tab for more details.
+            </div>
+          </div>
+        )}
+
+        {!loading && !errorMsg && messages.length === 0 && (
+          <div style={{ textAlign: 'center', marginTop: '40px', padding: '20px', background: 'rgba(0,0,0,0.85)', border: '1px solid rgba(50,255,50,0.2)', borderRadius: '15px', color: 'white', display: 'flex', flexDirection: 'column', gap: '10px', backdropFilter: 'blur(10px)' }}>
+            <div style={{ fontWeight: 'bold', fontSize: '16px', color: '#44ff44' }}>Channel Connected!</div>
             <div style={{ fontSize: '13px', opacity: 0.8 }}>
-              Discord API returned an empty feed. This usually means:
+              This Discord channel is currently empty.
               <br/><br/>
-              1. The server needs a restart to load the .env file.<br/>
-              2. The Bot hasn't been invited to the server yet.<br/>
-              3. The Message Content Intent is turned off.
+              Type a message below or in the Discord app to get started!
             </div>
           </div>
         )}

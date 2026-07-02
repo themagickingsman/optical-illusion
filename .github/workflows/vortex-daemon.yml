@@ -1,0 +1,36 @@
+name: Vortex Cloud Daemon (Heat Source)
+
+on:
+  schedule:
+    - cron: '*/15 * * * *' # Every 15 minutes by default
+  workflow_dispatch: # Allow manual triggering via UI/Webhook
+
+jobs:
+  scrape-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install Puppeteer
+        run: npm install puppeteer
+
+      - name: Run Stealth Scraper Engine
+        run: node src/daemon/stealth-scraper.js
+        env:
+          # In production, these would be routed to a Gist or S3 bucket using GH Actions
+          # For now, it runs locally within the action runner and pushes to the repo data file
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Commit Volatile State (Fallback to Repo)
+        run: |
+          git config --global user.name "Vortex Daemon"
+          git config --global user.email "daemon@vortex.network"
+          git add public/telemetry.json
+          git commit -m "chore: update volatile telemetry [skip ci]" || echo "No changes"
+          git push

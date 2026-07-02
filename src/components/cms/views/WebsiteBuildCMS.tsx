@@ -13,6 +13,7 @@ import GamesCMS from './GamesCMS';
 import ProcessCMS from './ProcessCMS';
 import { useQueryState } from '@/hooks/useQueryState';
 import ProjectCarouselView from './ProjectCarouselView';
+import DiscordFeedUI from '@/components/telecom/DiscordFeedUI';
 
 const AnimatedPage = ({ children, style }: { children: React.ReactNode, style?: React.CSSProperties }) => {
   const [mounted, setMounted] = useState(false);
@@ -73,11 +74,20 @@ export default function WebsiteBuildCMS() {
   const [previewMode, setPreviewMode] = useQueryState<'home' | 'games' | 'library' | 'process' | 'hire'>('preview', 'home');
   const [selectedEngineId, setSelectedEngineId] = useQueryState<string | null>('engine', null);
 
+  const [isMobile, setIsMobile] = useState(false);
+  const [mobileTab, setMobileTab] = useState<'chat' | 'discord'>('chat');
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth <= 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   const handleNavClick = (tab: 'home' | 'games' | 'library' | 'process' | 'hire') => {
     // To cleanly navigate and simultaneously clear any open project engines, 
-    // we use a single atomic router.push. Calling setPreviewMode simultaneously 
-    // causes Next.js router race conditions.
-    router.push(`?tab=build&preview=${tab}`, { scroll: false });
+    // we use a single atomic router.push with an absolute path (/) to prevent conflict with spoofed URLs.
+    router.push(`/?tab=build&preview=${tab}`, { scroll: false });
     
     // Visually update the URL bar to the clean path for SEO/Sharing
     // (We do this after a micro-delay to let Next.js finish its query string routing)
@@ -86,6 +96,8 @@ export default function WebsiteBuildCMS() {
       window.history.replaceState(null, '', cleanPath);
     }, 50);
   };
+
+  const [uiHidden, setUiHidden] = useState(false);
 
   // Reset scroll position when switching tabs
   useEffect(() => {
@@ -102,134 +114,207 @@ export default function WebsiteBuildCMS() {
   // Find the selected engine object if one is selected
   const selectedEngine = selectedEngineId ? engines.find((e: any) => e.id === selectedEngineId) : null;
 
+  if (isMobile) {
+    return (
+      <div style={{ 
+        width: '100vw', 
+        height: '100dvh', 
+        display: 'flex',
+        flexDirection: 'column',
+        backgroundImage: 'url(/assets/bg/mobile_bg.png)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        color: '#fff', 
+        overflow: 'hidden'
+      }}>
+        {/* Header in normal document flow */}
+        <div style={{ padding: '40px 20px 20px', zIndex: 50, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px' }}>
+          <div 
+            style={{ width: '120px', height: '30px', position: 'relative', cursor: 'pointer' }}
+            onClick={() => handleNavClick('home')}
+          >
+             <Image src="/assets/logo/op_logo.png" alt="Logo" fill style={{ objectFit: 'contain', objectPosition: 'center' }} priority />
+          </div>
+
+          {/* LOUD Tab Toggles */}
+          <div style={{ display: 'flex', gap: '15px' }}>
+            <button 
+              onClick={() => setMobileTab('chat')}
+              style={{ padding: '10px 20px', borderRadius: '30px', background: mobileTab === 'chat' ? '#fff' : 'rgba(255,255,255,0.1)', color: mobileTab === 'chat' ? '#000' : '#fff', border: '1px solid rgba(255,255,255,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s', fontWeight: 'bold', fontSize: '14px', letterSpacing: '1px' }}
+            >
+              CHAT
+            </button>
+            <button 
+              onClick={() => setMobileTab('discord')}
+              style={{ padding: '10px 20px', borderRadius: '30px', background: mobileTab === 'discord' ? '#fff' : 'rgba(255,255,255,0.1)', color: mobileTab === 'discord' ? '#000' : '#fff', border: '1px solid rgba(255,255,255,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s', fontWeight: 'bold', fontSize: '14px', letterSpacing: '1px' }}
+            >
+              DISCORD
+            </button>
+          </div>
+        </div>
+        
+        <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
+          {mobileTab === 'chat' ? <MobileChatUI theme="op" /> : <DiscordFeedUI channelType="op" />}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}>
       
-      {/* If an engine is selected, render the SPA Project Sub-Page View underneath the top header */}
-      {selectedEngine && (
-        <div style={{ position: 'absolute', inset: 0, zIndex: 5 }}>
-          <ProjectCarouselView 
-            app={selectedEngine} 
-            onBack={() => setSelectedEngineId(null)} 
-          />
-        </div>
+      {/* Zen Mode Overlay to restore UI */}
+      {uiHidden && (
+        <div 
+          style={{ position: 'absolute', inset: 0, zIndex: 9999, cursor: 'pointer' }}
+          onPointerDown={() => setUiHidden(false)}
+        />
       )}
 
-      {/* Read-Only Top Header (Simulating Public View) - Persists! */}
-      <div id="build-nav-left" style={{ position: 'absolute', top: '30px', left: '40px', zIndex: 100, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '35px', pointerEvents: 'auto' }}>
-        <div onPointerDown={(e) => { if (e.button === 0) { e.preventDefault(); handleNavClick('home'); } }} style={{ position: 'relative', width: '150px', height: '40px', cursor: 'pointer' }}>
-          <Image src="/assets/logo/op_logo.png" alt="Logo" fill style={{ objectFit: 'contain', objectPosition: 'left center' }} priority />
+      {/* Main UI Wrapper (Fades out when uiHidden is true) */}
+      <div style={{ 
+        position: 'absolute', 
+        inset: 0, 
+        opacity: uiHidden ? 0 : 1, 
+        pointerEvents: uiHidden ? 'none' : 'auto', 
+        transition: 'opacity 0.8s ease-in-out' 
+      }}>
+
+        {/* If an engine is selected, render the SPA Project Sub-Page View underneath the top header */}
+        {selectedEngine && (
+          <div style={{ position: 'absolute', inset: 0, zIndex: 5 }}>
+            <ProjectCarouselView 
+              app={selectedEngine} 
+              onBack={() => setSelectedEngineId(null)} 
+            />
+          </div>
+        )}
+
+        {/* Read-Only Top Header (Simulating Public View) - Persists! */}
+        <div id="build-nav-left" style={{ position: 'absolute', top: '30px', left: '40px', zIndex: 100, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '35px', pointerEvents: 'auto' }}>
+          <div 
+            onPointerDown={(e) => { 
+              if (e.button === 0) { 
+                e.preventDefault(); 
+                setUiHidden(true); 
+              } 
+            }} 
+            style={{ position: 'relative', width: '150px', height: '40px', cursor: 'pointer' }}
+            title="Zen Mode (Hide UI)"
+          >
+            <Image src="/assets/logo/op_logo.png" alt="Logo" fill style={{ objectFit: 'contain', objectPosition: 'left center' }} priority />
+          </div>
+          <button 
+            onPointerDown={(e) => { if (e.button === 0) { e.preventDefault(); e.currentTarget.style.transform = 'scale(0.95)'; handleNavClick('hire'); } }}
+            style={{ 
+              marginLeft: '7px', 
+              background: previewMode === 'hire' && !selectedEngine ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.2)', 
+              border: previewMode === 'hire' && !selectedEngine ? '1px solid rgba(255,255,255,0.4)' : '1px solid transparent', 
+              color: 'white', 
+              padding: '8px 16px', 
+              borderRadius: '30px', 
+              cursor: 'pointer', 
+              fontSize: '13px', 
+              fontWeight: 600, 
+              backdropFilter: 'blur(10px)', 
+              transition: 'all 0.2s', 
+              textAlign: 'center', 
+              width: 'fit-content',
+              display: 'inline-block' 
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.05)'; e.currentTarget.style.background = 'rgba(255,255,255,0.35)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.background = previewMode === 'hire' && !selectedEngine ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.2)'; }}
+            onPointerUp={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
+          >
+            Hire Us
+          </button>
+          <button
+            onPointerDown={(e) => { if (e.button === 0) { e.preventDefault(); e.currentTarget.style.transform = 'scale(0.9)'; window.dispatchEvent(new Event('nexus-randomize')); } }}
+            onPointerUp={(e) => e.currentTarget.style.transform = 'scale(1)'}
+            title="Randomize Background"
+            style={{ 
+              marginTop: '-5px',
+              marginLeft: '7px', 
+              background: 'rgba(255,255,255,0.1)', 
+              border: '1px solid rgba(255,255,255,0.2)', 
+              color: 'white', 
+              width: '42px', 
+              height: '42px', 
+              borderRadius: '50%', 
+              cursor: 'pointer', 
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              backdropFilter: 'blur(10px)', 
+              transition: 'all 0.3s ease', 
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.2)'; e.currentTarget.style.transform = 'rotate(180deg)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.transform = 'rotate(0deg)'; }}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="23 4 23 10 17 10"></polyline>
+              <polyline points="1 20 1 14 7 14"></polyline>
+              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+            </svg>
+          </button>
         </div>
-        <button 
-          onPointerDown={(e) => { if (e.button === 0) { e.preventDefault(); e.currentTarget.style.transform = 'scale(0.95)'; handleNavClick('hire'); } }}
-          style={{ 
-            marginLeft: '7px', 
-            background: previewMode === 'hire' && !selectedEngine ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.2)', 
-            border: previewMode === 'hire' && !selectedEngine ? '1px solid rgba(255,255,255,0.4)' : '1px solid transparent', 
-            color: 'white', 
-            padding: '8px 16px', 
-            borderRadius: '30px', 
-            cursor: 'pointer', 
-            fontSize: '13px', 
-            fontWeight: 600, 
-            backdropFilter: 'blur(10px)', 
-            transition: 'all 0.2s', 
-            textAlign: 'center', 
-            width: 'fit-content',
-            display: 'inline-block' 
-          }}
-          onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.05)'; e.currentTarget.style.background = 'rgba(255,255,255,0.35)'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.background = previewMode === 'hire' && !selectedEngine ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.2)'; }}
-          onPointerUp={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
-        >
-          Hire Us
-        </button>
-        <button
-          onPointerDown={(e) => { if (e.button === 0) { e.preventDefault(); e.currentTarget.style.transform = 'scale(0.9)'; window.dispatchEvent(new Event('nexus-randomize')); } }}
-          onPointerUp={(e) => e.currentTarget.style.transform = 'scale(1)'}
-          title="Randomize Background"
-          style={{ 
-            marginTop: '-5px',
-            marginLeft: '7px', 
-            background: 'rgba(255,255,255,0.1)', 
-            border: '1px solid rgba(255,255,255,0.2)', 
-            color: 'white', 
-            width: '42px', 
-            height: '42px', 
-            borderRadius: '50%', 
-            cursor: 'pointer', 
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            backdropFilter: 'blur(10px)', 
-            transition: 'all 0.3s ease', 
-          }}
-          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.2)'; e.currentTarget.style.transform = 'rotate(180deg)'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.transform = 'rotate(0deg)'; }}
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="23 4 23 10 17 10"></polyline>
-            <polyline points="1 20 1 14 7 14"></polyline>
-            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
-          </svg>
-        </button>
-      </div>
 
-      <div id="build-nav-center" style={{ position: 'absolute', top: '35px', left: '0', right: '0', zIndex: 100, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '30px', pointerEvents: 'none' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0px', pointerEvents: 'auto' }}>
-          <button onPointerDown={(e) => { if (e.button === 0) { e.preventDefault(); handleNavClick('home'); } }} style={{ background: 'transparent', border: 'none', color: previewMode === 'home' && !selectedEngine ? 'white' : 'rgba(255,255,255,0.7)', cursor: 'pointer', fontSize: '20px', fontWeight: 600, transition: 'all 0.2s', padding: 0 }}>About Us</button>
-          <button onPointerDown={(e) => { if (e.button === 0) { e.preventDefault(); handleNavClick('games'); } }} style={{ background: 'transparent', border: 'none', color: previewMode === 'games' && !selectedEngine ? 'white' : 'rgba(255,255,255,0.7)', cursor: 'pointer', fontSize: '20px', fontWeight: 600, transition: 'all 0.2s', padding: 0, marginLeft: '50px' }}>Games</button>
-          <button onPointerDown={(e) => { if (e.button === 0) { e.preventDefault(); handleNavClick('process'); } }} style={{ background: 'transparent', border: 'none', color: previewMode === 'process' && !selectedEngine ? 'white' : 'rgba(255,255,255,0.7)', cursor: 'pointer', fontSize: '20px', fontWeight: 600, transition: 'all 0.2s', padding: 0, marginLeft: '50px' }}>Our Process</button>
-          <button onPointerDown={(e) => { if (e.button === 0) { e.preventDefault(); handleNavClick('library'); } }} style={{ background: previewMode === 'library' && !selectedEngine ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.05)', border: previewMode === 'library' && !selectedEngine ? '1px solid rgba(255,255,255,0.3)' : '1px solid rgba(255,255,255,0.1)', color: '#03FFC0', padding: '8px 24px', borderRadius: '30px', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold', backdropFilter: 'blur(10px)', transition: 'all 0.2s', marginLeft: '50px', whiteSpace: 'nowrap' }}>Agentic Game Assets</button>
-        </div>
-      </div>
-
-      <div id="build-nav-right" style={{ position: 'absolute', top: '30px', right: '40px', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '12px', zIndex: 100, pointerEvents: 'none' }}>
-        <div style={{ display: 'flex', gap: '20px', color: 'white' }}>
-          <LiveClock />
-        </div>
-        <img src="/assets/sponsors/ps_xbox.png" alt="Sponsor" style={{ transform: 'scale(0.5)', transformOrigin: 'right top', position: 'relative', right: '-20px', top: '25px' }} />
-      </div>
-
-      {/* Main Grid View - Only shown if no engine is selected */}
-      {!selectedEngine && (
-        <div id="build-scroll-container" style={{ position: 'absolute', inset: 0, zIndex: 10, padding: '110px 60px 60px', overflowY: 'auto', overflowX: 'hidden', color: '#fff', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif' }}>
-          <div style={{ maxWidth: '1075px', margin: '0 auto' }}>
-            
-            {previewMode === 'home' && (
-              <AnimatedPage style={{ paddingTop: '100px' }}>
-                <HomeCMS />
-              </AnimatedPage>
-            )}
-
-            {previewMode === 'games' && (
-              <AnimatedPage style={{ paddingTop: '100px' }}>
-                <GamesCMS />
-              </AnimatedPage>
-            )}
-
-            {previewMode === 'library' && (
-              <AnimatedPage style={{ paddingTop: '100px' }}>
-                <LibraryCMS />
-              </AnimatedPage>
-            )}
-
-            {previewMode === 'process' && (
-              <div style={{ position: 'absolute', inset: 0, zIndex: 20, paddingTop: '100px' }}>
-                <ProcessCMS onTryItNow={() => handleNavClick('games')} />
-              </div>
-            )}
-
-            {previewMode === 'hire' && (
-              <AnimatedPage style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                <HireMeView />
-              </AnimatedPage>
-            )}
-
+        <div id="build-nav-center" style={{ position: 'absolute', top: '35px', left: '0', right: '0', zIndex: 100, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '30px', pointerEvents: 'none' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0px', pointerEvents: 'auto' }}>
+            <button onPointerDown={(e) => { if (e.button === 0) { e.preventDefault(); handleNavClick('home'); } }} style={{ background: 'transparent', border: 'none', color: previewMode === 'home' && !selectedEngine ? 'white' : 'rgba(255,255,255,0.7)', cursor: 'pointer', fontSize: '20px', fontWeight: 600, transition: 'all 0.2s', padding: 0 }}>About Us</button>
+            <button onPointerDown={(e) => { if (e.button === 0) { e.preventDefault(); handleNavClick('games'); } }} style={{ background: 'transparent', border: 'none', color: previewMode === 'games' && !selectedEngine ? 'white' : 'rgba(255,255,255,0.7)', cursor: 'pointer', fontSize: '20px', fontWeight: 600, transition: 'all 0.2s', padding: 0, marginLeft: '50px' }}>Games</button>
+            <button onPointerDown={(e) => { if (e.button === 0) { e.preventDefault(); handleNavClick('process'); } }} style={{ background: 'transparent', border: 'none', color: previewMode === 'process' && !selectedEngine ? 'white' : 'rgba(255,255,255,0.7)', cursor: 'pointer', fontSize: '20px', fontWeight: 600, transition: 'all 0.2s', padding: 0, marginLeft: '50px' }}>Our Process</button>
+            <button onPointerDown={(e) => { if (e.button === 0) { e.preventDefault(); handleNavClick('library'); } }} style={{ background: previewMode === 'library' && !selectedEngine ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.05)', border: previewMode === 'library' && !selectedEngine ? '1px solid rgba(255,255,255,0.3)' : '1px solid rgba(255,255,255,0.1)', color: '#03FFC0', padding: '8px 24px', borderRadius: '30px', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold', backdropFilter: 'blur(10px)', transition: 'all 0.2s', marginLeft: '50px', whiteSpace: 'nowrap' }}>Agentic Game Assets</button>
           </div>
         </div>
-      )}
 
+        <div id="build-nav-right" style={{ position: 'absolute', top: '30px', right: '40px', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '12px', zIndex: 100, pointerEvents: 'none' }}>
+          <div style={{ display: 'flex', gap: '20px', color: 'white' }}>
+            <LiveClock />
+          </div>
+          <img src="/assets/sponsors/ps_xbox.png" alt="Sponsor" style={{ transform: 'scale(0.5)', transformOrigin: 'right top', position: 'relative', right: '-20px', top: '25px' }} />
+        </div>
+
+        {/* Main Grid View - Only shown if no engine is selected */}
+        {!selectedEngine && (
+          <div id="build-scroll-container" style={{ position: 'absolute', inset: 0, zIndex: 10, padding: '110px 60px 60px', overflowY: 'auto', overflowX: 'hidden', color: '#fff', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif' }}>
+            <div style={{ maxWidth: '1075px', margin: '0 auto' }}>
+              
+              {previewMode === 'home' && (
+                <AnimatedPage style={{ paddingTop: '100px' }}>
+                  <HomeCMS />
+                </AnimatedPage>
+              )}
+
+              {previewMode === 'games' && (
+                <AnimatedPage style={{ paddingTop: '100px' }}>
+                  <GamesCMS />
+                </AnimatedPage>
+              )}
+
+              {previewMode === 'library' && (
+                <AnimatedPage style={{ paddingTop: '100px' }}>
+                  <LibraryCMS />
+                </AnimatedPage>
+              )}
+
+              {previewMode === 'process' && (
+                <div style={{ position: 'absolute', inset: 0, zIndex: 20, paddingTop: '100px' }}>
+                  <ProcessCMS onTryItNow={() => handleNavClick('games')} />
+                </div>
+              )}
+
+              {previewMode === 'hire' && (
+                <AnimatedPage style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                  <HireMeView />
+                </AnimatedPage>
+              )}
+
+            </div>
+          </div>
+        )}
+
+      </div>
     </div>
   );
 }

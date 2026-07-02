@@ -25,6 +25,16 @@ function GlobalBackgroundInner() {
     return null;
   }
 
+  // The user explicitly requested to REMOVE metaballs from the following backend CMS pages:
+  // Variables, Telecom, Mobile Site, Master Control.
+  // The public pages (Build, About Me, Games, etc.) SHOULD have the metaballs.
+  const noMetaballTabs = ['variables', 'telecom', 'mobile-site', 'master-control'];
+  const tab = currentTab || 'build'; // Default to build
+
+  if (noMetaballTabs.includes(tab)) {
+    return null;
+  }
+
   return (
     <div className="fixed inset-0 z-[-1] pointer-events-auto">
       <NexusMetaballs showFullscreenBtn={isBuildTab} />

@@ -1,5 +1,6 @@
 'use client';
 import React, { useEffect, useRef, useState, useMemo, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import dynamic from 'next/dynamic';
 import * as THREE from 'three';
 import { FontLoader, Font } from 'three/examples/jsm/loaders/FontLoader.js';
@@ -5980,6 +5981,7 @@ export default function CosmicRenderer({
 
       {/* Control Panel (Top Right) */}
       {activeTheme === 'game' && !isPlanetSystem && !hidePreferences && (
+      typeof document !== 'undefined' ? createPortal(
       <div 
         className="ui-overlay"
         onPointerDown={e => e.stopPropagation()}
@@ -6596,6 +6598,7 @@ export default function CosmicRenderer({
       )}
       </div>
       </div>
+      , document.body) : null
       )}
 
       {/* BACKGROUND LINES OVERLAY (Placed outside UI stacking context so mixBlendMode works on canvas) */}

@@ -5,6 +5,7 @@ export interface DashboardTab {
   id: string;
   label: string;
   badgeCount?: number;
+  hasNotification?: boolean;
 }
 
 interface DashboardNavProps {
@@ -58,8 +59,9 @@ export default function DashboardNav({ tabs, activeTab, onTabChange }: Dashboard
             onPointerDown={(e) => {
               if (e.button === 0) {
                 e.preventDefault();
-                // We just use standard query parameters instead of fighting Next.js App Router's client-side rewrite limitations.
-                router.push(`?tab=${tab.id}`, { scroll: false });
+                // We use an absolute path (/) so that if WebsiteBuildCMS has spoofed the URL (e.g. to /games), 
+                // clicking a CMS tab correctly routes back to the CMS root instead of the public /games page.
+                router.push(`/?tab=${tab.id}`, { scroll: false });
                 onTabChange(tab.id); // visually update immediately
               }
             }}
@@ -86,6 +88,19 @@ export default function DashboardNav({ tabs, activeTab, onTabChange }: Dashboard
               }}>
                 <span style={{ position: 'relative', top: '-1px' }}>{tab.badgeCount}</span>
               </span>
+            )}
+            {tab.hasNotification && (
+              <span style={{
+                position: 'absolute',
+                top: '0px',
+                right: '0px',
+                backgroundColor: '#ef4444',
+                width: '10px',
+                height: '10px',
+                borderRadius: '50%',
+                boxShadow: '0 0 10px rgba(239, 68, 68, 0.8)',
+                animation: 'pulse 2s infinite'
+              }}></span>
             )}
           </button>
         );

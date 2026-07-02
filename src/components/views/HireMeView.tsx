@@ -21,7 +21,7 @@ export default function HireMeView() {
   const [ndaStatus, setNdaStatus] = useState<"idle" | "submitting" | "success">("idle");
 
   // Chat State
-  const { messages: dbMessages, sendMessage } = useChatLogic(sessionId);
+  const { messages: dbMessages, sendMessage, sendTypingStatus } = useChatLogic(sessionId);
   const [inputText, setInputText] = useState("");
   const [isThinking, setIsThinking] = useState(false);
   const [tutorialStep, setTutorialStep] = useState(0);
@@ -120,13 +120,20 @@ export default function HireMeView() {
             <input
               type="text"
               value={inputText}
-              onChange={(e) => setInputText(e.target.value)}
+              onChange={(e) => {
+                setInputText(e.target.value);
+                sendTypingStatus();
+              }}
               onKeyDown={(e) => {
                 e.stopPropagation();
                 if (e.key === "Enter") handleSendMessage();
               }}
               placeholder="Type your message..."
-              style={{ flex: 1, background: "transparent", border: "none", color: "#fff", fontSize: "28px", padding: "20px 28px", outline: "none" }}
+              style={{ flex: 1, background: "transparent", border: "1px solid transparent", borderRadius: "100px", color: "#fff", fontSize: "28px", padding: "20px 28px", outline: "none", transition: "border 0.2s" }}
+              onMouseEnter={(e) => { if (document.activeElement !== e.target) e.currentTarget.style.border = '1px solid rgba(255,255,255,0.2)' }}
+              onMouseLeave={(e) => { if (document.activeElement !== e.target) e.currentTarget.style.border = '1px solid transparent' }}
+              onFocus={(e) => e.target.style.border = '1px solid rgba(3,255,192,0.8)'}
+              onBlur={(e) => e.target.style.border = '1px solid transparent'}
             />
             <button
               onClick={handleSendMessage}

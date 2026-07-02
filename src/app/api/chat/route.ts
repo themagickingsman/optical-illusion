@@ -5,6 +5,8 @@ import nodemailer from 'nodemailer';
 
 const dbPath = path.join(process.cwd(), 'src', 'data', 'chat_db.json');
 
+export const dynamic = 'force-dynamic';
+
 async function getDb() {
   const kvUrl = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
   const kvToken = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
@@ -66,7 +68,11 @@ export async function GET() {
     messages: db.messages || [],
     ndaLinks: db.ndaLinks || [],
     emailTemplate: db.emailTemplate || "",
-    emailSubject: db.emailSubject || ""
+    emailSubject: db.emailSubject || "",
+    welcomeMessage: db.welcomeMessage || "Welcome to the secure channel.",
+    autoReplyMessage: db.autoReplyMessage || "Message Received\nCurrent response time: 1 hour",
+    welcomeMessages: db.welcomeMessages || (db.welcomeMessage ? [db.welcomeMessage] : ["Welcome to the secure channel."]),
+    autoReplyMessages: db.autoReplyMessages || (db.autoReplyMessage ? [db.autoReplyMessage] : ["Message Received\nCurrent response time: 1 hour"])
   });
 }
 
@@ -83,6 +89,12 @@ export async function POST(req: Request) {
     if (body.action === 'save_template') {
       db.emailTemplate = body.template;
       db.emailSubject = body.subject;
+    }
+    else if (body.action === 'update_auto_messages') {
+      db.welcomeMessage = body.welcomeMessage;
+      db.autoReplyMessage = body.autoReplyMessage;
+      if (body.welcomeMessages) db.welcomeMessages = body.welcomeMessages;
+      if (body.autoReplyMessages) db.autoReplyMessages = body.autoReplyMessages;
     }
     else if (body.action === 'update_email') {
       const p = db.profiles.find((x: any) => x.id === body.profileId);
@@ -156,6 +168,12 @@ export async function POST(req: Request) {
         db.profiles.push(body.payload);
       }
     } 
+    else if (body.type === 'typing') {
+      const existing = db.profiles.find((p: any) => p.id === body.payload.id);
+      if (existing) {
+        existing.lastTyping = new Date().toISOString();
+      }
+    }
     else if (body.type === 'delete_message') {
       db.messages = db.messages.filter((m: any) => m.id !== body.payload.id);
     }

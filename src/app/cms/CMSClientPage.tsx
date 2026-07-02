@@ -7,12 +7,15 @@ import LibraryCMS from "@/components/cms/views/LibraryCMS";
 
 import WebsiteBuildCMS from "@/components/cms/views/WebsiteBuildCMS";
 import HireMeView from "@/components/views/HireMeView";
-import ChatCMS from "@/components/cms/views/ChatCMS";
+
 import MasterControllerView from "@/components/cms/views/MasterControllerView";
 import HomeCMS from "@/components/cms/views/HomeCMS";
 import GamesCMS from "@/components/cms/views/GamesCMS";
 import ProcessCMS from "@/components/cms/views/ProcessCMS";
 import VariablesCMS from "@/components/cms/views/VariablesCMS";
+import TelecomCMS from "@/components/cms/views/TelecomCMS";
+import MobileSiteCMS from "@/components/cms/views/MobileSiteCMS";
+import MetaballsCMS from "@/components/cms/views/MetaballsCMS";
 
 import { useQueryState } from "@/hooks/useQueryState";
 
@@ -20,6 +23,29 @@ import GlobalBackground from "@/components/GlobalBackground";
 
 function DashboardContent() {
   const [activeCmsTab, setActiveCmsTab] = useQueryState<string>("tab", "build");
+  const [hasNewChats, setHasNewChats] = React.useState(false);
+
+  React.useEffect(() => {
+    const checkChats = async () => {
+      try {
+        const res = await fetch('/api/chat?t=' + Date.now());
+        if (res.ok) {
+          const data = await res.json();
+          const hasUnread = data.profiles?.some((p: any) => {
+            const profileMessages = data.messages?.filter((m: any) => m.profileId === p.id) || [];
+            const lastMessage = profileMessages[profileMessages.length - 1];
+            return lastMessage && lastMessage.sender === 'user';
+          });
+          setHasNewChats(hasUnread);
+        }
+      } catch (e) {}
+    };
+    
+    // Check immediately, then poll every 5 seconds
+    checkChats();
+    const interval = setInterval(checkChats, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   // If this is a production deployment run by the Autonomous Pipeline,
   // we completely bypass the developer CMS and ONLY render the WebsiteBuildCMS tab.
@@ -39,9 +65,11 @@ function DashboardContent() {
     { id: "process", label: "My Process" },
     { id: "library", label: "Agentic Game Assets" },
     { id: "hire", label: "Hire Me" },
-    { id: "chat", label: "Chat" },
     { id: "variables", label: "Variables" },
-    { id: "master-control", label: "Master Control" }
+    { id: "telecom", label: "Telecom", hasNotification: hasNewChats && activeCmsTab !== "telecom" },
+    { id: "mobile-site", label: "Mobile Site" },
+    { id: "master-control", label: "Master Control" },
+    { id: "metaballs", label: "Metaballs" }
   ];
 
   return (
@@ -82,11 +110,7 @@ function DashboardContent() {
         {activeCmsTab === "process" && <div style={{ position: 'absolute', inset: 0, overflowY: 'auto' }}><ProcessCMS /></div>}
         {activeCmsTab === "library" && <div style={{ position: 'absolute', inset: 0, overflowY: 'auto' }}><LibraryCMS /></div>}
         {activeCmsTab === "hire" && <div style={{ position: 'absolute', inset: 0, overflowY: 'auto', display: 'flex', justifyContent: 'center', alignItems: 'center' }}><HireMeView /></div>}
-        {activeCmsTab === "chat" && (
-          <div style={{ position: "absolute", inset: 0, zIndex: 20 }}>
-            <ChatCMS />
-          </div>
-        )}
+
 
         {activeCmsTab === "variables" && (
           <div style={{ position: "absolute", inset: 0, zIndex: 20 }}>
@@ -97,6 +121,24 @@ function DashboardContent() {
         {activeCmsTab === "master-control" && (
           <div style={{ position: "absolute", inset: 0, zIndex: 20 }}>
             <MasterControllerView />
+          </div>
+        )}
+
+        {activeCmsTab === "telecom" && (
+          <div style={{ position: "absolute", inset: 0, zIndex: 20 }}>
+            <TelecomCMS />
+          </div>
+        )}
+
+        {activeCmsTab === "mobile-site" && (
+          <div style={{ position: "absolute", inset: 0, zIndex: 20 }}>
+            <MobileSiteCMS />
+          </div>
+        )}
+
+        {activeCmsTab === "metaballs" && (
+          <div style={{ position: "absolute", inset: 0, zIndex: 20 }}>
+            <MetaballsCMS />
           </div>
         )}
       </div>

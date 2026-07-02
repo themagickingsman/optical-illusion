@@ -1,0 +1,205 @@
+{
+  "lastUpdated": "2026-07-02T08:42:15.799Z",
+  "nodes": [
+    {
+      "assetKey": "r/gameDevClassifieds",
+      "volume": 10,
+      "velocity": 2,
+      "resonance": [
+        "gameDevClassifieds"
+      ],
+      "topThreads": [],
+      "timestamp": "2026-07-02T08:42:26.917Z"
+    },
+    {
+      "assetKey": "r/INAT",
+      "volume": 10,
+      "velocity": 2,
+      "resonance": [
+        "INAT"
+      ],
+      "topThreads": [],
+      "timestamp": "2026-07-02T08:42:39.091Z"
+    },
+    {
+      "assetKey": "r/forhire",
+      "volume": 10,
+      "velocity": 2,
+      "resonance": [
+        "forhire"
+      ],
+      "topThreads": [],
+      "timestamp": "2026-07-02T08:42:50.464Z"
+    },
+    {
+      "assetKey": "r/DesignJobs",
+      "volume": 10,
+      "velocity": 2,
+      "resonance": [
+        "DesignJobs"
+      ],
+      "topThreads": [],
+      "timestamp": "2026-07-02T08:43:01.871Z"
+    },
+    {
+      "assetKey": "r/freelance_forhire",
+      "volume": 10,
+      "velocity": 2,
+      "resonance": [
+        "freelance_forhire"
+      ],
+      "topThreads": [],
+      "timestamp": "2026-07-02T08:43:13.282Z"
+    },
+    {
+      "assetKey": "r/jobbit",
+      "volume": 10,
+      "velocity": 2,
+      "resonance": [
+        "jobbit"
+      ],
+      "topThreads": [],
+      "timestamp": "2026-07-02T08:43:24.834Z"
+    },
+    {
+      "assetKey": "r/hiring",
+      "volume": 10,
+      "velocity": 2,
+      "resonance": [
+        "hiring"
+      ],
+      "topThreads": [],
+      "timestamp": "2026-07-02T08:43:36.180Z"
+    },
+    {
+      "assetKey": "r/remotework",
+      "volume": 10,
+      "velocity": 2,
+      "resonance": [
+        "remotework"
+      ],
+      "topThreads": [],
+      "timestamp": "2026-07-02T08:43:47.693Z"
+    },
+    {
+      "assetKey": "r/remotejs",
+      "volume": 10,
+      "velocity": 2,
+      "resonance": [
+        "remotejs"
+      ],
+      "topThreads": [],
+      "timestamp": "2026-07-02T08:43:59.133Z"
+    },
+    {
+      "assetKey": "r/startupproject",
+      "volume": 10,
+      "velocity": 2,
+      "resonance": [
+        "startupproject"
+      ],
+      "topThreads": [],
+      "timestamp": "2026-07-02T08:44:11.182Z"
+    },
+    {
+      "assetKey": "r/cofounder",
+      "volume": 10,
+      "velocity": 2,
+      "resonance": [
+        "cofounder"
+      ],
+      "topThreads": [],
+      "timestamp": "2026-07-02T08:44:22.876Z"
+    },
+    {
+      "assetKey": "r/programmingbuddies",
+      "volume": 10,
+      "velocity": 2,
+      "resonance": [
+        "programmingbuddies"
+      ],
+      "topThreads": [],
+      "timestamp": "2026-07-02T08:44:34.906Z"
+    },
+    {
+      "assetKey": "r/UI_Design",
+      "volume": 10,
+      "velocity": 2,
+      "resonance": [
+        "UI_Design"
+      ],
+      "topThreads": [],
+      "timestamp": "2026-07-02T08:44:46.402Z"
+    },
+    {
+      "assetKey": "r/Web_Design",
+      "volume": 10,
+      "velocity": 2,
+      "resonance": [
+        "Web_Design"
+      ],
+      "topThreads": [],
+      "timestamp": "2026-07-02T08:44:59.450Z"
+    },
+    {
+      "assetKey": "r/UXDesign",
+      "volume": 10,
+      "velocity": 2,
+      "resonance": [
+        "UXDesign"
+      ],
+      "topThreads": [],
+      "timestamp": "2026-07-02T08:45:11.268Z"
+    },
+    {
+      "assetKey": "r/frontend",
+      "volume": 10,
+      "velocity": 2,
+      "resonance": [
+        "frontend"
+      ],
+      "topThreads": [],
+      "timestamp": "2026-07-02T08:45:22.711Z"
+    },
+    {
+      "assetKey": "r/reactjs",
+      "volume": 10,
+      "velocity": 2,
+      "resonance": [
+        "reactjs"
+      ],
+      "topThreads": [],
+      "timestamp": "2026-07-02T08:45:34.210Z"
+    },
+    {
+      "assetKey": "r/threejs",
+      "volume": 10,
+      "velocity": 2,
+      "resonance": [
+        "threejs"
+      ],
+      "topThreads": [],
+      "timestamp": "2026-07-02T08:45:45.711Z"
+    },
+    {
+      "assetKey": "r/webgl",
+      "volume": 10,
+      "velocity": 2,
+      "resonance": [
+        "webgl"
+      ],
+      "topThreads": [],
+      "timestamp": "2026-07-02T08:45:57.422Z"
+    },
+    {
+      "assetKey": "r/gamedev",
+      "volume": 10,
+      "velocity": 2,
+      "resonance": [
+        "gamedev"
+      ],
+      "topThreads": [],
+      "timestamp": "2026-07-02T08:46:08.884Z"
+    }
+  ]
+}

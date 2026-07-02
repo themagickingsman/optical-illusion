@@ -33,7 +33,14 @@ export async function GET(request: Request) {
     if (!response.ok) {
       const errorText = await response.text();
       console.error(`Discord API Error: ${response.status} ${response.statusText}`, errorText);
-      return NextResponse.json({ error: 'Failed to fetch messages from Discord' }, { status: response.status });
+      
+      let parsedError = errorText;
+      try {
+        const json = JSON.parse(errorText);
+        parsedError = json.message || errorText;
+      } catch (e) {}
+
+      return NextResponse.json({ error: `Discord API: ${parsedError}` }, { status: response.status });
     }
 
     const messages = await response.json();

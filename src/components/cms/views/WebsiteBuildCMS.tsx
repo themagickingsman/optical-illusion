@@ -14,6 +14,7 @@ import ProcessCMS from './ProcessCMS';
 import { useQueryState } from '@/hooks/useQueryState';
 import ProjectCarouselView from './ProjectCarouselView';
 import DiscordFeedUI from '@/components/telecom/DiscordFeedUI';
+import MobileChatUI from '@/components/telecom/MobileChatUI';
 
 const AnimatedPage = ({ children, style }: { children: React.ReactNode, style?: React.CSSProperties }) => {
   const [mounted, setMounted] = useState(false);

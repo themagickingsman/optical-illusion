@@ -26,6 +26,7 @@ interface MobileChatUIProps {
   onAdminSendMessage?: (text: string) => void;
   adminTypingStatus?: boolean;
   padding?: string;
+  onAdminDeleteMessage?: (messageId: string) => void;
 }
 
 export default function MobileChatUI({ 
@@ -35,7 +36,8 @@ export default function MobileChatUI({
   adminMessages = [],
   onAdminSendMessage,
   adminTypingStatus = false,
-  padding
+  padding,
+  onAdminDeleteMessage
 }: MobileChatUIProps) {
   const [sessionId, setSessionId] = useState(externalSessionId || "");
 
@@ -171,32 +173,58 @@ export default function MobileChatUI({
               flexDirection: 'column',
               willChange: 'transform, opacity'
             }}>
-            <div style={{ position: 'relative' }}>
-              <div className="chat-bubble-bg" style={{
-                position: 'absolute',
-                inset: 0,
-                background: isMe ? 'rgba(10, 132, 255, 0.9)' : 'rgba(147, 51, 234, 0.9)',
-                borderRadius: '20px',
-                borderBottomRightRadius: isMe ? '4px' : '20px',
-                borderBottomLeftRadius: !isMe ? '4px' : '20px',
-                zIndex: 0,
-                opacity: 'var(--bg-opacity, 1)',
-              }} />
-              
-              <div className="chat-bubble-text" style={{
-                position: 'relative',
-                zIndex: 1,
-                padding: '15px 20px',
-                fontSize: "17px",
-                color: "white",
-                fontWeight: 800,
-                fontFamily: 'var(--font-rubik), sans-serif',
-                lineHeight: "1.4",
-                whiteSpace: 'pre-wrap',
-                opacity: 'var(--text-opacity, 1)',
-                willChange: 'opacity'
-              }}>
-                {msg.text}
+            <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              {mode === 'admin' && (
+                <button
+                  onClick={() => onAdminDeleteMessage && onAdminDeleteMessage(msg.id)}
+                  style={{
+                    width: '24px',
+                    height: '24px',
+                    borderRadius: '50%',
+                    background: 'rgba(255,59,48,0.2)',
+                    color: '#FF3B30',
+                    border: '1px solid rgba(255,59,48,0.5)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    fontSize: '12px',
+                    order: isMe ? -1 : 1,
+                    flexShrink: 0,
+                    padding: 0
+                  }}
+                  title="Delete message"
+                >
+                  ✕
+                </button>
+              )}
+              <div style={{ position: 'relative', flex: 1 }}>
+                <div className="chat-bubble-bg" style={{
+                  position: 'absolute',
+                  inset: 0,
+                  background: isMe ? 'rgba(10, 132, 255, 0.9)' : 'rgba(147, 51, 234, 0.9)',
+                  borderRadius: '20px',
+                  borderBottomRightRadius: isMe ? '4px' : '20px',
+                  borderBottomLeftRadius: !isMe ? '4px' : '20px',
+                  zIndex: 0,
+                  opacity: 'var(--bg-opacity, 1)',
+                }} />
+                
+                <div className="chat-bubble-text" style={{
+                  position: 'relative',
+                  zIndex: 1,
+                  padding: '15px 20px',
+                  fontSize: "17px",
+                  color: "white",
+                  fontWeight: 800,
+                  fontFamily: 'var(--font-rubik), sans-serif',
+                  lineHeight: "1.4",
+                  whiteSpace: 'pre-wrap',
+                  opacity: 'var(--text-opacity, 1)',
+                  willChange: 'opacity'
+                }}>
+                  {msg.text}
+                </div>
               </div>
             </div>
             <div className="chat-timestamp" style={{ fontSize: '12px', color: 'rgba(0, 0, 0, 0.6)', marginTop: '6px', textAlign: isMe ? 'right' : 'left', fontWeight: 'bold', opacity: 'var(--bg-opacity, 1)' }}>

@@ -173,6 +173,21 @@ export default function MobileTelecomCMS() {
                     console.error(err);
                   }
                 }}
+                onAdminDeleteMessage={async (messageId) => {
+                  try {
+                    await fetch('/api/chat', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        action: 'delete_message',
+                        messageId
+                      })
+                    });
+                    fetchData();
+                  } catch (err) {
+                    console.error(err);
+                  }
+                }}
               />
           ) : (
             <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#888', padding: '20px', textAlign: 'center', fontFamily: 'var(--font-rubik), sans-serif' }}>

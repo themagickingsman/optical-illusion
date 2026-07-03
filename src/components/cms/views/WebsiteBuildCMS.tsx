@@ -162,14 +162,14 @@ export default function WebsiteBuildCMS() {
           </div>
 
           <div 
-            style={{ width: '120px', height: '30px', position: 'relative', cursor: 'pointer' }}
+            style={{ width: '120px', height: '30px', position: 'relative', cursor: 'pointer', marginTop: '25px' }}
             onClick={() => handleNavClick('home')}
           >
              <Image src="/assets/logo/op_logo.png" alt="Logo" fill style={{ objectFit: 'contain', objectPosition: 'center' }} priority />
           </div>
 
-          {/* Scrollable Tab Toggles (Social Icons) - Pushed down 25px */}
-          <div className="no-scrollbar" style={{ display: 'flex', gap: '15px', width: '100%', padding: '0 20px', marginTop: '25px', overflowX: 'auto', WebkitOverflowScrolling: 'touch', flexShrink: 0, justifyContent: 'center' }}>
+          {/* Scrollable Tab Toggles (Social Icons) */}
+          <div className="no-scrollbar" style={{ display: 'flex', gap: '15px', width: '100%', padding: '0 20px', marginTop: '0px', overflowX: 'auto', WebkitOverflowScrolling: 'touch', flexShrink: 0, justifyContent: 'center' }}>
             <button 
               onClick={() => setMobileTab('chat')}
               style={{ flexShrink: 0, width: '50px', height: '50px', borderRadius: '50%', background: mobileTab === 'chat' ? '#fff' : 'rgba(255,255,255,0.1)', color: mobileTab === 'chat' ? '#000' : '#fff', border: '1px solid rgba(255,255,255,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s' }}

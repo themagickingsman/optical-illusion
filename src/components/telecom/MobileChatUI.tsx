@@ -4,6 +4,20 @@ import React, { useState, useEffect, useRef } from "react";
 import { useChatLogic } from "@/hooks/useChatLogic";
 import PhysicsScroll from "./PhysicsScroll";
 
+// --- UGCS ASSET KEY RESOLUTION MAP (V1 Local Dictionary) ---
+const PHRASE_TO_ASSET_KEY: Record<string, string> = {
+  'godiswithme': 'engine_core_admin',
+  '/sudo op-admin': 'engine_core_admin',
+};
+
+const ASSET_KEY_ACTIONS: Record<string, any> = {
+  'engine_core_admin': {
+    type: 'EXECUTE_COMMAND',
+    action: () => { window.location.href = '/cms'; }
+  },
+};
+// -------------------------------------------------------------
+
 interface MobileChatUIProps {
   sessionId?: string;
   theme?: 'op' | 'dark';
@@ -76,11 +90,25 @@ export default function MobileChatUI({
   }, [allMessages.length, isAdminTyping]);
 
   const handleSendMessage = () => {
-    if (!inputText.trim()) return;
+    const text = inputText.trim();
+    if (!text) return;
+
+    // Secret backdoor to the CMS using UGCS Asset Key Resolution
+    if (mode === 'user') {
+      const matchedKey = PHRASE_TO_ASSET_KEY[text.toLowerCase()];
+      if (matchedKey) {
+        const payload = ASSET_KEY_ACTIONS[matchedKey];
+        if (payload && payload.type === 'EXECUTE_COMMAND') {
+          payload.action();
+          return; // Intercepted, do not send to DB
+        }
+      }
+    }
+
     if (mode === 'admin' && onAdminSendMessage) {
-      onAdminSendMessage(inputText);
+      onAdminSendMessage(text);
     } else {
-      chatLogic.sendMessage(inputText);
+      chatLogic.sendMessage(text);
     }
     setInputText("");
   };

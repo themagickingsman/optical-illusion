@@ -14,6 +14,7 @@ import GamesCMS from "@/components/cms/views/GamesCMS";
 import ProcessCMS from "@/components/cms/views/ProcessCMS";
 import VariablesCMS from "@/components/cms/views/VariablesCMS";
 import TelecomCMS from "@/components/cms/views/TelecomCMS";
+import MobileTelecomCMS from "@/components/cms/views/MobileTelecomCMS";
 import MobileSiteCMS from "@/components/cms/views/MobileSiteCMS";
 import MetaballsCMS from "@/components/cms/views/MetaballsCMS";
 
@@ -66,7 +67,8 @@ function DashboardContent() {
     { id: "library", label: "Agentic Game Assets" },
     { id: "hire", label: "Hire Me" },
     { id: "variables", label: "Variables" },
-    { id: "telecom", label: "Telecom", hasNotification: hasNewChats && activeCmsTab !== "telecom" },
+    { id: "telecom", label: "Telecom", hasNotification: hasNewChats && activeCmsTab !== "telecom" && activeCmsTab !== "mobile-admin" },
+    { id: "mobile-admin", label: "Mobile Admin", hasNotification: hasNewChats && activeCmsTab !== "telecom" && activeCmsTab !== "mobile-admin" },
     { id: "mobile-site", label: "Mobile Site" },
     { id: "master-control", label: "Master Control" },
     { id: "metaballs", label: "Metaballs" }
@@ -133,6 +135,12 @@ function DashboardContent() {
         {activeCmsTab === "mobile-site" && (
           <div style={{ position: "absolute", inset: 0, zIndex: 20 }}>
             <MobileSiteCMS />
+          </div>
+        )}
+
+        {activeCmsTab === "mobile-admin" && (
+          <div style={{ position: "absolute", inset: 0, zIndex: 20 }}>
+            <MobileTelecomCMS />
           </div>
         )}
 

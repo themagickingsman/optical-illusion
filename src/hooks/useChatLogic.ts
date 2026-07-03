@@ -175,9 +175,11 @@ export function useChatLogic(sessionId: string) {
 
   const activeId = effectiveSessionId || sessionId;
   const sessionMessages = messages.filter(m => m.profileId === activeId);
+  // Cap messages to the last 25 for mobile performance (industry standard for live widgets)
+  const cappedMessages = sessionMessages.slice(-25);
 
   return {
-    messages: sessionMessages,
+    messages: cappedMessages,
     isLoading,
     sendMessage,
     sendTypingStatus,

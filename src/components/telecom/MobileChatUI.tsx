@@ -323,28 +323,6 @@ export default function MobileChatUI({
         </div>
 
         <form onSubmit={(e) => { e.preventDefault(); handleSendMessage(); }} style={{ display: 'flex', gap: '10px', position: 'relative' }}>
-          <input 
-            type="text" 
-            value={inputText}
-            onChange={(e) => handleTyping(e.target.value)}
-            placeholder="Secure message..." 
-            style={{ 
-              flex: 1, 
-              padding: '15px 20px', 
-              borderRadius: '100px', 
-              border: '1px solid rgba(255,255,255,0.2)', 
-              background: 'rgba(0,0,0,0.6)', 
-              color: '#fff', 
-              fontSize: '16px', 
-              outline: 'none',
-              transition: 'border 0.2s',
-            }} 
-            onMouseEnter={(e) => { if (document.activeElement !== e.target) e.currentTarget.style.border = '1px solid rgba(255,255,255,0.5)' }}
-            onMouseLeave={(e) => { if (document.activeElement !== e.target) e.currentTarget.style.border = '1px solid rgba(255,255,255,0.2)' }}
-            onFocus={(e) => e.target.style.border = '1px solid rgba(3,255,192,0.8)'}
-            onBlur={(e) => e.target.style.border = '1px solid rgba(255,255,255,0.2)'}
-          />
-          
           {/* Pickers Toggle */}
           <div style={{ display: 'flex', gap: '5px', alignItems: 'center' }}>
             <button 
@@ -368,6 +346,29 @@ export default function MobileChatUI({
               😊
             </button>
           </div>
+
+          <input 
+            type="text" 
+            value={inputText}
+            onChange={(e) => handleTyping(e.target.value)}
+            placeholder="Secure message..." 
+            style={{ 
+              flex: 1, 
+              padding: '15px 20px', 
+              borderRadius: '100px', 
+              border: '1px solid rgba(255,255,255,0.2)', 
+              background: 'rgba(0,0,0,0.6)', 
+              color: '#fff', 
+              fontSize: '16px', 
+              outline: 'none',
+              transition: 'border 0.2s',
+              minWidth: 0, // Ensure flex child shrinks properly
+            }} 
+            onMouseEnter={(e) => { if (document.activeElement !== e.target) e.currentTarget.style.border = '1px solid rgba(255,255,255,0.5)' }}
+            onMouseLeave={(e) => { if (document.activeElement !== e.target) e.currentTarget.style.border = '1px solid rgba(255,255,255,0.2)' }}
+            onFocus={(e) => e.target.style.border = '1px solid rgba(3,255,192,0.8)'}
+            onBlur={(e) => e.target.style.border = '1px solid rgba(255,255,255,0.2)'}
+          />
 
           <button 
             type="submit" 

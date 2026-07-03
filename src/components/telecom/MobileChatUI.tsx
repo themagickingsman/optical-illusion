@@ -161,7 +161,7 @@ export default function MobileChatUI({
                 {msg.text}
               </div>
             </div>
-            <div className="chat-timestamp" style={{ fontSize: '12px', color: 'rgba(255, 255, 255, 0.6)', marginTop: '6px', textAlign: isMe ? 'right' : 'left', fontWeight: 'bold', opacity: 'var(--text-opacity, 1)' }}>
+            <div className="chat-timestamp" style={{ fontSize: '12px', color: 'rgba(0, 0, 0, 0.6)', marginTop: '6px', textAlign: isMe ? 'right' : 'left', fontWeight: 'bold', opacity: 'var(--text-opacity, 1)' }}>
               {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
             </div>
             </div>

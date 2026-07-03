@@ -109,8 +109,7 @@ export default function MobileTelecomCMS() {
           {sortedProfiles.map((p: any) => {
             const isSelected = p.id === activeProfileId;
             const profileMessages = messages.filter((m: any) => m.profileId === p.id);
-            const lastMessage = profileMessages[profileMessages.length - 1];
-            const hasUnread = lastMessage && lastMessage.sender === 'user' && !isSelected;
+            const hasUnread = p.unread && !isSelected;
             
             const firstLetter = (p.name && p.name.trim().length > 0) ? p.name.charAt(0).toUpperCase() : '?';
 
@@ -124,6 +123,14 @@ export default function MobileTelecomCMS() {
                   if (deletingProfileId === p.id) return;
                   setDeletingProfileId(null);
                   setActiveProfileId(p.id);
+                  if (p.unread) {
+                    p.unread = false; // Optimistic update
+                    fetch('/api/chat', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ action: 'mark_read', profileId: p.id })
+                    }).catch(console.error);
+                  }
                 }}
                 style={{
                   position: 'relative',

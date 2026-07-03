@@ -156,7 +156,7 @@ export default function MobileTelecomCMS() {
                 mode="admin"
                 adminMessages={activeMessages}
                 adminTypingStatus={activeProfile?.lastTyping && (Date.now() - new Date(activeProfile.lastTyping).getTime() < 5000)}
-                padding="20px"
+                padding="20px 20px 120px 20px"
                 onAdminSendMessage={async (text) => {
                   try {
                     await fetch('/api/chat', {

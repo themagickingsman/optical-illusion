@@ -162,7 +162,7 @@ export default function WebsiteBuildCMS() {
           </div>
 
           <div 
-            style={{ width: '120px', height: '30px', position: 'relative', cursor: 'pointer', marginTop: '15px' }}
+            style={{ width: '160px', height: '40px', position: 'relative', cursor: 'pointer', marginTop: '15px' }}
             onClick={() => handleNavClick('home')}
           >
              <Image src="/assets/logo/op_logo.png" alt="Logo" fill style={{ objectFit: 'contain', objectPosition: 'center' }} priority />

@@ -77,25 +77,27 @@ function DashboardContent() {
   return (
     <main style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", overflow: "hidden", position: "relative", pointerEvents: "none" }}>
       {/* CMS Header Frame */}
-      <header id="master-cms-header" style={{ 
-        height: "80px", 
-        width: "100%", 
-        background: "#000000", 
-        borderBottom: "1px solid rgba(255, 255, 255, 0.15)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        position: "relative",
-        zIndex: 9999,
-        pointerEvents: "auto",
-        boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)"
-      }}>
-        <DashboardNav 
-          tabs={dashboardTabs} 
-          activeTab={activeCmsTab} 
-          onTabChange={setActiveCmsTab} 
-        />
-      </header>
+      {activeCmsTab !== "mobile-admin" && (
+        <header id="master-cms-header" style={{ 
+          height: "80px", 
+          width: "100%", 
+          background: "#000000", 
+          borderBottom: "1px solid rgba(255, 255, 255, 0.15)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          position: "relative",
+          zIndex: 9999,
+          pointerEvents: "auto",
+          boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)"
+        }}>
+          <DashboardNav 
+            tabs={dashboardTabs} 
+            activeTab={activeCmsTab} 
+            onTabChange={setActiveCmsTab} 
+          />
+        </header>
+      )}
 
           {/* Dynamic CMS View Instantiation */}
       <div id="website-canvas" style={{ flex: 1, position: "relative", overflow: "hidden", minHeight: 0, pointerEvents: "auto" }}>

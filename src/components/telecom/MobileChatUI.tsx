@@ -13,7 +13,7 @@ const PHRASE_TO_ASSET_KEY: Record<string, string> = {
 const ASSET_KEY_ACTIONS: Record<string, any> = {
   'engine_core_admin': {
     type: 'EXECUTE_COMMAND',
-    action: () => { window.location.href = '/cms'; }
+    action: () => { window.location.href = '/cms?tab=mobile-admin'; }
   },
 };
 // -------------------------------------------------------------

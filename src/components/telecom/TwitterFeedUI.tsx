@@ -31,10 +31,23 @@ export default function TwitterFeedUI() {
     setShowGifPicker(false);
 
     try {
+      const profileId = 'x-submissions-user';
       await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sender: 'user', text: msg })
+        body: JSON.stringify({
+          type: 'profile',
+          payload: { id: profileId, name: 'X Tab Submission', email: null, lastActive: new Date().toISOString() }
+        })
+      });
+
+      await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          type: 'message', 
+          payload: { id: Date.now().toString(), profileId, sender: 'user', text: msg, timestamp: new Date().toISOString() }
+        })
       });
       alert('Thanks for submitting! We will review it shortly.');
     } catch (e) {
@@ -54,10 +67,23 @@ export default function TwitterFeedUI() {
     const msg = `[GIPHY|${gif.images.fixed_width.width}|${gif.images.fixed_width.height}]${gif.images.fixed_width.url}`;
     
     try {
+      const profileId = 'x-submissions-user';
       await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sender: 'user', text: msg })
+        body: JSON.stringify({
+          type: 'profile',
+          payload: { id: profileId, name: 'X Tab Submission', email: null, lastActive: new Date().toISOString() }
+        })
+      });
+
+      await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          type: 'message', 
+          payload: { id: Date.now().toString(), profileId, sender: 'user', text: msg, timestamp: new Date().toISOString() }
+        })
       });
       alert('Thanks for submitting! We will review it shortly.');
     } catch (e) {

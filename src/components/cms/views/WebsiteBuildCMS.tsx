@@ -75,7 +75,7 @@ export default function WebsiteBuildCMS() {
   const [previewMode, setPreviewMode] = useQueryState<'home' | 'games' | 'library' | 'process' | 'hire'>('preview', 'home');
   const [selectedEngineId, setSelectedEngineId] = useQueryState<string | null>('engine', null);
 
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState<boolean | null>(null);
   const [mobileTab, setMobileTab] = useState<'chat' | 'discord' | 'discord-cr'>('chat');
   const [touchStartX, setTouchStartX] = useState(0);
 
@@ -126,7 +126,7 @@ export default function WebsiteBuildCMS() {
     }
   }, [previewMode]);
 
-  if (isLoading || engines.length === 0) {
+  if (isLoading || engines.length === 0 || isMobile === null) {
     return <div style={{ minHeight: '100%', background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontFamily: 'var(--font-rubik)', fontSize: '23pt' }}>Loading Optical Illusions</div>;
   }
 

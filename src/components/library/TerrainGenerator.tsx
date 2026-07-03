@@ -673,7 +673,7 @@ function AnimatedVictoryScreen({ stats, onRestart, triggerFirework }: { stats: {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5vh', alignItems: 'center', marginTop: '175px' }}>
           <div style={{ fontWeight: 700, lineHeight: 1.2, textAlign: 'center' }}>
             <span style={{ fontSize: '4.5vw' }}>You did it!</span><br/>
-            <span style={{ fontSize: '2.5vw' }}>Since you've made it this far, there is nothing you can't do.</span>
+            <span style={{ fontSize: '2.5vw' }}>Is 1 billion possible?</span>
           </div>
         </div>
       );

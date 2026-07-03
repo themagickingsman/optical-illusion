@@ -300,17 +300,9 @@ export default function GamesCMS() {
         pointerEvents: showScreensaver ? 'none' : 'auto',
         transition: 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)'
       }}>
-        <h1 style={{ fontSize: '54px', fontWeight: 600, margin: '0 0 12px 0', color: 'white', letterSpacing: '-0.03em', lineHeight: '1.1' }}>UI/UX + Game Design + Co-Dev</h1>
-        <p style={{ 
-          fontSize: '28px', 
-          margin: 0, 
-          color: 'rgba(255, 255, 255, 0.8)',
-          display: 'inline-block',
-          letterSpacing: '-0.01em',
-          fontWeight: 500
-        }}>
-          Creative Direction + Tech Art + Integration
-        </p>
+        <h1 style={{ fontSize: '54px', fontWeight: 600, margin: '0 0 8px 0', color: 'white', letterSpacing: '-0.03em', lineHeight: '1.1' }}>We are Creative Technologists</h1>
+        <h2 style={{ fontSize: '36px', fontWeight: 500, margin: '0 0 16px 0', color: 'rgba(255, 255, 255, 0.9)', letterSpacing: '-0.02em' }}>UI/UX + Game Design + Co-Dev</h2>
+
       </div>
       
 

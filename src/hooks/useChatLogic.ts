@@ -15,7 +15,7 @@ export type ChatMessage = {
   timestamp: string;
 };
 
-export function useChatLogic(sessionId: string) {
+export function useChatLogic(sessionId: string, isGlobalChat: boolean = false) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [profiles, setProfiles] = useState<ChatProfile[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -174,7 +174,8 @@ export function useChatLogic(sessionId: string) {
   };
 
   const activeId = effectiveSessionId || sessionId;
-  const sessionMessages = messages.filter(m => m.profileId === activeId);
+  // If global chat, show all messages. Otherwise filter by the active session ID.
+  const sessionMessages = isGlobalChat ? messages : messages.filter(m => m.profileId === activeId);
   // Cap messages to the last 25 for mobile performance (industry standard for live widgets)
   const cappedMessages = sessionMessages.slice(-25);
 
@@ -187,6 +188,7 @@ export function useChatLogic(sessionId: string) {
     welcomeMessage,
     autoReplyMessage,
     welcomeMessages,
-    autoReplyMessages
+    autoReplyMessages,
+    effectiveSessionId: activeId
   };
 }

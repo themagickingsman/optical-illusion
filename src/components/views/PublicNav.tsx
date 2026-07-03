@@ -60,7 +60,7 @@ export default function PublicNav() {
   return (
     <>
       <div id="build-nav-left" style={{ position: 'absolute', top: '30px', left: '40px', zIndex: 100, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '35px', pointerEvents: 'auto' }}>
-        <div style={{ position: 'relative' }}>
+        <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
           <Link 
             href="/about" 
             style={{ position: 'relative', width: '150px', height: '40px', cursor: 'pointer', display: 'block' }}
@@ -68,11 +68,6 @@ export default function PublicNav() {
           >
             <Image src="/assets/logo/op_logo.png" alt="Logo" fill style={{ objectFit: 'contain', objectPosition: 'left center' }} priority />
           </Link>
-          {chatCount > 0 && (
-            <div style={{ position: 'absolute', top: '-10px', right: '-10px', background: '#FFD700', color: 'black', borderRadius: '50%', width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', fontWeight: 'bold', fontFamily: 'var(--font-rubik), sans-serif', boxShadow: '0 2px 8px rgba(0,0,0,0.5)', pointerEvents: 'none' }}>
-              {chatCount}
-            </div>
-          )}
         </div>
         <Link 
           href="/hire" 

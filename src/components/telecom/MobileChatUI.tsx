@@ -61,7 +61,7 @@ export default function MobileChatUI({
   }, [externalSessionId, mode]);
   
   // Only execute chat logic side-effects if in user mode
-  const chatLogic = useChatLogic(mode === 'user' ? sessionId : "");
+  const chatLogic = useChatLogic(mode === 'user' ? sessionId : "", true);
   
   // Use dynamic welcome messages array from chatLogic
   const [localMessages, setLocalMessages] = useState<any[]>([]);
@@ -203,7 +203,7 @@ export default function MobileChatUI({
       {/* Chat Messages */}
       <PhysicsScroll className="chat-feed-scroll" padding={padding || '20px 20px 100px 20px'}>
         {allMessages.map((msg, idx) => {
-          const isMe = mode === 'admin' ? msg.sender === 'admin' : msg.sender === 'user';
+          const isMe = mode === 'admin' ? msg.sender === 'admin' : (msg.sender === 'user' && msg.profileId === chatLogic.effectiveSessionId);
           
           // Check if message is ONLY emojis
           const checkIsOnlyEmojis = (str: string) => {

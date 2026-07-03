@@ -12,12 +12,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const rubik = Rubik({
-  variable: "--font-rubik",
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-  display: "swap",
-});
+// Replaced next/font/google Rubik with direct link for better mobile support
 
 export const metadata: Metadata = {
   title: "Optical Illusions",
@@ -44,9 +39,14 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${rubik.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="h-full w-full m-0 p-0 overflow-hidden relative" style={{ backgroundColor: 'black' }}>
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+      </head>
+      <body className="h-full w-full m-0 p-0 overflow-hidden relative" style={{ backgroundColor: 'black', fontFamily: '"Rubik", sans-serif' }}>
         <MasterControllerProvider>
           <main className="relative z-10 w-full h-full">
             {children}

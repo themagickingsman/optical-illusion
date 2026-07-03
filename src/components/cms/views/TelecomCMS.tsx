@@ -13,7 +13,7 @@ export default function TelecomCMS() {
   const [data, setData] = useState<any>(null);
   const [activeProfileId, setActiveProfileId] = useState<string | null>(null);
   const [replyText, setReplyText] = useState("");
-  const [activeTab, setActiveTab] = useState<'keys' | 'chat' | 'email' | 'architecture' | 'triangle' | 'square'>('keys');
+  const [activeTab, setActiveTab] = useState<'keys' | 'chat' | 'email' | 'architecture' | 'triangle' | 'square'>('chat');
   const [emailTemplate, setEmailTemplate] = useState("");
   const [emailSubject, setEmailSubject] = useState("");
   const [editingEmail, setEditingEmail] = useState("");
@@ -176,16 +176,19 @@ export default function TelecomCMS() {
       {/* Top Navigation Tabs */}
       <div style={{ display: 'flex', borderBottom: '1px solid #333', backgroundColor: '#111' }}>
         <button 
+          onClick={() => setActiveTab('chat')}
+          style={{ position: 'relative', padding: '15px 30px', border: 'none', background: activeTab === 'chat' ? '#222' : 'transparent', color: activeTab === 'chat' ? '#4ade80' : '#888', cursor: 'pointer', fontWeight: 'bold', fontSize: '15px', borderRight: '1px solid #333' }}
+        >
+          Chat View
+          {profiles.some((p: any) => p.unread) && (
+            <div style={{ position: 'absolute', top: '10px', right: '10px', width: '8px', height: '8px', backgroundColor: '#ef4444', borderRadius: '50%', boxShadow: '0 0 10px rgba(239, 68, 68, 0.8)' }} />
+          )}
+        </button>
+        <button 
           onClick={() => setActiveTab('keys')}
           style={{ padding: '15px 30px', border: 'none', background: activeTab === 'keys' ? '#222' : 'transparent', color: activeTab === 'keys' ? '#03FFC0' : '#888', cursor: 'pointer', fontWeight: 'bold', fontSize: '15px', borderRight: '1px solid #333' }}
         >
           Network Keys
-        </button>
-        <button 
-          onClick={() => setActiveTab('chat')}
-          style={{ padding: '15px 30px', border: 'none', background: activeTab === 'chat' ? '#222' : 'transparent', color: activeTab === 'chat' ? '#4ade80' : '#888', cursor: 'pointer', fontWeight: 'bold', fontSize: '15px', borderRight: '1px solid #333' }}
-        >
-          Chat View
         </button>
         <button 
           onClick={() => setActiveTab('email')}
@@ -328,12 +331,23 @@ export default function TelecomCMS() {
               {profiles.map((profile: any) => {
                 const profileMessages = messages.filter((m: any) => m.profileId === profile.id);
                 const lastMessage = profileMessages[profileMessages.length - 1];
-                const isNew = lastMessage && lastMessage.sender === 'user';
+                const isNew = profile.unread;
 
                 return (
                   <div 
                     key={profile.id}
-                    onClick={() => setActiveProfileId(profile.id)}
+                    onClick={() => {
+                      setActiveProfileId(profile.id);
+                      if (profile.unread) {
+                        fetch('/api/chat', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ action: 'mark_read', profileId: profile.id })
+                        });
+                        // Optimistically update local state so the dot disappears immediately
+                        profile.unread = false;
+                      }
+                    }}
                     style={{ 
                       padding: '15px 40px 15px 20px', 
                       cursor: 'pointer',

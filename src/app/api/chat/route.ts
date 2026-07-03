@@ -152,6 +152,10 @@ export async function POST(req: Request) {
       db.messages = db.messages.filter((m: any) => m.profileId !== body.profileId);
       db.ndaLinks = db.ndaLinks.filter((n: any) => n.sessionId !== body.profileId);
     }
+    else if (body.action === 'mark_read') {
+      const p = db.profiles.find((x: any) => x.id === body.profileId);
+      if (p) p.unread = false;
+    }
     
     // --- Frontend App Action Support ---
     else if (body.type === 'message') {
@@ -160,6 +164,9 @@ export async function POST(req: Request) {
       const profile = db.profiles.find((p: any) => p.id === body.payload.profileId);
       if (profile) {
         profile.lastActive = new Date().toISOString();
+        if (body.payload.sender === 'user') {
+          profile.unread = true;
+        }
       }
     } 
     else if (body.type === 'profile') {

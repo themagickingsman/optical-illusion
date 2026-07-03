@@ -46,12 +46,18 @@ export default function MobileChatUI({
       ? chatLogic.welcomeMessages 
       : (chatLogic.welcomeMessage ? [chatLogic.welcomeMessage] : ["Welcome to the secure channel."]);
       
-    setLocalMessages(messages.map((text: string, idx: number) => ({
-      id: `welcome-${idx}`,
-      sender: 'admin',
-      text,
-      timestamp: new Date().toISOString()
-    })));
+    setLocalMessages(prevLocal => {
+      return messages.map((text: string, idx: number) => {
+        // Find existing message to preserve timestamp
+        const existing = prevLocal.find(m => m.id === `welcome-${idx}` && m.text === text);
+        return {
+          id: `welcome-${idx}`,
+          sender: 'admin',
+          text,
+          timestamp: existing ? existing.timestamp : new Date().toISOString()
+        };
+      });
+    });
   }, [chatLogic.welcomeMessages, chatLogic.welcomeMessage]);
 
   const [inputText, setInputText] = useState("");
@@ -95,7 +101,7 @@ export default function MobileChatUI({
       backgroundColor: 'transparent',
       color: '#fff',
       position: 'relative',
-      fontFamily: "var(--font-rubik), sans-serif"
+      fontFamily: '"Rubik", sans-serif'
     }}>
       <style>{`
         @keyframes springIn {

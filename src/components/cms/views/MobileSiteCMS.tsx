@@ -43,7 +43,13 @@ export default function MobileSiteCMS() {
           overflow: 'hidden', 
         }}>
           {/* Header */}
-          <div style={{ padding: '40px 0 20px', zIndex: 50, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px', flexShrink: 0 }}>
+          <div style={{ padding: '40px 0 20px', zIndex: 50, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px', flexShrink: 0, position: 'relative' }}>
+            
+            {/* Build Number */}
+            <div style={{ position: 'absolute', top: '15px', left: '50%', transform: 'translateX(-50%)', color: 'rgba(255,255,255,0.4)', fontSize: '10px', fontWeight: 'bold', letterSpacing: '1px' }}>
+              BUILD 0.1.0
+            </div>
+
             <div 
               style={{ width: '120px', height: '30px', position: 'relative', cursor: 'pointer' }}
               onClick={() => alert("Navigating home from Mobile Site preview...")}
@@ -51,8 +57,8 @@ export default function MobileSiteCMS() {
                <Image src="/assets/logo/op_logo.png" alt="Logo" fill style={{ objectFit: 'contain', objectPosition: 'center' }} priority />
             </div>
 
-            {/* Scrollable Tab Toggles */}
-            <div className="no-scrollbar" style={{ display: 'flex', gap: '15px', width: '100%', padding: '0 20px', overflowX: 'auto', WebkitOverflowScrolling: 'touch', flexShrink: 0, justifyContent: 'center' }}>
+            {/* Scrollable Tab Toggles (Social Icons) - Pushed down 50px */}
+            <div className="no-scrollbar" style={{ display: 'flex', gap: '15px', width: '100%', padding: '0 20px', marginTop: '50px', overflowX: 'auto', WebkitOverflowScrolling: 'touch', flexShrink: 0, justifyContent: 'center' }}>
               <button 
                 onClick={() => setMobileTab('chat')}
                 style={{ flexShrink: 0, width: '50px', height: '50px', borderRadius: '50%', background: mobileTab === 'chat' ? '#fff' : 'rgba(255,255,255,0.1)', color: mobileTab === 'chat' ? '#000' : '#fff', border: '1px solid rgba(255,255,255,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s' }}

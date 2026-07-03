@@ -1,11 +1,27 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import MobileChatUI from '@/components/telecom/MobileChatUI';
 
 export default function MobileTelecomCMS() {
   const [data, setData] = useState<any>(null);
   const [activeProfileId, setActiveProfileId] = useState<string | null>(null);
+  const [deletingProfileId, setDeletingProfileId] = useState<string | null>(null);
+  const holdTimerRef = useRef<NodeJS.Timeout | null>(null);
+  
+  const handlePointerDown = (id: string) => {
+    if (holdTimerRef.current) clearTimeout(holdTimerRef.current);
+    holdTimerRef.current = setTimeout(() => {
+      setDeletingProfileId(id);
+    }, 600);
+  };
+
+  const handlePointerUpOrLeave = () => {
+    if (holdTimerRef.current) {
+      clearTimeout(holdTimerRef.current);
+      holdTimerRef.current = null;
+    }
+  };
   
   const fetchData = () => {
     fetch('/api/chat')
@@ -101,14 +117,21 @@ export default function MobileTelecomCMS() {
             return (
               <div 
                 key={p.id}
-                onClick={() => setActiveProfileId(p.id)}
+                onPointerDown={() => handlePointerDown(p.id)}
+                onPointerUp={handlePointerUpOrLeave}
+                onPointerLeave={handlePointerUpOrLeave}
+                onClick={() => {
+                  if (deletingProfileId === p.id) return;
+                  setDeletingProfileId(null);
+                  setActiveProfileId(p.id);
+                }}
                 style={{
                   position: 'relative',
                   width: '46px',
                   height: '46px',
                   borderRadius: '50%',
-                  backgroundColor: isSelected ? '#fff' : '#222',
-                  color: isSelected ? '#000' : '#fff',
+                  backgroundColor: isSelected && deletingProfileId !== p.id ? '#fff' : '#222',
+                  color: isSelected && deletingProfileId !== p.id ? '#000' : '#fff',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -116,12 +139,35 @@ export default function MobileTelecomCMS() {
                   fontWeight: 'bold',
                   fontFamily: 'var(--font-rubik), sans-serif',
                   cursor: 'pointer',
-                  border: isSelected ? '2px solid #fff' : '1px solid #444',
+                  border: isSelected && deletingProfileId !== p.id ? '2px solid #fff' : (deletingProfileId === p.id ? '2px solid #FF3B30' : '1px solid #444'),
                   transition: 'all 0.2s ease',
-                  flexShrink: 0
+                  flexShrink: 0,
+                  userSelect: 'none',
+                  WebkitUserSelect: 'none'
                 }}
               >
-                {firstLetter}
+                {deletingProfileId === p.id ? (
+                  <span 
+                    style={{ color: '#FF3B30', fontSize: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' }}
+                    onClick={async (e) => {
+                      e.stopPropagation();
+                      try {
+                        await fetch('/api/chat', { 
+                          method: 'POST', 
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ action: 'delete_profile', profileId: p.id }) 
+                        });
+                        setDeletingProfileId(null);
+                        if (activeProfileId === p.id) setActiveProfileId(null);
+                        fetchData();
+                      } catch(err) { console.error(err); }
+                    }}
+                  >
+                    ✕
+                  </span>
+                ) : (
+                  firstLetter
+                )}
                 
                 {/* Unread Notification Dot */}
                 {hasUnread && (

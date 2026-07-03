@@ -1,13 +1,11 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
 import MobileChatUI from '@/components/telecom/MobileChatUI';
 import DiscordFeedUI from '@/components/telecom/DiscordFeedUI';
 import Image from 'next/image';
 
 export default function MobileSiteCMS() {
-  const router = useRouter();
   const [mobileTab, setMobileTab] = useState<'chat' | 'discord' | 'discord-cr'>('chat');
   const [touchStartX, setTouchStartX] = useState(0);
   const headerRef = useRef<HTMLDivElement>(null);

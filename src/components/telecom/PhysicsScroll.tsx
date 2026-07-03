@@ -45,25 +45,12 @@ export default function PhysicsScroll({ children, className = '', padding = '20p
       if (bubblesPhysics.length !== bubbles.length || lastScrollHeight !== currentScrollHeight) {
         bubblesPhysics = Array.from({ length: bubbles.length }).map((_, i) => {
           const el = bubbles[i] as HTMLElement;
-          return { y: bubblesPhysics[i]?.y || 0, offsetTop: el.offsetTop };
+          return { y: bubblesPhysics[i]?.y || 0, offsetTop: el.offsetTop, offsetHeight: el.offsetHeight };
         });
         lastScrollHeight = currentScrollHeight;
       }
 
-      // Dynamic Anchor: Element closest to the center of the viewport
       const viewportCenter = currentScrollTop + container.clientHeight / 2;
-      let closestDist = Infinity;
-      activeAnchor = 0;
-      
-      bubbles.forEach((bubble, i) => {
-        const el = bubble as HTMLElement;
-        const center = el.offsetTop + el.offsetHeight / 2;
-        const dist = Math.abs(center - viewportCenter);
-        if (dist < closestDist) {
-          closestDist = dist;
-          activeAnchor = i;
-        }
-      });
 
       if (deltaScroll !== 0) {
         bubblesPhysics.forEach((phys) => {
@@ -71,29 +58,27 @@ export default function PhysicsScroll({ children, className = '', padding = '20p
         });
       }
 
-      // 1. Anchor snaps to 0 quickly
-      bubblesPhysics[activeAnchor].y += (0 - bubblesPhysics[activeAnchor].y) * 0.7;
-
-      // 2. Propagate UPWARDS (from anchor to top)
-      for (let i = activeAnchor - 1; i >= 0; i--) {
-        bubblesPhysics[i].y += (bubblesPhysics[i + 1].y - bubblesPhysics[i].y) * 0.55;
-      }
-
-      // 3. Propagate DOWNWARDS (from anchor to bottom)
-      for (let i = activeAnchor + 1; i < bubbles.length; i++) {
-        bubblesPhysics[i].y += (bubblesPhysics[i - 1].y - bubblesPhysics[i].y) * 0.55;
-      }
-
       bubbles.forEach((bubble, i) => {
         const el = bubble as HTMLElement;
         const phys = bubblesPhysics[i];
+
+        // 1. Smooth Spring Physics (No Jumping Anchors)
+        // We use cached offsetTop/Height to prevent massive layout thrashing (forced synchronous layout).
+        const center = phys.offsetTop + phys.offsetHeight / 2;
+        const dist = Math.abs(center - viewportCenter);
+        
+        // Elements near the center snap back faster (0.3), elements at edges lag more (0.1)
+        const normalizedDist = Math.min(dist / container.clientHeight, 1);
+        const stiffness = 0.3 - (normalizedDist * 0.2);
+        
+        phys.y += (0 - phys.y) * stiffness;
 
         if (Math.abs(phys.y) > 0.1 || Math.abs(deltaScroll) > 0) {
           el.style.transform = `translateY(${phys.y}px)`;
         }
 
         const visibleTop = phys.offsetTop - currentScrollTop + phys.y;
-        const visibleBottom = visibleTop + el.offsetHeight;
+        const visibleBottom = visibleTop + phys.offsetHeight;
 
         const fadeStart = 10; 
         const textFadeStart = -10; 

@@ -268,7 +268,7 @@ export default function WebsiteBuildCMS() {
         {/* Build Number Overlay (positioned just above the input area) */}
         <div style={{ position: 'absolute', bottom: '95px', left: 0, right: 0, display: 'flex', justifyContent: 'center', pointerEvents: 'none', zIndex: 100 }}>
           <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '10px', fontWeight: 'bold', letterSpacing: '1px' }}>
-            BUILD 0.1.1
+            BUILD 0.1.2
           </div>
         </div>
       </div>

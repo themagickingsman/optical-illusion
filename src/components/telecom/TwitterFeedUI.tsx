@@ -167,7 +167,7 @@ export default function TwitterFeedUI() {
             type="text" 
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
-            placeholder="Secure message..." 
+            placeholder="Add Post here" 
             style={{ 
               flex: 1, 
               padding: '15px 20px', 

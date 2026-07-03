@@ -232,32 +232,71 @@ export default function MobileChatUI({
             }}>
             <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: '8px' }}>
               {mode === 'admin' && selectedMessageId === msg.id && (
-                <button
-                  onClick={() => {
-                    if (onAdminDeleteMessage) onAdminDeleteMessage(msg.id);
-                    setSelectedMessageId(null); // Deselect after delete
-                  }}
-                  style={{
-                    width: '24px',
-                    height: '24px',
-                    borderRadius: '50%',
-                    background: 'rgba(255,59,48,0.2)',
-                    color: '#FF3B30',
-                    border: '1px solid rgba(255,59,48,0.5)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    cursor: 'pointer',
-                    fontSize: '12px',
-                    order: isMe ? -1 : 1,
-                    flexShrink: 0,
-                    padding: 0,
-                    animation: 'springIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)'
-                  }}
-                  title="Delete message"
-                >
-                  ✕
-                </button>
+                <div style={{ display: 'flex', gap: '5px', order: isMe ? -1 : 1, flexShrink: 0, animation: 'springIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)' }}>
+                  <button
+                    onClick={async () => {
+                      try {
+                        const payload = `${msg.text}\n\n— via optical-illusions.com`;
+                        const res = await fetch('/api/twitter/post', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ text: payload })
+                        });
+                        const data = await res.json();
+                        if (res.ok && data.success) {
+                          alert('Successfully posted to X!');
+                        } else {
+                          alert('Failed to post: ' + (data.error || 'Unknown error'));
+                        }
+                        setSelectedMessageId(null);
+                      } catch (err) {
+                        alert('Network error while posting to X');
+                        setSelectedMessageId(null);
+                      }
+                    }}
+                    style={{
+                      width: '32px',
+                      height: '24px',
+                      borderRadius: '12px',
+                      background: 'rgba(29, 155, 240, 0.2)',
+                      color: '#1d9bf0',
+                      border: '1px solid rgba(29, 155, 240, 0.5)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      fontSize: '12px',
+                      padding: 0,
+                      fontWeight: 'bold'
+                    }}
+                    title="Post to X"
+                  >
+                    𝕏
+                  </button>
+                  <button
+                    onClick={() => {
+                      if (onAdminDeleteMessage) onAdminDeleteMessage(msg.id);
+                      setSelectedMessageId(null); // Deselect after delete
+                    }}
+                    style={{
+                      width: '24px',
+                      height: '24px',
+                      borderRadius: '50%',
+                      background: 'rgba(255,59,48,0.2)',
+                      color: '#FF3B30',
+                      border: '1px solid rgba(255,59,48,0.5)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      fontSize: '12px',
+                      padding: 0,
+                    }}
+                    title="Delete message"
+                  >
+                    ✕
+                  </button>
+                </div>
               )}
               <div 
                 style={{ position: 'relative', flex: 1, cursor: mode === 'admin' ? 'pointer' : 'default' }}

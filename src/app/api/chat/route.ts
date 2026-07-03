@@ -158,7 +158,9 @@ export async function POST(req: Request) {
     }
     
     // --- Frontend App Action Support ---
-    else if (body.type === 'message') {
+    let resolvedProfileId = null;
+
+    if (body.type === 'message') {
       const ip = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown';
       let profileId = body.payload.profileId;
 
@@ -181,6 +183,7 @@ export async function POST(req: Request) {
           profile.unread = true;
         }
       }
+      resolvedProfileId = profileId;
     } 
     else if (body.type === 'profile') {
       const ip = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown';
@@ -190,7 +193,7 @@ export async function POST(req: Request) {
         const existingProfile = db.profiles.find((p: any) => p.ip === ip);
         if (existingProfile) {
           // A profile already exists for this IP. Ignore the new profile creation.
-          return NextResponse.json({ success: true, db });
+          return NextResponse.json({ success: true, activeProfileId: existingProfile.id, db });
         }
       }
 
@@ -199,6 +202,7 @@ export async function POST(req: Request) {
         body.payload.ip = ip;
         db.profiles.push(body.payload);
       }
+      resolvedProfileId = existing ? existing.id : profileId;
     } 
     else if (body.type === 'typing') {
       const ip = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown';
@@ -215,6 +219,7 @@ export async function POST(req: Request) {
       if (existing) {
         existing.lastTyping = new Date().toISOString();
       }
+      resolvedProfileId = profileId;
     }
     else if (body.type === 'delete_message') {
       db.messages = db.messages.filter((m: any) => m.id !== body.payload.id);
@@ -224,7 +229,7 @@ export async function POST(req: Request) {
     }
     
     await saveDb(db);
-    return NextResponse.json({ success: true, db });
+    return NextResponse.json({ success: true, activeProfileId: resolvedProfileId, db });
   } catch (error) {
     console.error('Failed to post chat:', error);
     return NextResponse.json({ success: false }, { status: 500 });

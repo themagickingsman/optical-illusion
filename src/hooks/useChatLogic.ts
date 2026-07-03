@@ -20,6 +20,7 @@ export function useChatLogic(sessionId: string) {
   const [profiles, setProfiles] = useState<ChatProfile[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isAdminTyping, setIsAdminTyping] = useState(false);
+  const [effectiveSessionId, setEffectiveSessionId] = useState(sessionId);
   const [welcomeMessage, setWelcomeMessage] = useState("Welcome to the secure channel.");
   const [autoReplyMessage, setAutoReplyMessage] = useState("Message Received\nCurrent response time: 1 hour");
   const [welcomeMessages, setWelcomeMessages] = useState<string[]>([]);
@@ -49,29 +50,42 @@ export function useChatLogic(sessionId: string) {
     return () => clearInterval(interval);
   }, [fetchChats]);
 
+  // Sync if props change but only if we don't already have an effective ID
+  useEffect(() => {
+    if (!effectiveSessionId && sessionId) {
+      setEffectiveSessionId(sessionId);
+    }
+  }, [sessionId, effectiveSessionId]);
+
   const sendMessage = async (text: string) => {
     if (!text.trim()) return;
 
+    const currentId = effectiveSessionId || sessionId;
+
     // First ensure the profile exists
-    if (!profiles.find(p => p.id === sessionId)) {
-      await fetch('/api/chat', {
+    if (!profiles.find(p => p.id === currentId)) {
+      const pRes = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           type: 'profile',
           payload: {
-            id: sessionId,
+            id: currentId,
             name: 'Visitor',
             email: null,
             lastActive: new Date().toISOString()
           }
         })
       });
+      const pData = await pRes.json();
+      if (pData.activeProfileId && pData.activeProfileId !== currentId) {
+        setEffectiveSessionId(pData.activeProfileId);
+      }
     }
 
     const newMessage: ChatMessage = {
       id: Date.now().toString(),
-      profileId: sessionId,
+      profileId: effectiveSessionId || sessionId,
       sender: 'user',
       text,
       timestamp: new Date().toISOString()
@@ -80,11 +94,17 @@ export function useChatLogic(sessionId: string) {
     // Optimistic update
     setMessages(prev => [...prev, newMessage]);
 
-    await fetch('/api/chat', {
+    const res = await fetch('/api/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ type: 'message', payload: newMessage })
     });
+    
+    const data = await res.json();
+    if (data.activeProfileId && data.activeProfileId !== newMessage.profileId) {
+      setEffectiveSessionId(data.activeProfileId);
+      setMessages(prev => prev.map(m => m.id === newMessage.id ? { ...m, profileId: data.activeProfileId } : m));
+    }
     
     // Trigger global event if needed for the dashboard counter
     window.dispatchEvent(new Event('chat_updated'));
@@ -99,9 +119,10 @@ export function useChatLogic(sessionId: string) {
       }
       
       setTimeout(async () => {
+        const activeId = effectiveSessionId || sessionId;
         const autoReply: ChatMessage = {
           id: (Date.now() + index).toString(),
-          profileId: sessionId,
+          profileId: activeId,
           sender: 'admin',
           text: messagesArray[index],
           timestamp: new Date().toISOString()
@@ -135,19 +156,25 @@ export function useChatLogic(sessionId: string) {
   // Throttle typing events
   let lastTypingTime = 0;
   const sendTypingStatus = async () => {
-    if (!sessionId) return;
+    const currentId = effectiveSessionId || sessionId;
+    if (!currentId) return;
     const now = Date.now();
     if (now - lastTypingTime > 3000) {
       lastTypingTime = now;
-      await fetch('/api/chat', {
+      const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type: 'typing', payload: { id: sessionId } })
+        body: JSON.stringify({ type: 'typing', payload: { id: currentId } })
       });
+      const data = await res.json();
+      if (data.activeProfileId && data.activeProfileId !== currentId) {
+        setEffectiveSessionId(data.activeProfileId);
+      }
     }
   };
 
-  const sessionMessages = messages.filter(m => m.profileId === sessionId);
+  const activeId = effectiveSessionId || sessionId;
+  const sessionMessages = messages.filter(m => m.profileId === activeId);
 
   return {
     messages: sessionMessages,

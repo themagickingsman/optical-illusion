@@ -162,7 +162,7 @@ export default function WebsiteBuildCMS() {
           </div>
 
           <div 
-            style={{ width: '120px', height: '30px', position: 'relative', cursor: 'pointer', marginTop: '25px' }}
+            style={{ width: '120px', height: '30px', position: 'relative', cursor: 'pointer', marginTop: '15px' }}
             onClick={() => handleNavClick('home')}
           >
              <Image src="/assets/logo/op_logo.png" alt="Logo" fill style={{ objectFit: 'contain', objectPosition: 'center' }} priority />
@@ -204,7 +204,7 @@ export default function WebsiteBuildCMS() {
         </div>
         
         <div 
-          style={{ flex: 1, position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column', minHeight: 0 }}
+          style={{ flex: 1, position: 'relative', overflow: 'visible', display: 'flex', flexDirection: 'column', minHeight: 0 }}
           onPointerDown={handlePointerDown}
           onPointerUp={handlePointerUp}
         >

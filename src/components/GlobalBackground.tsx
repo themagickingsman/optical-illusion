@@ -12,6 +12,14 @@ function GlobalBackgroundInner() {
   const isBuildTab = currentTab === 'build' || currentTab === null;
 
   const [isPreviewing, setIsPreviewing] = React.useState(false);
+  const [isMobile, setIsMobile] = React.useState<boolean | null>(null);
+
+  React.useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth <= 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   React.useEffect(() => {
     const handlePreviewChange = (e: any) => setIsPreviewing(e.detail?.isPreviewing || false);
@@ -19,9 +27,14 @@ function GlobalBackgroundInner() {
     return () => window.removeEventListener('preview-state-change', handlePreviewChange);
   }, []);
 
+  // Do not mount WebGL until we know if it's mobile to avoid WebKit crash
+  if (isMobile === null) {
+    return null;
+  }
+
   // Only render the heavy WebGL metaballs when there is no engine selected
-  // and we are not in preview mode.
-  if (hasEngineSelected || isPreviewing) {
+  // and we are not in preview mode, and we are not on mobile.
+  if (hasEngineSelected || isPreviewing || isMobile) {
     return null;
   }
 

@@ -128,17 +128,33 @@ export default function MobileChatUI({
     setShowGifPicker(false);
   };
 
-  const handleSendGif = (gifUrl: string) => {
+  const handleSendGif = (gif: any) => {
+    // Serialize the payload to include dimensions for Solution 2 (Aspect Ratio Placeholder)
+    const payload = `[GIPHY|${gif.images.original.width}|${gif.images.original.height}]${gif.images.original.url}`;
+    
     if (mode === 'user') {
-      chatLogic.sendMessage(gifUrl);
+      chatLogic.sendMessage(payload);
     } else if (onAdminSendMessage) {
-      onAdminSendMessage(gifUrl);
+      onAdminSendMessage(payload);
     }
     setShowGifPicker(false);
   };
 
   const renderMessageText = (text: string) => {
-    // Check if it's a Giphy URL
+    // Check if it's our new serialized GIPHY format with dimensions
+    const giphyMatch = text.match(/^\[GIPHY\|(\d+)\|(\d+)\](.*)$/);
+    if (giphyMatch) {
+      const width = giphyMatch[1];
+      const height = giphyMatch[2];
+      const url = giphyMatch[3];
+      return (
+        <div style={{ width: '100%', aspectRatio: `${width} / ${height}`, position: 'relative', background: 'rgba(255,255,255,0.05)', borderRadius: '12px' }}>
+          <img src={url} alt="GIF" style={{ width: '100%', height: '100%', borderRadius: '12px', display: 'block', objectFit: 'cover', position: 'absolute', inset: 0 }} />
+        </div>
+      );
+    }
+
+    // Fallback for older raw Giphy URLs (backwards compatibility)
     if (text.match(/^https?:\/\/(media\d*|i)\.giphy\.com\/media\//i)) {
       return <img src={text} alt="GIF" style={{ width: '100%', borderRadius: '12px', display: 'block' }} />;
     }
@@ -314,7 +330,7 @@ export default function MobileChatUI({
                   fetchGifs={(offset: number) => gf.trending({ offset, limit: 10 })} 
                   onGifClick={(gif, e) => {
                     e.preventDefault();
-                    handleSendGif(gif.images.original.url);
+                    handleSendGif(gif);
                   }} 
                 />
               </div>

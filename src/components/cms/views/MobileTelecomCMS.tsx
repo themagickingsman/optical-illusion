@@ -32,21 +32,16 @@ export default function MobileTelecomCMS() {
   const activeProfile = profiles.find((p: any) => p.id === activeProfileId);
 
   return (
-    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#000', overflow: 'hidden', padding: '20px' }}>
+    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#000', overflow: 'hidden' }}>
       {/* Mobile Shell Simulation Container */}
       <div style={{ 
         width: '100%', 
-        maxWidth: '430px',
         height: '100%',
-        maxHeight: '932px',
-        borderRadius: '40px', 
         overflow: 'hidden', 
         position: 'relative', 
         backgroundColor: 'transparent', 
         display: 'flex',
         flexDirection: 'column',
-        boxShadow: '0 0 50px rgba(0,0,0,0.5)', 
-        border: '4px solid #333',
         backgroundImage: 'url(/assets/bg/mobile_bg.png)',
         backgroundSize: 'cover',
         backgroundPosition: 'center'

@@ -40,6 +40,7 @@ export default function MobileChatUI({
   onAdminDeleteMessage
 }: MobileChatUIProps) {
   const [sessionId, setSessionId] = useState(externalSessionId || "");
+  const [selectedMessageId, setSelectedMessageId] = useState<string | null>(null);
 
   useEffect(() => {
     if (mode === 'admin') return; // Admin mode does not need a cookie session
@@ -174,9 +175,12 @@ export default function MobileChatUI({
               willChange: 'transform, opacity'
             }}>
             <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              {mode === 'admin' && (
+              {mode === 'admin' && selectedMessageId === msg.id && (
                 <button
-                  onClick={() => onAdminDeleteMessage && onAdminDeleteMessage(msg.id)}
+                  onClick={() => {
+                    if (onAdminDeleteMessage) onAdminDeleteMessage(msg.id);
+                    setSelectedMessageId(null); // Deselect after delete
+                  }}
                   style={{
                     width: '24px',
                     height: '24px',
@@ -191,14 +195,22 @@ export default function MobileChatUI({
                     fontSize: '12px',
                     order: isMe ? -1 : 1,
                     flexShrink: 0,
-                    padding: 0
+                    padding: 0,
+                    animation: 'springIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)'
                   }}
                   title="Delete message"
                 >
                   ✕
                 </button>
               )}
-              <div style={{ position: 'relative', flex: 1 }}>
+              <div 
+                style={{ position: 'relative', flex: 1, cursor: mode === 'admin' ? 'pointer' : 'default' }}
+                onClick={() => {
+                  if (mode === 'admin') {
+                    setSelectedMessageId(selectedMessageId === msg.id ? null : msg.id);
+                  }
+                }}
+              >
                 <div className="chat-bubble-bg" style={{
                   position: 'absolute',
                   inset: 0,

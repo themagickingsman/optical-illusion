@@ -49,8 +49,9 @@ function DashboardContent() {
   }, []);
 
   // If this is a production deployment run by the Autonomous Pipeline,
-  // we completely bypass the developer CMS and ONLY render the WebsiteBuildCMS tab.
-  if (process.env.NEXT_PUBLIC_BUILD === 'true') {
+  // we completely bypass the developer CMS and ONLY render the WebsiteBuildCMS tab,
+  // EXCEPT if the mobile-admin backdoor tab is explicitly requested.
+  if (process.env.NEXT_PUBLIC_BUILD === 'true' && activeCmsTab !== 'mobile-admin') {
     return (
       <main id="website-canvas" style={{ width: "100%", height: "100%", overflow: "hidden", position: "relative", pointerEvents: "auto" }}>
         <GlobalBackground />

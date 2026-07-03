@@ -88,7 +88,7 @@ export default function TwitterFeedUI() {
               backdropFilter: 'blur(10px)'
             }}>
               <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3px', background: 'linear-gradient(90deg, #1d9bf0, #9333ea)' }} />
-              <h3 style={{ color: '#fff', fontSize: '22px', fontWeight: 900, margin: '0 0 12px 0', textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>Promote Your Game for Free! 🚀</h3>
+              <h3 style={{ color: '#fff', fontSize: '48px', fontWeight: 500, margin: '0 0 16px 0', letterSpacing: '-0.02em', lineHeight: 1, textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>Promote Your Game for Free! 🚀</h3>
               <p style={{ color: 'rgba(255,255,255,0.85)', fontSize: '16px', lineHeight: '1.6', margin: 0, fontWeight: 500 }}>
                 Drop a post below with a link to your game or your portfolio for designers and game developers. Our team pushes the best ones straight to our official X page!
               </p>
@@ -137,7 +137,7 @@ export default function TwitterFeedUI() {
           )}
         </div>
 
-        <form onSubmit={(e) => { e.preventDefault(); handleSendMessage(); }} style={{ display: 'flex', gap: '10px', position: 'relative', maxWidth: '600px', margin: '0 auto' }}>
+        <form onSubmit={(e) => { e.preventDefault(); handleSendMessage(); }} style={{ display: 'flex', gap: '10px', position: 'relative', maxWidth: '600px', margin: '0 auto', alignItems: 'center' }}>
           {/* Pickers Toggle */}
           <div style={{ display: 'flex', gap: '5px', alignItems: 'center' }}>
             <button 
@@ -166,29 +166,47 @@ export default function TwitterFeedUI() {
             type="text" 
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
-            placeholder="Submit your game/portfolio link..." 
+            placeholder="Secure message..." 
             style={{ 
               flex: 1, 
               padding: '15px 20px', 
               borderRadius: '100px', 
               border: '1px solid rgba(255,255,255,0.2)', 
-              background: 'rgba(0,0,0,0.8)', 
+              background: 'rgba(0,0,0,0.6)', 
               color: '#fff', 
               fontSize: '16px',
               fontFamily: 'var(--font-rubik), sans-serif',
               outline: 'none',
-              boxShadow: 'inset 0 2px 5px rgba(0,0,0,0.5)',
+              transition: 'border 0.2s',
               minWidth: 0
             }}
+            onMouseEnter={(e) => { if (document.activeElement !== e.target) e.currentTarget.style.border = '1px solid rgba(255,255,255,0.5)' }}
+            onMouseLeave={(e) => { if (document.activeElement !== e.target) e.currentTarget.style.border = '1px solid rgba(255,255,255,0.2)' }}
+            onFocus={(e) => e.target.style.border = '1px solid rgba(3,255,192,0.8)'}
+            onBlur={(e) => e.target.style.border = '1px solid rgba(255,255,255,0.2)'}
           />
           <button 
             type="submit" 
-            disabled={isSending}
+            disabled={!inputText.trim() || isSending}
             style={{ 
-              background: 'white', color: 'black', border: 'none', borderRadius: '100px', padding: '0 20px', fontSize: '16px', fontWeight: 'bold', cursor: 'pointer', fontFamily: 'var(--font-rubik), sans-serif', opacity: isSending ? 0.5 : 1
+              width: '50px', 
+              height: '50px', 
+              borderRadius: '50%', 
+              background: inputText.trim() && !isSending ? '#00A37A' : 'rgba(0,0,0,0.6)', 
+              color: inputText.trim() && !isSending ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.4)', 
+              border: 'none', 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center', 
+              cursor: inputText.trim() && !isSending ? 'pointer' : 'default',
+              transition: 'all 0.2s',
+              flexShrink: 0
             }}
           >
-            {isSending ? 'Sending...' : 'Send'}
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="22" y1="2" x2="11" y2="13"></line>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+            </svg>
           </button>
         </form>
       </div>

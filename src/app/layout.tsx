@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Rubik } from "next/font/google";
 import "./globals.css";
 
@@ -20,6 +20,13 @@ const rubik = Rubik({
 export const metadata: Metadata = {
   title: "Optical Illusions",
   description: "We architect front-end UI/UX for seamless Unity and Unreal integration via AI and secure MCP protocols.",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 };
 
 

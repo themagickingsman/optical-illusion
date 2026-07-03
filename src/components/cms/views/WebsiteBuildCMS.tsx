@@ -191,13 +191,8 @@ export default function WebsiteBuildCMS() {
         {/* Header - Overlaid as Absolute */}
         <div ref={headerRef} style={{ padding: '40px 0 20px', position: 'absolute', top: 0, left: 0, right: 0, zIndex: 50, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px', pointerEvents: 'auto', transition: 'opacity 0.3s ease', opacity: 1 }}>
           
-          {/* Build Number */}
-          <div style={{ position: 'absolute', top: '15px', left: '50%', transform: 'translateX(-50%)', color: 'rgba(255,255,255,0.4)', fontSize: '10px', fontWeight: 'bold', letterSpacing: '1px' }}>
-            BUILD 0.1.0
-          </div>
-
           <div 
-            style={{ width: '160px', height: '40px', position: 'relative', cursor: 'pointer', marginTop: '5px' }}
+            style={{ width: '160px', height: '40px', position: 'relative', cursor: 'pointer', marginTop: '-15px', marginBottom: '7px' }}
             onClick={() => handleNavClick('home')}
           >
              <Image src="/assets/logo/op_logo.png" alt="Logo" fill style={{ objectFit: 'contain', objectPosition: 'center' }} priority />
@@ -256,6 +251,13 @@ export default function WebsiteBuildCMS() {
           {mobileTab === 'chat' && <MobileChatUI theme="op" padding="220px 20px 120px 20px" />}
           {mobileTab === 'discord' && <DiscordFeedUI channelType="op" padding="220px 20px 120px 20px" />}
           {mobileTab === 'discord-cr' && <DiscordFeedUI channelType="cr" padding="220px 20px 120px 20px" />}
+        </div>
+
+        {/* Build Number Overlay (positioned just above the input area) */}
+        <div style={{ position: 'absolute', bottom: '95px', left: 0, right: 0, display: 'flex', justifyContent: 'center', pointerEvents: 'none', zIndex: 100 }}>
+          <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '10px', fontWeight: 'bold', letterSpacing: '1px' }}>
+            BUILD 0.1.1
+          </div>
         </div>
       </div>
     );

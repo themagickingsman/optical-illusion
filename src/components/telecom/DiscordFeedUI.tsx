@@ -17,9 +17,10 @@ interface DiscordMessage {
 
 interface DiscordFeedUIProps {
   channelType: 'op' | 'cr';
+  padding?: string;
 }
 
-export default function DiscordFeedUI({ channelType }: DiscordFeedUIProps) {
+export default function DiscordFeedUI({ channelType, padding }: DiscordFeedUIProps) {
   const [messages, setMessages] = useState<DiscordMessage[]>([]);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -100,7 +101,7 @@ export default function DiscordFeedUI({ channelType }: DiscordFeedUIProps) {
         }
       `}</style>
       
-      <PhysicsScroll className="discord-feed-scroll">
+      <PhysicsScroll className="discord-feed-scroll" padding={padding || '20px'}>
         {loading && <div style={{ textAlign: 'center', marginTop: '40px', fontWeight: 'bold', color: 'rgba(255,255,255,0.5)' }}>Connecting to Discord...</div>}
         
         {errorMsg && (

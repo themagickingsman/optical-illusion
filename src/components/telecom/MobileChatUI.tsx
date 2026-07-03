@@ -11,6 +11,7 @@ interface MobileChatUIProps {
   adminMessages?: any[];
   onAdminSendMessage?: (text: string) => void;
   adminTypingStatus?: boolean;
+  padding?: string;
 }
 
 export default function MobileChatUI({ 
@@ -19,7 +20,8 @@ export default function MobileChatUI({
   mode = 'user',
   adminMessages = [],
   onAdminSendMessage,
-  adminTypingStatus = false
+  adminTypingStatus = false,
+  padding
 }: MobileChatUIProps) {
   const [sessionId, setSessionId] = useState(externalSessionId || "");
 
@@ -123,7 +125,7 @@ export default function MobileChatUI({
       {/* Background Glows Removed for Performance */}
 
       {/* Chat Messages */}
-      <PhysicsScroll className="chat-feed-scroll">
+      <PhysicsScroll className="chat-feed-scroll" padding={padding || '20px'}>
         {allMessages.map((msg, idx) => {
           const isMe = mode === 'admin' ? msg.sender === 'admin' : msg.sender === 'user';
           
@@ -167,7 +169,7 @@ export default function MobileChatUI({
                 {msg.text}
               </div>
             </div>
-            <div className="chat-timestamp" style={{ fontSize: '12px', color: 'rgba(0, 0, 0, 0.6)', marginTop: '6px', textAlign: isMe ? 'right' : 'left', fontWeight: 'bold', opacity: 'var(--text-opacity, 1)' }}>
+            <div className="chat-timestamp" style={{ fontSize: '12px', color: 'rgba(0, 0, 0, 0.6)', marginTop: '6px', textAlign: isMe ? 'right' : 'left', fontWeight: 'bold', opacity: 'var(--bg-opacity, 1)' }}>
               {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
             </div>
             </div>
@@ -193,7 +195,7 @@ export default function MobileChatUI({
       </PhysicsScroll>
 
       {/* Input Area */}
-      <div style={{ padding: "20px", zIndex: 20, background: 'transparent', position: 'sticky', bottom: 0 }}>
+      <div style={{ padding: "20px", zIndex: 20, background: 'transparent', position: 'absolute', bottom: 0, left: 0, right: 0 }}>
         <form onSubmit={(e) => { e.preventDefault(); handleSendMessage(); }} style={{ display: 'flex', gap: '10px', position: 'relative' }}>
           <input 
             type="text" 
@@ -223,8 +225,8 @@ export default function MobileChatUI({
               width: '50px', 
               height: '50px', 
               borderRadius: '50%', 
-              background: inputText.trim() ? '#00A37A' : 'rgba(255,255,255,0.1)', 
-              color: inputText.trim() ? 'rgba(0,0,0,0.6)' : '#fff', 
+              background: inputText.trim() ? '#00A37A' : 'rgba(0,0,0,0.6)', 
+              color: inputText.trim() ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.4)', 
               border: 'none', 
               display: 'flex', 
               alignItems: 'center', 

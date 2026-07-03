@@ -29,6 +29,12 @@ export default function PhysicsScroll({ children, className = '', padding = '20p
       const deltaScroll = currentScrollTop - lastScrollTop;
       lastScrollTop = currentScrollTop;
 
+      if (Math.abs(deltaScroll) > 0) {
+        window.dispatchEvent(new CustomEvent('mobile-feed-scroll', { 
+          detail: { deltaY: deltaScroll, scrollTop: currentScrollTop } 
+        }));
+      }
+
       // Only target direct children that are standard elements
       const bubbles = Array.from(container.children).filter(el => (el as HTMLElement).tagName !== 'STYLE' && (el as HTMLElement).id !== 'physics-anchor');
       if (bubbles.length === 0) {
@@ -87,14 +93,24 @@ export default function PhysicsScroll({ children, className = '', padding = '20p
         }
 
         const visibleTop = phys.offsetTop - currentScrollTop + phys.y;
+        const visibleBottom = visibleTop + el.offsetHeight;
+
         const fadeStart = 10; 
         const textFadeStart = -10; 
         const fadeEnd = -30;
+
+        const bottomFadeStart = container.clientHeight - 110;
+        const bottomTextFadeStart = container.clientHeight - 80;
+        const bottomFadeEnd = container.clientHeight - 50;
 
         let bgOpacity = 1;
         if (visibleTop < fadeStart && visibleTop > textFadeStart) {
           bgOpacity = (visibleTop - textFadeStart) / (fadeStart - textFadeStart);
         } else if (visibleTop <= textFadeStart) {
+          bgOpacity = 0;
+        } else if (visibleBottom > bottomFadeStart && visibleBottom < bottomTextFadeStart) {
+          bgOpacity = 1 - ((visibleBottom - bottomFadeStart) / (bottomTextFadeStart - bottomFadeStart));
+        } else if (visibleBottom >= bottomTextFadeStart) {
           bgOpacity = 0;
         }
 
@@ -102,6 +118,10 @@ export default function PhysicsScroll({ children, className = '', padding = '20p
         if (visibleTop < textFadeStart && visibleTop > fadeEnd) {
           textOpacity = (visibleTop - fadeEnd) / (textFadeStart - fadeEnd);
         } else if (visibleTop <= fadeEnd) {
+          textOpacity = 0;
+        } else if (visibleBottom > bottomTextFadeStart && visibleBottom < bottomFadeEnd) {
+          textOpacity = 1 - ((visibleBottom - bottomTextFadeStart) / (bottomFadeEnd - bottomTextFadeStart));
+        } else if (visibleBottom >= bottomFadeEnd) {
           textOpacity = 0;
         }
 
@@ -137,7 +157,7 @@ export default function PhysicsScroll({ children, className = '', padding = '20p
         gap: "15px", 
         zIndex: 10, 
         overflowY: 'auto', 
-        WebkitOverflowScrolling: 'touch' 
+        WebkitOverflowScrolling: 'touch'
       }}
     >
       <style>{`

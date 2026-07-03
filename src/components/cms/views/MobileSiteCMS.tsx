@@ -1,13 +1,36 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import MobileChatUI from '@/components/telecom/MobileChatUI';
 import DiscordFeedUI from '@/components/telecom/DiscordFeedUI';
 import Image from 'next/image';
 
 export default function MobileSiteCMS() {
+  const router = useRouter();
   const [mobileTab, setMobileTab] = useState<'chat' | 'discord' | 'discord-cr'>('chat');
   const [touchStartX, setTouchStartX] = useState(0);
+  const headerRef = useRef<HTMLDivElement>(null);
+
+  // Scroll-based Header Fade
+  useEffect(() => {
+    const handleScroll = (e: any) => {
+      if (!headerRef.current) return;
+      const { deltaY, scrollTop } = e.detail;
+      if (scrollTop < 50) {
+        headerRef.current.style.opacity = '1';
+        headerRef.current.style.pointerEvents = 'auto'; // allow clicks
+      } else if (deltaY > 2) { // Scrolling down
+        headerRef.current.style.opacity = '0';
+        headerRef.current.style.pointerEvents = 'none'; // disable clicks when hidden
+      } else if (deltaY < -2) { // Scrolling up
+        headerRef.current.style.opacity = '1';
+        headerRef.current.style.pointerEvents = 'auto';
+      }
+    };
+    window.addEventListener('mobile-feed-scroll', handleScroll);
+    return () => window.removeEventListener('mobile-feed-scroll', handleScroll);
+  }, []);
 
   const handlePointerDown = (e: React.PointerEvent) => {
     setTouchStartX(e.clientX);
@@ -43,7 +66,7 @@ export default function MobileSiteCMS() {
           overflow: 'hidden', 
         }}>
           {/* Header */}
-          <div style={{ padding: '40px 0 20px', zIndex: 50, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px', flexShrink: 0, position: 'relative' }}>
+          <div ref={headerRef} style={{ padding: '40px 0 20px', position: 'absolute', top: 0, left: 0, right: 0, zIndex: 50, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px', pointerEvents: 'auto', transition: 'opacity 0.3s ease', opacity: 1 }}>
             
             {/* Build Number */}
             <div style={{ position: 'absolute', top: '15px', left: '50%', transform: 'translateX(-50%)', color: 'rgba(255,255,255,0.4)', fontSize: '10px', fontWeight: 'bold', letterSpacing: '1px' }}>
@@ -51,7 +74,7 @@ export default function MobileSiteCMS() {
             </div>
 
             <div 
-              style={{ width: '160px', height: '40px', position: 'relative', cursor: 'pointer', marginTop: '15px' }}
+              style={{ width: '160px', height: '40px', position: 'relative', cursor: 'pointer', marginTop: '5px' }}
               onClick={() => alert("Navigating home from Mobile Site preview...")}
             >
                <Image src="/assets/logo/op_logo.png" alt="Logo" fill style={{ objectFit: 'contain', objectPosition: 'center' }} priority />
@@ -61,7 +84,7 @@ export default function MobileSiteCMS() {
             <div className="no-scrollbar" style={{ display: 'flex', gap: '15px', width: '100%', padding: '0 20px', marginTop: '0px', overflowX: 'auto', WebkitOverflowScrolling: 'touch', flexShrink: 0, justifyContent: 'center' }}>
               <button 
                 onClick={() => setMobileTab('chat')}
-                style={{ flexShrink: 0, width: '50px', height: '50px', borderRadius: '50%', background: mobileTab === 'chat' ? '#fff' : 'rgba(255,255,255,0.1)', color: mobileTab === 'chat' ? '#000' : '#fff', border: '1px solid rgba(255,255,255,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s' }}
+                style={{ flexShrink: 0, width: '50px', height: '50px', borderRadius: '50%', background: mobileTab === 'chat' ? '#fff' : 'rgba(255,255,255,0.1)', backdropFilter: mobileTab !== 'chat' ? 'blur(10px)' : 'none', WebkitBackdropFilter: mobileTab !== 'chat' ? 'blur(10px)' : 'none', color: mobileTab === 'chat' ? '#000' : '#fff', border: '1px solid rgba(255,255,255,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s' }}
               >
                 <img 
                   src="/assets/icon/op_04.png" 
@@ -72,7 +95,7 @@ export default function MobileSiteCMS() {
               
               <button 
                 onClick={() => setMobileTab('discord')}
-                style={{ flexShrink: 0, width: '50px', height: '50px', borderRadius: '50%', background: mobileTab === 'discord' ? '#fff' : 'rgba(255,255,255,0.1)', color: mobileTab === 'discord' ? '#000' : '#fff', border: '1px solid rgba(255,255,255,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s' }}
+                style={{ flexShrink: 0, width: '50px', height: '50px', borderRadius: '50%', background: mobileTab === 'discord' ? '#fff' : 'rgba(255,255,255,0.1)', backdropFilter: mobileTab !== 'discord' ? 'blur(10px)' : 'none', WebkitBackdropFilter: mobileTab !== 'discord' ? 'blur(10px)' : 'none', color: mobileTab === 'discord' ? '#000' : '#fff', border: '1px solid rgba(255,255,255,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s' }}
               >
                 <svg width="26" height="26" viewBox="0 0 127.14 96.36" fill="currentColor">
                   <path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21h0A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1,105.25,105.25,0,0,0,32.19-16.14c0,0,.04-.06.05-.09h0c2.69-28.05-4.28-51.44-19.55-72.06ZM42.63,65.22C38.22,65.22,34.61,61.16,34.61,56.19S38.11,47.16,42.63,47.16c4.54,0,8.12,4.09,8.07,9S47.17,65.22,42.63,65.22Zm41.88,0c-4.41,0-8.02-4.06-8.02-9s3.52-9,8.02-9c4.54,0,8.12,4.09,8.07,9S89.05,65.22,84.51,65.22Z" />
@@ -81,7 +104,7 @@ export default function MobileSiteCMS() {
 
               <button 
                 onClick={() => setMobileTab('discord-cr')}
-                style={{ flexShrink: 0, width: '50px', height: '50px', borderRadius: '50%', background: mobileTab === 'discord-cr' ? '#fff' : 'rgba(255,255,255,0.1)', color: mobileTab === 'discord-cr' ? '#000' : '#fff', border: '1px solid rgba(255,255,255,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s' }}
+                style={{ flexShrink: 0, width: '50px', height: '50px', borderRadius: '50%', background: mobileTab === 'discord-cr' ? '#fff' : 'rgba(255,255,255,0.1)', backdropFilter: mobileTab !== 'discord-cr' ? 'blur(10px)' : 'none', WebkitBackdropFilter: mobileTab !== 'discord-cr' ? 'blur(10px)' : 'none', color: mobileTab === 'discord-cr' ? '#000' : '#fff', border: '1px solid rgba(255,255,255,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s' }}
               >
                 <img 
                   src="/assets/icon/Cosmic_racers_icon.png" 
@@ -92,8 +115,9 @@ export default function MobileSiteCMS() {
             </div>
           </div>
           
+          {/* Fullscreen Scroll Container */}
           <div 
-            style={{ flex: 1, position: 'relative', overflow: 'visible', display: 'flex', flexDirection: 'column', minHeight: 0 }}
+            style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column' }}
             onPointerDown={handlePointerDown}
             onPointerUp={handlePointerUp}
           >
@@ -101,9 +125,9 @@ export default function MobileSiteCMS() {
               .no-scrollbar::-webkit-scrollbar { display: none; }
               .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
             `}</style>
-            {mobileTab === 'chat' && <MobileChatUI theme="op" />}
-            {mobileTab === 'discord' && <DiscordFeedUI channelType="op" />}
-            {mobileTab === 'discord-cr' && <DiscordFeedUI channelType="cr" />}
+            {mobileTab === 'chat' && <MobileChatUI theme="op" padding="220px 20px 120px 20px" />}
+            {mobileTab === 'discord' && <DiscordFeedUI channelType="op" padding="220px 20px 120px 20px" />}
+            {mobileTab === 'discord-cr' && <DiscordFeedUI channelType="cr" padding="220px 20px 120px 20px" />}
           </div>
         </div>
 

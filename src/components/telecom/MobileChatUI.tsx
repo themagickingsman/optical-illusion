@@ -140,7 +140,8 @@ export default function MobileChatUI({
               transformOrigin: isMe ? 'bottom right' : 'bottom left',
               animation: 'springIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)',
               display: 'flex',
-              flexDirection: 'column'
+              flexDirection: 'column',
+              willChange: 'transform, opacity'
             }}>
             <div style={{ position: 'relative' }}>
               <div className="chat-bubble-bg" style={{
@@ -163,8 +164,8 @@ export default function MobileChatUI({
                 fontWeight: 'bold',
                 lineHeight: "1.4",
                 whiteSpace: 'pre-wrap',
-                transition: 'opacity 0.1s linear',
                 opacity: 'var(--text-opacity, 1)',
+                willChange: 'opacity'
               }}>
                 {msg.text}
               </div>
@@ -178,10 +179,10 @@ export default function MobileChatUI({
         
         {isAdminTyping && (
           <div className="chat-message-group" style={{ alignSelf: 'flex-start', maxWidth: '85%', display: 'flex', flexDirection: 'column' }}>
-            <div style={{ transformOrigin: 'bottom left', animation: 'springIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ transformOrigin: 'bottom left', animation: 'springIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)', display: 'flex', flexDirection: 'column', willChange: 'transform, opacity' }}>
               <div style={{ position: 'relative' }}>
                 <div className="chat-bubble-bg" style={{ position: 'absolute', inset: 0, background: 'rgba(147, 51, 234, 0.9)', borderRadius: '20px', borderBottomLeftRadius: '4px', zIndex: 0, opacity: 'var(--bg-opacity, 1)' }} />
-                <div className="chat-bubble-text" style={{ position: 'relative', zIndex: 1, padding: '15px 20px', display: 'flex', gap: '4px', alignItems: 'center', height: '51px', opacity: 'var(--text-opacity, 1)' }}>
+                <div className="chat-bubble-text" style={{ position: 'relative', zIndex: 1, padding: '15px 20px', display: 'flex', gap: '4px', alignItems: 'center', height: '51px', opacity: 'var(--text-opacity, 1)', willChange: 'opacity' }}>
                   <span style={{ width: '6px', height: '6px', background: '#fff', borderRadius: '50%', animation: 'typingPulse 1.4s infinite 0s' }} />
                   <span style={{ width: '6px', height: '6px', background: '#fff', borderRadius: '50%', animation: 'typingPulse 1.4s infinite 0.2s' }} />
                   <span style={{ width: '6px', height: '6px', background: '#fff', borderRadius: '50%', animation: 'typingPulse 1.4s infinite 0.4s' }} />

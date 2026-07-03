@@ -38,17 +38,42 @@ const LiveClock = () => {
 export default function PublicNav() {
   const pathname = usePathname();
   const router = useRouter();
+  const [chatCount, setChatCount] = useState(0);
+
+  useEffect(() => {
+    const fetchChatCount = async () => {
+      try {
+        const res = await fetch('/api/chat', { cache: 'no-store' });
+        const data = await res.json();
+        if (data.profiles) {
+          setChatCount(data.profiles.length);
+        }
+      } catch (err) {
+        console.error('Failed to fetch chat count', err);
+      }
+    };
+    fetchChatCount();
+    const timer = setInterval(fetchChatCount, 5000);
+    return () => clearInterval(timer);
+  }, []);
 
   return (
     <>
       <div id="build-nav-left" style={{ position: 'absolute', top: '30px', left: '40px', zIndex: 100, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '35px', pointerEvents: 'auto' }}>
-        <Link 
-          href="/about" 
-          style={{ position: 'relative', width: '150px', height: '40px', cursor: 'pointer', display: 'block' }}
-          onPointerDown={(e) => { if (e.button === 0) { e.preventDefault(); router.push('/about'); } }}
-        >
-          <Image src="/assets/logo/op_logo.png" alt="Logo" fill style={{ objectFit: 'contain', objectPosition: 'left center' }} priority />
-        </Link>
+        <div style={{ position: 'relative' }}>
+          <Link 
+            href="/about" 
+            style={{ position: 'relative', width: '150px', height: '40px', cursor: 'pointer', display: 'block' }}
+            onPointerDown={(e) => { if (e.button === 0) { e.preventDefault(); router.push('/about'); } }}
+          >
+            <Image src="/assets/logo/op_logo.png" alt="Logo" fill style={{ objectFit: 'contain', objectPosition: 'left center' }} priority />
+          </Link>
+          {chatCount > 0 && (
+            <div style={{ position: 'absolute', top: '-10px', right: '-10px', background: '#FFD700', color: 'black', borderRadius: '50%', width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', fontWeight: 'bold', fontFamily: 'var(--font-rubik), sans-serif', boxShadow: '0 2px 8px rgba(0,0,0,0.5)', pointerEvents: 'none' }}>
+              {chatCount}
+            </div>
+          )}
+        </div>
         <Link 
           href="/hire" 
           style={{ 
@@ -61,7 +86,6 @@ export default function PublicNav() {
             cursor: 'pointer', 
             fontSize: '13px', 
             fontWeight: 600, 
-            backdropFilter: 'blur(10px)', 
             transition: 'all 0.2s', 
             textAlign: 'center', 
             textDecoration: 'none',
@@ -91,7 +115,6 @@ export default function PublicNav() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            backdropFilter: 'blur(10px)', 
             transition: 'all 0.3s ease', 
           }}
           onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.2)'; e.currentTarget.style.transform = 'rotate(180deg)'; }}
@@ -172,9 +195,9 @@ export default function PublicNav() {
               color: '#03FFC0', 
               padding: '8px 24px', 
               borderRadius: '30px', 
+              cursor: 'pointer', 
               fontSize: '16px', 
               fontWeight: 'bold', 
-              backdropFilter: 'blur(10px)', 
               transition: 'all 0.2s', 
               marginLeft: '50px', 
               whiteSpace: 'nowrap',

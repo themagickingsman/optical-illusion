@@ -78,6 +78,7 @@ export default function WebsiteBuildCMS() {
   const [isMobile, setIsMobile] = useState<boolean | null>(null);
   const [mobileTab, setMobileTab] = useState<'chat' | 'discord' | 'discord-cr'>('chat');
   const [touchStartX, setTouchStartX] = useState(0);
+  const [chatCount, setChatCount] = useState(0);
   const headerRef = useRef<HTMLDivElement>(null);
 
   const handlePointerDown = (e: React.PointerEvent) => {
@@ -102,6 +103,19 @@ export default function WebsiteBuildCMS() {
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  useEffect(() => {
+    const fetchChatCount = async () => {
+      try {
+        const res = await fetch('/api/chat', { cache: 'no-store' });
+        const data = await res.json();
+        if (data.profiles) setChatCount(data.profiles.length);
+      } catch (e) {}
+    };
+    fetchChatCount();
+    const timer = setInterval(fetchChatCount, 5000);
+    return () => clearInterval(timer);
   }, []);
 
   // Scroll-based Header Fade
@@ -187,13 +201,18 @@ export default function WebsiteBuildCMS() {
             onClick={() => handleNavClick('home')}
           >
              <Image src="/assets/logo/op_logo.png" alt="Logo" fill style={{ objectFit: 'contain', objectPosition: 'center' }} priority />
+             {chatCount > 0 && (
+               <div style={{ position: 'absolute', top: '-10px', right: '0px', background: '#FFD700', color: 'black', borderRadius: '50%', width: '22px', height: '22px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 'bold', fontFamily: 'var(--font-rubik), sans-serif', pointerEvents: 'none' }}>
+                 {chatCount}
+               </div>
+             )}
           </div>
 
           {/* Scrollable Tab Toggles (Social Icons) */}
           <div className="no-scrollbar" style={{ display: 'flex', gap: '15px', width: '100%', padding: '0 20px', marginTop: '0px', overflowX: 'auto', WebkitOverflowScrolling: 'touch', flexShrink: 0, justifyContent: 'center' }}>
             <button 
               onClick={() => setMobileTab('chat')}
-              style={{ flexShrink: 0, width: '50px', height: '50px', borderRadius: '50%', background: mobileTab === 'chat' ? '#fff' : 'rgba(255,255,255,0.1)', backdropFilter: mobileTab !== 'chat' ? 'blur(10px)' : 'none', WebkitBackdropFilter: mobileTab !== 'chat' ? 'blur(10px)' : 'none', color: mobileTab === 'chat' ? '#000' : '#fff', border: '1px solid rgba(255,255,255,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s' }}
+              style={{ flexShrink: 0, width: '50px', height: '50px', borderRadius: '50%', background: mobileTab === 'chat' ? '#fff' : 'rgba(30,30,30,0.8)', color: mobileTab === 'chat' ? '#000' : '#fff', border: '1px solid rgba(255,255,255,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s' }}
             >
               <img 
                 src="/assets/icon/op_04.png" 
@@ -204,7 +223,7 @@ export default function WebsiteBuildCMS() {
             
             <button 
               onClick={() => setMobileTab('discord')}
-              style={{ flexShrink: 0, width: '50px', height: '50px', borderRadius: '50%', background: mobileTab === 'discord' ? '#fff' : 'rgba(255,255,255,0.1)', backdropFilter: mobileTab !== 'discord' ? 'blur(10px)' : 'none', WebkitBackdropFilter: mobileTab !== 'discord' ? 'blur(10px)' : 'none', color: mobileTab === 'discord' ? '#000' : '#fff', border: '1px solid rgba(255,255,255,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s' }}
+              style={{ flexShrink: 0, width: '50px', height: '50px', borderRadius: '50%', background: mobileTab === 'discord' ? '#fff' : 'rgba(30,30,30,0.8)', color: mobileTab === 'discord' ? '#000' : '#fff', border: '1px solid rgba(255,255,255,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s' }}
             >
               <svg width="26" height="26" viewBox="0 0 127.14 96.36" fill="currentColor">
                 <path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21h0A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1,105.25,105.25,0,0,0,32.19-16.14c0,0,.04-.06.05-.09h0c2.69-28.05-4.28-51.44-19.55-72.06ZM42.63,65.22C38.22,65.22,34.61,61.16,34.61,56.19S38.11,47.16,42.63,47.16c4.54,0,8.12,4.09,8.07,9S47.17,65.22,42.63,65.22Zm41.88,0c-4.41,0-8.02-4.06-8.02-9s3.52-9,8.02-9c4.54,0,8.12,4.09,8.07,9S89.05,65.22,84.51,65.22Z" />
@@ -213,7 +232,7 @@ export default function WebsiteBuildCMS() {
 
             <button 
               onClick={() => setMobileTab('discord-cr')}
-              style={{ flexShrink: 0, width: '50px', height: '50px', borderRadius: '50%', background: mobileTab === 'discord-cr' ? '#fff' : 'rgba(255,255,255,0.1)', backdropFilter: mobileTab !== 'discord-cr' ? 'blur(10px)' : 'none', WebkitBackdropFilter: mobileTab !== 'discord-cr' ? 'blur(10px)' : 'none', color: mobileTab === 'discord-cr' ? '#000' : '#fff', border: '1px solid rgba(255,255,255,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s' }}
+              style={{ flexShrink: 0, width: '50px', height: '50px', borderRadius: '50%', background: mobileTab === 'discord-cr' ? '#fff' : 'rgba(30,30,30,0.8)', color: mobileTab === 'discord-cr' ? '#000' : '#fff', border: '1px solid rgba(255,255,255,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s' }}
             >
               <img 
                 src="/assets/icon/Cosmic_racers_icon.png" 
@@ -292,6 +311,11 @@ export default function WebsiteBuildCMS() {
             title="Zen Mode (Hide UI)"
           >
             <Image src="/assets/logo/op_logo.png" alt="Logo" fill style={{ objectFit: 'contain', objectPosition: 'left center' }} priority />
+            {chatCount > 0 && (
+              <div style={{ position: 'absolute', top: '-10px', right: '-10px', background: '#FFD700', color: 'black', borderRadius: '50%', width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', fontWeight: 'bold', fontFamily: 'var(--font-rubik), sans-serif', boxShadow: '0 2px 8px rgba(0,0,0,0.5)', pointerEvents: 'none' }}>
+                {chatCount}
+              </div>
+            )}
           </div>
           <button 
             onPointerDown={(e) => { if (e.button === 0) { e.preventDefault(); e.currentTarget.style.transform = 'scale(0.95)'; handleNavClick('hire'); } }}
@@ -304,8 +328,7 @@ export default function WebsiteBuildCMS() {
               borderRadius: '30px', 
               cursor: 'pointer', 
               fontSize: '13px', 
-              fontWeight: 600, 
-              backdropFilter: 'blur(10px)', 
+              fontWeight: 'bold', 
               transition: 'all 0.2s', 
               textAlign: 'center', 
               width: 'fit-content',
@@ -334,7 +357,6 @@ export default function WebsiteBuildCMS() {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              backdropFilter: 'blur(10px)', 
               transition: 'all 0.3s ease', 
             }}
             onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.2)'; e.currentTarget.style.transform = 'rotate(180deg)'; }}
@@ -353,7 +375,9 @@ export default function WebsiteBuildCMS() {
             <button onPointerDown={(e) => { if (e.button === 0) { e.preventDefault(); handleNavClick('home'); } }} style={{ background: 'transparent', border: 'none', color: previewMode === 'home' && !selectedEngine ? 'white' : 'rgba(255,255,255,0.7)', cursor: 'pointer', fontSize: '20px', fontWeight: 600, transition: 'all 0.2s', padding: 0 }}>About Us</button>
             <button onPointerDown={(e) => { if (e.button === 0) { e.preventDefault(); handleNavClick('games'); } }} style={{ background: 'transparent', border: 'none', color: previewMode === 'games' && !selectedEngine ? 'white' : 'rgba(255,255,255,0.7)', cursor: 'pointer', fontSize: '20px', fontWeight: 600, transition: 'all 0.2s', padding: 0, marginLeft: '50px' }}>Games</button>
             <button onPointerDown={(e) => { if (e.button === 0) { e.preventDefault(); handleNavClick('process'); } }} style={{ background: 'transparent', border: 'none', color: previewMode === 'process' && !selectedEngine ? 'white' : 'rgba(255,255,255,0.7)', cursor: 'pointer', fontSize: '20px', fontWeight: 600, transition: 'all 0.2s', padding: 0, marginLeft: '50px' }}>Our Process</button>
-            <button onPointerDown={(e) => { if (e.button === 0) { e.preventDefault(); handleNavClick('library'); } }} style={{ background: previewMode === 'library' && !selectedEngine ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.05)', border: previewMode === 'library' && !selectedEngine ? '1px solid rgba(255,255,255,0.3)' : '1px solid rgba(255,255,255,0.1)', color: '#03FFC0', padding: '8px 24px', borderRadius: '30px', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold', backdropFilter: 'blur(10px)', transition: 'all 0.2s', marginLeft: '50px', whiteSpace: 'nowrap' }}>Agentic Game Assets</button>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <button onPointerDown={(e) => { if (e.button === 0) { e.preventDefault(); handleNavClick('library'); } }} style={{ background: previewMode === 'library' && !selectedEngine ? 'rgba(30,30,30,0.9)' : 'rgba(20,20,20,0.8)', border: previewMode === 'library' && !selectedEngine ? '1px solid rgba(255,255,255,0.3)' : '1px solid rgba(255,255,255,0.1)', color: '#03FFC0', padding: '8px 24px', borderRadius: '30px', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold', transition: 'all 0.2s', marginLeft: '50px', whiteSpace: 'nowrap' }}>Agentic Game Assets</button>
+            </div>
           </div>
         </div>
 

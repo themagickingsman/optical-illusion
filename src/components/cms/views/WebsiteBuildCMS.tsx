@@ -192,8 +192,7 @@ export default function WebsiteBuildCMS() {
         <div ref={headerRef} style={{ padding: '40px 0 20px', position: 'absolute', top: 0, left: 0, right: 0, zIndex: 50, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px', pointerEvents: 'auto', transition: 'opacity 0.3s ease', opacity: 1 }}>
           
           <div 
-            style={{ width: '160px', height: '40px', position: 'relative', cursor: 'pointer', marginTop: '-15px', marginBottom: '7px' }}
-            onClick={() => handleNavClick('home')}
+            style={{ width: '160px', height: '40px', position: 'relative', marginTop: '-15px', marginBottom: '7px' }}
           >
              <Image src="/assets/logo/op_logo.png" alt="Logo" fill style={{ objectFit: 'contain', objectPosition: 'center' }} priority />
              {chatCount > 0 && (

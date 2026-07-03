@@ -30,7 +30,7 @@ export default function DiscordFeedUI({ channelType, padding }: DiscordFeedUIPro
 
   const fetchMessages = async () => {
     try {
-      const res = await fetch(`/api/discord/messages?channel=${channelType}`);
+      const res = await fetch(`/api/discord/messages?channel=${channelType}&t=${Date.now()}`, { cache: 'no-store' });
       const data = await res.json();
       if (res.ok && Array.isArray(data)) {
         setMessages(data);

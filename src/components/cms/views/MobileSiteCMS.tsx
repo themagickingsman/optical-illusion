@@ -3,10 +3,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import MobileChatUI from '@/components/telecom/MobileChatUI';
 import DiscordFeedUI from '@/components/telecom/DiscordFeedUI';
+import TwitterFeedUI from '@/components/telecom/TwitterFeedUI';
 import Image from 'next/image';
 
 export default function MobileSiteCMS() {
-  const [mobileTab, setMobileTab] = useState<'chat' | 'discord' | 'discord-cr'>('chat');
+  const [mobileTab, setMobileTab] = useState<'chat' | 'discord' | 'discord-cr' | 'x-twitter'>('chat');
   const [touchStartX, setTouchStartX] = useState(0);
   const [chatCount, setChatCount] = useState(0);
   const headerRef = useRef<HTMLDivElement>(null);
@@ -123,6 +124,15 @@ export default function MobileSiteCMS() {
                   style={{ width: '28px', height: '28px', borderRadius: '50%', objectFit: 'cover' }} 
                 />
               </button>
+
+              <button 
+                onClick={() => setMobileTab('x-twitter')}
+                style={{ flexShrink: 0, width: '50px', height: '50px', borderRadius: '50%', background: mobileTab === 'x-twitter' ? '#fff' : 'rgba(30,30,30,0.8)', color: mobileTab === 'x-twitter' ? '#000' : '#fff', border: '1px solid rgba(255,255,255,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s' }}
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                </svg>
+              </button>
             </div>
 
           </div>
@@ -140,6 +150,7 @@ export default function MobileSiteCMS() {
             {mobileTab === 'chat' && <MobileChatUI theme="op" padding="220px 20px 120px 20px" />}
             {mobileTab === 'discord' && <DiscordFeedUI channelType="op" padding="220px 20px 120px 20px" />}
             {mobileTab === 'discord-cr' && <DiscordFeedUI channelType="cr" padding="220px 20px 120px 20px" />}
+            {mobileTab === 'x-twitter' && <TwitterFeedUI />}
           </div>
 
           {/* Build Number Overlay (positioned just above the input area) */}

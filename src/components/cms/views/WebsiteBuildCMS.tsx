@@ -15,6 +15,7 @@ import { useQueryState } from '@/hooks/useQueryState';
 import ProjectCarouselView from './ProjectCarouselView';
 import DiscordFeedUI from '@/components/telecom/DiscordFeedUI';
 import MobileChatUI from '@/components/telecom/MobileChatUI';
+import TwitterFeedUI from '@/components/telecom/TwitterFeedUI';
 
 const AnimatedPage = ({ children, style }: { children: React.ReactNode, style?: React.CSSProperties }) => {
   const [mounted, setMounted] = useState(false);
@@ -76,7 +77,7 @@ export default function WebsiteBuildCMS() {
   const [selectedEngineId, setSelectedEngineId] = useQueryState<string | null>('engine', null);
 
   const [isMobile, setIsMobile] = useState<boolean | null>(null);
-  const [mobileTab, setMobileTab] = useState<'chat' | 'discord' | 'discord-cr'>('chat');
+  const [mobileTab, setMobileTab] = useState<'chat' | 'discord' | 'discord-cr' | 'x-twitter'>('chat');
   const [touchStartX, setTouchStartX] = useState(0);
   const [chatCount, setChatCount] = useState(0);
   const headerRef = useRef<HTMLDivElement>(null);
@@ -91,10 +92,12 @@ export default function WebsiteBuildCMS() {
       // Swiped Left - go to next tab
       if (mobileTab === 'chat') setMobileTab('discord');
       else if (mobileTab === 'discord') setMobileTab('discord-cr');
+      else if (mobileTab === 'discord-cr') setMobileTab('x-twitter');
     }
     if (touchEndX - touchStartX > 50) {
       // Swiped Right - go to prev tab
-      if (mobileTab === 'discord-cr') setMobileTab('discord');
+      if (mobileTab === 'x-twitter') setMobileTab('discord-cr');
+      else if (mobileTab === 'discord-cr') setMobileTab('discord');
       else if (mobileTab === 'discord') setMobileTab('chat');
     }
   };
@@ -234,6 +237,15 @@ export default function WebsiteBuildCMS() {
                 style={{ width: '28px', height: '28px', borderRadius: '50%', objectFit: 'cover' }} 
               />
             </button>
+
+            <button 
+              onClick={() => setMobileTab('x-twitter')}
+              style={{ flexShrink: 0, width: '50px', height: '50px', borderRadius: '50%', background: mobileTab === 'x-twitter' ? '#fff' : 'rgba(30,30,30,0.8)', color: mobileTab === 'x-twitter' ? '#000' : '#fff', border: '1px solid rgba(255,255,255,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s' }}
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+              </svg>
+            </button>
           </div>
         </div>
         
@@ -250,6 +262,7 @@ export default function WebsiteBuildCMS() {
           {mobileTab === 'chat' && <MobileChatUI theme="op" padding="220px 20px 120px 20px" />}
           {mobileTab === 'discord' && <DiscordFeedUI channelType="op" padding="220px 20px 120px 20px" />}
           {mobileTab === 'discord-cr' && <DiscordFeedUI channelType="cr" padding="220px 20px 120px 20px" />}
+          {mobileTab === 'x-twitter' && <TwitterFeedUI />}
         </div>
 
         {/* Build Number Overlay (positioned just above the input area) */}

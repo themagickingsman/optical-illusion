@@ -125,7 +125,7 @@ export default function MobileChatUI({
       {/* Background Glows Removed for Performance */}
 
       {/* Chat Messages */}
-      <PhysicsScroll className="chat-feed-scroll" padding={padding || '20px'}>
+      <PhysicsScroll className="chat-feed-scroll" padding={padding || '20px 20px 100px 20px'}>
         {allMessages.map((msg, idx) => {
           const isMe = mode === 'admin' ? msg.sender === 'admin' : msg.sender === 'user';
           

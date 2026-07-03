@@ -205,6 +205,17 @@ export default function MobileChatUI({
         {allMessages.map((msg, idx) => {
           const isMe = mode === 'admin' ? msg.sender === 'admin' : msg.sender === 'user';
           
+          // Check if message is ONLY emojis
+          const checkIsOnlyEmojis = (str: string) => {
+            if (str.startsWith('[GIPHY|') || str.startsWith('http')) return false;
+            const stripped = str.replace(/[\s\n]/g, '');
+            if (!stripped) return false;
+            // Match extended pictographics, emoji presentation, zero-width joiners, and variant selectors
+            return /^(\p{Emoji_Presentation}|\p{Extended_Pictographic}|\uFE0F|\u200D)+$/u.test(stripped);
+          };
+          const isEmojiOnly = checkIsOnlyEmojis(msg.text);
+          const isGiphy = msg.text.startsWith('[GIPHY|') || msg.text.match(/^https?:\/\/(media\d*|i)\.giphy\.com\/media\//i);
+          
           return (
           <div key={msg.id || idx} className="chat-message-group" style={{
             alignSelf: isMe ? 'flex-end' : 'flex-start',
@@ -256,29 +267,32 @@ export default function MobileChatUI({
                   }
                 }}
               >
-                <div className="chat-bubble-bg" style={{
-                  position: 'absolute',
-                  inset: 0,
-                  background: isMe ? 'rgba(10, 132, 255, 0.9)' : 'rgba(147, 51, 234, 0.9)',
-                  borderRadius: '20px',
-                  borderBottomRightRadius: isMe ? '4px' : '20px',
-                  borderBottomLeftRadius: !isMe ? '4px' : '20px',
-                  zIndex: 0,
-                  opacity: 'var(--bg-opacity, 1)',
-                }} />
+                {!isEmojiOnly && !isGiphy && (
+                  <div className="chat-bubble-bg" style={{
+                    position: 'absolute',
+                    inset: 0,
+                    background: isMe ? 'rgba(10, 132, 255, 0.9)' : 'rgba(147, 51, 234, 0.9)',
+                    borderRadius: '20px',
+                    borderBottomRightRadius: isMe ? '4px' : '20px',
+                    borderBottomLeftRadius: !isMe ? '4px' : '20px',
+                    zIndex: 0,
+                    opacity: 'var(--bg-opacity, 1)',
+                  }} />
+                )}
                 
                 <div className="chat-bubble-text" style={{
                   position: 'relative',
                   zIndex: 1,
-                  padding: '15px 20px',
-                  fontSize: "17px",
+                  padding: (isEmojiOnly || isGiphy) ? '0px' : '15px 20px',
+                  fontSize: isEmojiOnly ? "45px" : "17px",
                   color: "white",
                   fontWeight: 800,
                   fontFamily: 'var(--font-rubik), sans-serif',
                   lineHeight: "1.4",
                   whiteSpace: 'pre-wrap',
                   opacity: 'var(--text-opacity, 1)',
-                  willChange: 'opacity'
+                  willChange: 'opacity',
+                  filter: isEmojiOnly ? 'drop-shadow(0px 4px 6px rgba(0,0,0,0.4))' : 'none',
                 }}>
                   {renderMessageText(msg.text)}
                 </div>

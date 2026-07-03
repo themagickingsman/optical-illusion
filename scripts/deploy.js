@@ -32,6 +32,14 @@ console.log('\n⚙️ Executing deployment sequence...');
 try {
   const rootDir = path.join(__dirname, '..');
 
+  // Auto-increment build number
+  console.log('Incrementing build number...');
+  execSync('npm version patch --no-git-tag-version', { stdio: 'inherit', cwd: rootDir });
+  
+  // Read new version
+  const newPackage = JSON.parse(fs.readFileSync(path.join(rootDir, 'package.json'), 'utf8'));
+  console.log(`✅ Build number incremented to ${newPackage.version}`);
+
   // Push to Git
   console.log('Pushing to GitHub...');
   execSync('git add .', { stdio: 'inherit', cwd: rootDir });

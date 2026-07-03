@@ -78,7 +78,8 @@ export default function TwitterFeedUI() {
             <div style={{ 
               background: 'rgba(0,0,0,0.7)', 
               border: '1px solid rgba(255,255,255,0.15)', 
-              borderRadius: '16px', 
+              borderTop: 'none',
+              borderRadius: '0 0 16px 16px', 
               padding: '24px', 
               textAlign: 'center',
               boxShadow: '0 10px 30px rgba(0,0,0,0.8)',
@@ -109,7 +110,7 @@ export default function TwitterFeedUI() {
       </PhysicsScroll>
 
       {/* Input Area */}
-      <div style={{ padding: "20px", zIndex: 100, background: 'linear-gradient(to top, rgba(0,0,0,0.9), transparent)', position: 'absolute', bottom: 0, left: 0, right: 0 }}>
+      <div style={{ padding: "20px 20px 100px 20px", zIndex: 100, background: 'linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.9) 40%, transparent 100%)', position: 'absolute', bottom: 0, left: 0, right: 0 }}>
         
         {/* Pickers Popover */}
         <div style={{ position: 'absolute', bottom: '80px', right: '20px', zIndex: 30, display: 'flex', flexDirection: 'column', gap: '10px' }}>

@@ -3,6 +3,12 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useChatLogic } from "@/hooks/useChatLogic";
 import PhysicsScroll from "./PhysicsScroll";
+import data from '@emoji-mart/data';
+import Picker from '@emoji-mart/react';
+import { GiphyFetch } from '@giphy/js-fetch-api';
+import { Grid } from '@giphy/react-components';
+
+const gf = new GiphyFetch(process.env.NEXT_PUBLIC_GIPHY_API_KEY || '5hwYpLrCsAkukYs4poS79fObIfonvtBd');
 
 // --- UGCS ASSET KEY RESOLUTION MAP (V1 Local Dictionary) ---
 const PHRASE_TO_ASSET_KEY: Record<string, string> = {
@@ -80,6 +86,8 @@ export default function MobileChatUI({
   }, [chatLogic.welcomeMessages, chatLogic.welcomeMessage]);
 
   const [inputText, setInputText] = useState("");
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [showGifPicker, setShowGifPicker] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const dbMessages = mode === 'admin' ? adminMessages : chatLogic.messages;
@@ -109,11 +117,32 @@ export default function MobileChatUI({
     }
 
     if (mode === 'admin' && onAdminSendMessage) {
+      // For Admin, trigger the passed function
       onAdminSendMessage(text);
     } else {
       chatLogic.sendMessage(text);
     }
+    
     setInputText("");
+    setShowEmojiPicker(false);
+    setShowGifPicker(false);
+  };
+
+  const handleSendGif = (gifUrl: string) => {
+    if (mode === 'user') {
+      chatLogic.sendMessage(gifUrl);
+    } else if (onAdminSendMessage) {
+      onAdminSendMessage(gifUrl);
+    }
+    setShowGifPicker(false);
+  };
+
+  const renderMessageText = (text: string) => {
+    // Check if it's a Giphy URL
+    if (text.match(/^https?:\/\/(media\d*|i)\.giphy\.com\/media\//i)) {
+      return <img src={text} alt="GIF" style={{ width: '100%', borderRadius: '12px', display: 'block' }} />;
+    }
+    return text;
   };
 
   const handleTyping = (text: string) => {
@@ -235,7 +264,7 @@ export default function MobileChatUI({
                   opacity: 'var(--text-opacity, 1)',
                   willChange: 'opacity'
                 }}>
-                  {msg.text}
+                  {renderMessageText(msg.text)}
                 </div>
               </div>
             </div>
@@ -266,6 +295,33 @@ export default function MobileChatUI({
 
       {/* Input Area */}
       <div style={{ padding: "20px", zIndex: 20, background: 'transparent', position: 'absolute', bottom: 0, left: 0, right: 0 }}>
+        
+        {/* Pickers Popover */}
+        <div style={{ position: 'absolute', bottom: '80px', right: '20px', zIndex: 30, display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          {showEmojiPicker && (
+            <div style={{ borderRadius: '12px', overflow: 'hidden', boxShadow: '0 10px 25px rgba(0,0,0,0.5)' }}>
+              <Picker data={data} theme="dark" onEmojiSelect={(emoji: any) => setInputText(prev => prev + emoji.native)} />
+            </div>
+          )}
+          
+          {showGifPicker && (
+            <div style={{ width: '300px', height: '400px', background: '#222', borderRadius: '12px', overflow: 'hidden', padding: '10px', boxShadow: '0 10px 25px rgba(0,0,0,0.5)', display: 'flex', flexDirection: 'column' }}>
+              <div style={{ color: '#fff', fontSize: '14px', fontWeight: 'bold', marginBottom: '10px', textAlign: 'center' }}>GIPHY</div>
+              <div style={{ flex: 1, overflowY: 'auto' }} className="no-scrollbar">
+                <Grid 
+                  width={280} 
+                  columns={2} 
+                  fetchGifs={(offset: number) => gf.trending({ offset, limit: 10 })} 
+                  onGifClick={(gif, e) => {
+                    e.preventDefault();
+                    handleSendGif(gif.images.original.url);
+                  }} 
+                />
+              </div>
+            </div>
+          )}
+        </div>
+
         <form onSubmit={(e) => { e.preventDefault(); handleSendMessage(); }} style={{ display: 'flex', gap: '10px', position: 'relative' }}>
           <input 
             type="text" 
@@ -288,6 +344,31 @@ export default function MobileChatUI({
             onFocus={(e) => e.target.style.border = '1px solid rgba(3,255,192,0.8)'}
             onBlur={(e) => e.target.style.border = '1px solid rgba(255,255,255,0.2)'}
           />
+          
+          {/* Pickers Toggle */}
+          <div style={{ display: 'flex', gap: '5px', alignItems: 'center' }}>
+            <button 
+              type="button"
+              onClick={() => { setShowGifPicker(!showGifPicker); setShowEmojiPicker(false); }}
+              style={{
+                width: '40px', height: '40px', borderRadius: '50%', background: showGifPicker ? 'rgba(255,255,255,0.2)' : 'transparent',
+                color: '#fff', border: 'none', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold'
+              }}
+            >
+              GIF
+            </button>
+            <button 
+              type="button"
+              onClick={() => { setShowEmojiPicker(!showEmojiPicker); setShowGifPicker(false); }}
+              style={{
+                width: '40px', height: '40px', borderRadius: '50%', background: showEmojiPicker ? 'rgba(255,255,255,0.2)' : 'transparent',
+                color: '#fff', border: 'none', cursor: 'pointer', fontSize: '20px'
+              }}
+            >
+              😊
+            </button>
+          </div>
+
           <button 
             type="submit" 
             disabled={!inputText.trim()}

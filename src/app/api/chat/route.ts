@@ -159,24 +159,59 @@ export async function POST(req: Request) {
     
     // --- Frontend App Action Support ---
     else if (body.type === 'message') {
+      const ip = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown';
+      let profileId = body.payload.profileId;
+
+      // Unify sessions: If a non-admin IP is known, override the frontend's random session ID with the existing persistent profile ID.
+      if (ip !== 'unknown' && ip !== '::1' && ip !== '127.0.0.1') {
+        const existingProfile = db.profiles.find((p: any) => p.ip === ip);
+        if (existingProfile) {
+          profileId = existingProfile.id;
+          body.payload.profileId = profileId; // Force the message to attach to the old profile
+        }
+      }
+
       db.messages.push(body.payload);
       
-      const profile = db.profiles.find((p: any) => p.id === body.payload.profileId);
+      const profile = db.profiles.find((p: any) => p.id === profileId);
       if (profile) {
         profile.lastActive = new Date().toISOString();
+        if (!profile.ip) profile.ip = ip;
         if (body.payload.sender === 'user') {
           profile.unread = true;
         }
       }
     } 
     else if (body.type === 'profile') {
-      const existing = db.profiles.find((p: any) => p.id === body.payload.id);
+      const ip = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown';
+      let profileId = body.payload.id;
+
+      if (ip !== 'unknown' && ip !== '::1' && ip !== '127.0.0.1') {
+        const existingProfile = db.profiles.find((p: any) => p.ip === ip);
+        if (existingProfile) {
+          // A profile already exists for this IP. Ignore the new profile creation.
+          return NextResponse.json({ success: true, db });
+        }
+      }
+
+      const existing = db.profiles.find((p: any) => p.id === profileId);
       if (!existing) {
+        body.payload.ip = ip;
         db.profiles.push(body.payload);
       }
     } 
     else if (body.type === 'typing') {
-      const existing = db.profiles.find((p: any) => p.id === body.payload.id);
+      const ip = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown';
+      let profileId = body.payload.id;
+
+      if (ip !== 'unknown' && ip !== '::1' && ip !== '127.0.0.1') {
+        const existingProfile = db.profiles.find((p: any) => p.ip === ip);
+        if (existingProfile) {
+          profileId = existingProfile.id;
+        }
+      }
+
+      const existing = db.profiles.find((p: any) => p.id === profileId);
       if (existing) {
         existing.lastTyping = new Date().toISOString();
       }

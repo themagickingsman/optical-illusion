@@ -13,7 +13,7 @@ export default function MobileSiteCMS() {
   // Scroll-based Header Fade
   useEffect(() => {
     const handleScroll = (e: any) => {
-      if (!headerRef.current) return;
+      if (!headerRef.current || !e.detail) return;
       const { deltaY, scrollTop } = e.detail;
       if (scrollTop < 50) {
         headerRef.current.style.opacity = '1';

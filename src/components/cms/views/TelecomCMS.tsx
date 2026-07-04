@@ -3,6 +3,7 @@ import ArchitectureCMS from "./ArchitectureCMS";
 import TriangleCMS from "./TriangleCMS";
 import SquareCMS from "./SquareCMS";
 import MobileChatUI from '@/components/telecom/MobileChatUI';
+import VirtualNumberControl from '@/components/telecom/VirtualNumberControl';
 
 export default function TelecomCMS() {
   // --- Telecom Keys (GSK) State ---
@@ -51,6 +52,17 @@ export default function TelecomCMS() {
     const interval = setInterval(fetchData, 3000);
     return () => clearInterval(interval);
   }, []);
+
+  // Force a fetch if the active profile was just created but isn't in the list yet
+  const [lastForcedProfileId, setLastForcedProfileId] = useState<string | null>(null);
+  useEffect(() => {
+    if (activeProfileId && data && data.profiles && !data.profiles.find((p: any) => p.id === activeProfileId)) {
+      if (lastForcedProfileId !== activeProfileId) {
+        setLastForcedProfileId(activeProfileId);
+        fetchData();
+      }
+    }
+  }, [activeProfileId, data, lastForcedProfileId]);
 
   const handleReply = async () => {
     if (!replyText.trim() || !activeProfileId) return;
@@ -326,7 +338,11 @@ export default function TelecomCMS() {
         )}
 
         {activeTab === 'chat' && (
-          <div style={{ display: 'flex', width: '100%', height: '100%', overflow: 'hidden' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', width: '100%', height: '100%', overflow: 'hidden' }}>
+            <div style={{ width: '100%', flexShrink: 0 }}>
+              <VirtualNumberControl onNumberActivated={(id) => setActiveProfileId(id)} />
+            </div>
+            <div style={{ display: 'flex', flex: 1, width: '100%', overflow: 'hidden' }}>
             {/* Left Column: Profiles Inbox */}
             <div style={{ width: '300px', borderRight: '1px solid #333', overflowY: 'auto', flexShrink: 0 }}>
               <h2 style={{ padding: '20px', borderBottom: '1px solid #333', margin: 0, fontSize: '18px' }}>Inbox</h2>
@@ -510,7 +526,7 @@ export default function TelecomCMS() {
 
             {/* Right Column: Chat Interface */}
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', position: 'relative', alignItems: 'center', justifyContent: 'center', backgroundColor: '#050505' }}>
-              {activeProfileId ? (
+              {activeProfileId && activeProfile ? (
                 <div style={{ width: '375px', height: '812px', borderRadius: '40px', overflow: 'hidden', position: 'relative', backgroundColor: 'transparent', display: 'flex', flexDirection: 'column', boxShadow: '0 0 50px rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.05)' }}>
                   <div style={{ 
                     flex: 1, 
@@ -572,6 +588,7 @@ export default function TelecomCMS() {
               )}
             </div>
           </div>
+        </div>
         )}
       </div>
     </div>

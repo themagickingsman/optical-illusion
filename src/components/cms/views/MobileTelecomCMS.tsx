@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import MobileChatUI from '@/components/telecom/MobileChatUI';
 import LiveKitVideoEngine from '@/components/network-engine/assets/livekit_video_engine';
+import VirtualNumberControl from '@/components/telecom/VirtualNumberControl';
 
 export default function MobileTelecomCMS() {
   const [data, setData] = useState<any>(null);
@@ -36,6 +37,17 @@ export default function MobileTelecomCMS() {
     const interval = setInterval(fetchData, 3000);
     return () => clearInterval(interval);
   }, []);
+
+  // Force a fetch if the active profile was just created but isn't in the list yet
+  const [lastForcedProfileId, setLastForcedProfileId] = useState<string | null>(null);
+  useEffect(() => {
+    if (activeProfileId && data && data.profiles && !data.profiles.find((p: any) => p.id === activeProfileId)) {
+      if (lastForcedProfileId !== activeProfileId) {
+        setLastForcedProfileId(activeProfileId);
+        fetchData();
+      }
+    }
+  }, [activeProfileId, data, lastForcedProfileId]);
 
   const profiles = data?.profiles || [];
   const messages = data?.messages || [];
@@ -79,6 +91,11 @@ export default function MobileTelecomCMS() {
           <div style={{ color: '#fff', fontSize: '15px', fontWeight: 'bold', fontFamily: 'var(--font-rubik), sans-serif' }}>
             {activeProfileId ? (activeProfile?.name || 'Anonymous User') : 'Select User'}
           </div>
+        </div>
+
+        {/* Virtual Number Control - Hidden on small mobile but accessible in admin view */}
+        <div style={{ width: '100%', flexShrink: 0, zIndex: 90 }}>
+          <VirtualNumberControl onNumberActivated={(id) => setActiveProfileId(id)} />
         </div>
 
         {/* Main Content Area (Row) */}

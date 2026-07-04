@@ -11,7 +11,6 @@ import packageJson from '../../../../package.json';
 
 export default function MobileSiteCMS() {
   const [mobileTab, setMobileTab] = useState<'chat' | 'discord' | 'discord-cr' | 'x-twitter'>('chat');
-  const [touchStartX, setTouchStartX] = useState(0);
   const [chatCount, setChatCount] = useState(0);
   const headerRef = useRef<HTMLDivElement>(null);
   
@@ -87,24 +86,6 @@ export default function MobileSiteCMS() {
     window.addEventListener('mobile-feed-scroll', handleScroll);
     return () => window.removeEventListener('mobile-feed-scroll', handleScroll);
   }, []);
-
-  const handlePointerDown = (e: React.PointerEvent) => {
-    setTouchStartX(e.clientX);
-  };
-
-  const handlePointerUp = (e: React.PointerEvent) => {
-    const touchEndX = e.clientX;
-    if (touchStartX - touchEndX > 50) {
-      // Swiped Left - go to next tab
-      if (mobileTab === 'chat') setMobileTab('discord');
-      else if (mobileTab === 'discord') setMobileTab('discord-cr');
-    }
-    if (touchEndX - touchStartX > 50) {
-      // Swiped Right - go to prev tab
-      if (mobileTab === 'discord-cr') setMobileTab('discord');
-      else if (mobileTab === 'discord') setMobileTab('chat');
-    }
-  };
 
   return (
     <div style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: 'transparent' }}>
@@ -187,8 +168,6 @@ export default function MobileSiteCMS() {
           {/* Fullscreen Scroll Container */}
           <div 
             style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column' }}
-            onPointerDown={handlePointerDown}
-            onPointerUp={handlePointerUp}
           >
             <style>{`
               .no-scrollbar::-webkit-scrollbar { display: none; }

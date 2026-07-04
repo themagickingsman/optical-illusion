@@ -403,7 +403,12 @@ export default function MobileChatUI({
                 </div>
               </div>
             </div>
-            <div className="chat-timestamp" style={{ fontSize: '12px', color: 'rgba(0, 0, 0, 0.6)', marginTop: '6px', textAlign: isMe ? 'right' : 'left', fontWeight: 'bold', opacity: 'var(--bg-opacity, 1)' }}>
+            {!isMe && msg.sender !== 'admin' && (
+              <div style={{ fontSize: '12px', color: 'rgba(0, 0, 0, 0.6)', marginTop: '4px', textAlign: 'left', fontWeight: 'bold' }}>
+                {msg.sender}
+              </div>
+            )}
+            <div className="chat-timestamp" style={{ fontSize: '12px', color: 'rgba(0, 0, 0, 0.6)', marginTop: '2px', textAlign: isMe ? 'right' : 'left', fontWeight: 'bold', opacity: 'var(--bg-opacity, 1)' }}>
               {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
             </div>
             </div>

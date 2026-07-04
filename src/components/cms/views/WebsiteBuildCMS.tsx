@@ -80,29 +80,9 @@ export default function WebsiteBuildCMS() {
   const [isMobile, setIsMobile] = useState<boolean | null>(null);
   const [isLandscapeMobile, setIsLandscapeMobile] = useState(false);
   const [mobileTab, setMobileTab] = useState<'chat' | 'discord' | 'discord-cr' | 'x-twitter'>('chat');
-  const [touchStartX, setTouchStartX] = useState(0);
   const [chatCount, setChatCount] = useState(0);
   const headerRef = useRef<HTMLDivElement>(null);
 
-  const handlePointerDown = (e: React.PointerEvent) => {
-    setTouchStartX(e.clientX);
-  };
-
-  const handlePointerUp = (e: React.PointerEvent) => {
-    const touchEndX = e.clientX;
-    if (touchStartX - touchEndX > 50) {
-      // Swiped Left - go to next tab
-      if (mobileTab === 'chat') setMobileTab('discord');
-      else if (mobileTab === 'discord') setMobileTab('discord-cr');
-      else if (mobileTab === 'discord-cr') setMobileTab('x-twitter');
-    }
-    if (touchEndX - touchStartX > 50) {
-      // Swiped Right - go to prev tab
-      if (mobileTab === 'x-twitter') setMobileTab('discord-cr');
-      else if (mobileTab === 'discord-cr') setMobileTab('discord');
-      else if (mobileTab === 'discord') setMobileTab('chat');
-    }
-  };
   useEffect(() => {
     const checkMobile = () => {
       const mobilePortrait = window.innerWidth <= 768;
@@ -284,8 +264,6 @@ export default function WebsiteBuildCMS() {
         {/* Fullscreen Scroll Container */}
         <div 
           style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column' }}
-          onPointerDown={handlePointerDown}
-          onPointerUp={handlePointerUp}
         >
           <style>{`
             .no-scrollbar::-webkit-scrollbar { display: none; }

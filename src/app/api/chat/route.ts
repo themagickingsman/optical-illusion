@@ -7,7 +7,7 @@ const dbPath = path.join(process.cwd(), 'src', 'data', 'chat_db.json');
 
 export const dynamic = 'force-dynamic';
 
-async function getDb() {
+export async function getDb() {
   const kvUrl = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
   const kvToken = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
 
@@ -38,7 +38,7 @@ async function getDb() {
   }
 }
 
-async function saveDb(data: any) {
+export async function saveDb(data: any) {
   const kvUrl = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
   const kvToken = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
 

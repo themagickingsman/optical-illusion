@@ -112,7 +112,33 @@ export async function POST(req: Request) {
     if (!db.messages) db.messages = [];
 
     // --- Legacy CMS Action Support ---
-    if (body.action === 'save_template') {
+    if (body.action === 'create_vip_profile') {
+      const { profileId } = body;
+      const exists = db.profiles.find((x: any) => x.id === profileId);
+      if (!exists) {
+        db.profiles.push({
+          id: profileId,
+          type: 'vip',
+          name: 'VIP Client',
+          lastActive: new Date().toISOString(),
+          unread: false
+        });
+      }
+    }
+    else if (body.action === 'create_sms_profile') {
+      const { profileId, number } = body;
+      const exists = db.profiles.find((x: any) => x.id === profileId);
+      if (!exists) {
+        db.profiles.push({
+          id: profileId,
+          type: 'sms',
+          name: number,
+          lastActive: new Date().toISOString(),
+          unread: false
+        });
+      }
+    }
+    else if (body.action === 'save_template') {
       db.emailTemplate = body.template;
       db.emailSubject = body.subject;
     }

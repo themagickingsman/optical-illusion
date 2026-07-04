@@ -10,6 +10,37 @@ export default function MobileTelecomCMS() {
   const [data, setData] = useState<any>(null);
   const [activeProfileId, setActiveProfileId] = useState<string | null>(null);
   const [isGeneratingSms, setIsGeneratingSms] = useState(false);
+  const [isGeneratingVip, setIsGeneratingVip] = useState(false);
+  const [vipCopied, setVipCopied] = useState(false);
+  
+  const handleNewVipChat = async () => {
+    setIsGeneratingVip(true);
+    try {
+      const token = Math.random().toString(36).substring(2, 6).toUpperCase();
+      const profileId = `VIP-${token}`;
+      
+      await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'create_vip_profile',
+          profileId
+        })
+      });
+
+      const inviteLink = `https://optical-illusion-eight.vercel.app/hire?t=${profileId}`;
+      await navigator.clipboard.writeText(inviteLink);
+      
+      setActiveProfileId(profileId);
+      fetchData();
+      
+      setVipCopied(true);
+      setTimeout(() => setVipCopied(false), 2000);
+    } catch (err) {
+      console.error("Failed to generate VIP chat", err);
+    }
+    setIsGeneratingVip(false);
+  };
   
   const handleNewSmsChat = async () => {
     setIsGeneratingSms(true);
@@ -32,7 +63,20 @@ export default function MobileTelecomCMS() {
         
         if (postData.activeNumber) {
           const profileId = `virtual-sms-${postData.activeNumber.replace(/\D/g, '')}`;
+          
+          // Create the profile in the database
+          await fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              action: 'create_sms_profile',
+              profileId,
+              number: postData.activeNumber
+            })
+          });
+
           setActiveProfileId(profileId);
+          fetchData(); // Refresh the list so it shows up in the sidebar
         }
       }
     } catch (err) {
@@ -168,6 +212,15 @@ export default function MobileTelecomCMS() {
             title="Generate New SMS Chat"
           >
             {isGeneratingSms ? <AppleSpinner size={14} /> : 'SMS'}
+          </button>
+          
+          <button 
+            onClick={handleNewVipChat}
+            disabled={isGeneratingVip}
+            style={{ width: '60px', height: '32px', borderRadius: '16px', backgroundColor: vipCopied ? 'rgba(0,255,0,0.2)' : 'transparent', color: vipCopied ? '#00FF00' : '#FFFFFF', border: `1px solid ${vipCopied ? 'rgba(0,255,0,0.5)' : 'rgba(255, 255, 255, 0.3)'}`, cursor: isGeneratingVip ? 'wait' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 'bold', flexShrink: 0, transition: 'all 0.2s', opacity: isGeneratingVip ? 0.7 : 1, marginTop: '-5px' }}
+            title="Generate VIP Invite Link"
+          >
+            {isGeneratingVip ? <AppleSpinner size={14} /> : (vipCopied ? '✅' : 'Invite')}
           </button>
           
           {sortedProfiles.map((p: any) => {

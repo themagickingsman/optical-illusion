@@ -15,6 +15,37 @@ export default function TelecomCMS() {
   const [data, setData] = useState<any>(null);
   const [activeProfileId, setActiveProfileId] = useState<string | null>(null);
   const [isGeneratingSms, setIsGeneratingSms] = useState(false);
+  const [isGeneratingVip, setIsGeneratingVip] = useState(false);
+  const [vipCopied, setVipCopied] = useState(false);
+  
+  const handleNewVipChat = async () => {
+    setIsGeneratingVip(true);
+    try {
+      const token = Math.random().toString(36).substring(2, 6).toUpperCase();
+      const profileId = `VIP-${token}`;
+      
+      await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'create_vip_profile',
+          profileId
+        })
+      });
+
+      const inviteLink = `https://optical-illusion-eight.vercel.app/hire?t=${profileId}`;
+      await navigator.clipboard.writeText(inviteLink);
+      
+      setActiveProfileId(profileId);
+      fetchData();
+      
+      setVipCopied(true);
+      setTimeout(() => setVipCopied(false), 2000);
+    } catch (err) {
+      console.error("Failed to generate VIP chat", err);
+    }
+    setIsGeneratingVip(false);
+  };
   
   const handleNewSmsChat = async () => {
     setIsGeneratingSms(true);
@@ -37,7 +68,20 @@ export default function TelecomCMS() {
         
         if (postData.activeNumber) {
           const profileId = `virtual-sms-${postData.activeNumber.replace(/\D/g, '')}`;
+          
+          // Create the profile in the database
+          await fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              action: 'create_sms_profile',
+              profileId,
+              number: postData.activeNumber
+            })
+          });
+
           setActiveProfileId(profileId);
+          fetchData(); // Refresh the list so it shows up in the sidebar
         }
       }
     } catch (err) {
@@ -383,16 +427,28 @@ export default function TelecomCMS() {
             <div style={{ width: '300px', borderRight: '1px solid #333', overflowY: 'auto', flexShrink: 0 }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px', borderBottom: '1px solid #333' }}>
                 <h2 style={{ margin: 0, fontSize: '18px' }}>Inbox</h2>
-                  <button 
-                  onClick={handleNewSmsChat}
-                  disabled={isGeneratingSms}
-                  style={{ width: '40px', height: '32px', borderRadius: '16px', backgroundColor: 'transparent', color: '#03FFC0', border: '1px solid rgba(3, 255, 192, 0.3)', cursor: isGeneratingSms ? 'wait' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 'bold', transition: 'all 0.2s', opacity: isGeneratingSms ? 0.7 : 1 }}
-                  title="Generate New SMS Chat"
-                  onMouseEnter={e => { if (!isGeneratingSms) { e.currentTarget.style.background = 'rgba(3, 255, 192, 0.1)'; e.currentTarget.style.transform = 'scale(1.05)'; } }}
-                  onMouseLeave={e => { if (!isGeneratingSms) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.transform = 'scale(1)'; } }}
-                >
-                  {isGeneratingSms ? <AppleSpinner size={14} /> : 'SMS'}
-                </button>
+                  <div style={{ display: 'flex', gap: '10px' }}>
+                    <button 
+                      onClick={handleNewSmsChat}
+                      disabled={isGeneratingSms}
+                      style={{ width: '40px', height: '32px', borderRadius: '16px', backgroundColor: 'transparent', color: '#03FFC0', border: '1px solid rgba(3, 255, 192, 0.3)', cursor: isGeneratingSms ? 'wait' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 'bold', transition: 'all 0.2s', opacity: isGeneratingSms ? 0.7 : 1 }}
+                      title="Generate New SMS Chat"
+                      onMouseEnter={e => { if (!isGeneratingSms) { e.currentTarget.style.background = 'rgba(3, 255, 192, 0.1)'; e.currentTarget.style.transform = 'scale(1.05)'; } }}
+                      onMouseLeave={e => { if (!isGeneratingSms) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.transform = 'scale(1)'; } }}
+                    >
+                      {isGeneratingSms ? <AppleSpinner size={14} /> : 'SMS'}
+                    </button>
+                    <button 
+                      onClick={handleNewVipChat}
+                      disabled={isGeneratingVip}
+                      style={{ width: '60px', height: '32px', borderRadius: '16px', backgroundColor: vipCopied ? 'rgba(0,255,0,0.2)' : 'transparent', color: vipCopied ? '#00FF00' : '#FFFFFF', border: `1px solid ${vipCopied ? 'rgba(0,255,0,0.5)' : 'rgba(255, 255, 255, 0.3)'}`, cursor: isGeneratingVip ? 'wait' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 'bold', transition: 'all 0.2s', opacity: isGeneratingVip ? 0.7 : 1 }}
+                      title="Generate VIP Invite Link"
+                      onMouseEnter={e => { if (!isGeneratingVip && !vipCopied) { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'; e.currentTarget.style.transform = 'scale(1.05)'; } }}
+                      onMouseLeave={e => { if (!isGeneratingVip && !vipCopied) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.transform = 'scale(1)'; } }}
+                    >
+                      {isGeneratingVip ? <AppleSpinner size={14} /> : (vipCopied ? '✅' : 'Invite')}
+                    </button>
+                  </div>
               </div>
               {profiles.map((profile: any) => {
                 const profileMessages = messages.filter((m: any) => m.profileId === profile.id);

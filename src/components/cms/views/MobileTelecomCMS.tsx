@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import MobileChatUI from '@/components/telecom/MobileChatUI';
+import LiveKitVideoEngine from '@/components/network-engine/assets/livekit_video_engine';
 
 export default function MobileTelecomCMS() {
   const [data, setData] = useState<any>(null);
@@ -256,6 +257,8 @@ export default function MobileTelecomCMS() {
         </div>
       </div>
       {/* End Main Content Area (Row) */}
+      
+        <LiveKitVideoEngine />
       </div>
     </div>
   );

@@ -3,10 +3,12 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useChatLogic } from "@/hooks/useChatLogic";
 import PhysicsScroll from "./PhysicsScroll";
+import { useVideoStore } from '@/store/useVideoStore';
 import data from '@emoji-mart/data';
 import Picker from '@emoji-mart/react';
 import { GiphyFetch } from '@giphy/js-fetch-api';
 import { Grid } from '@giphy/react-components';
+import Image from 'next/image';
 
 const gf = new GiphyFetch(process.env.NEXT_PUBLIC_GIPHY_API_KEY || '5hwYpLrCsAkukYs4poS79fObIfonvtBd');
 
@@ -88,6 +90,7 @@ export default function MobileChatUI({
   const [inputText, setInputText] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [showGifPicker, setShowGifPicker] = useState(false);
+  const [lightboxImage, setLightboxImage] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const dbMessages = mode === 'admin' ? adminMessages : chatLogic.messages;
@@ -160,20 +163,55 @@ export default function MobileChatUI({
     // Check if it's our new serialized GIPHY format with dimensions
     const giphyMatch = text.match(/^\[GIPHY\|(\d+)\|(\d+)\](.*)$/);
     if (giphyMatch) {
-      const width = giphyMatch[1];
-      const height = giphyMatch[2];
+      const width = parseInt(giphyMatch[1]);
+      const height = parseInt(giphyMatch[2]);
       const url = giphyMatch[3];
+      const aspect = width / height;
+      const displayWidth = 200;
+      const displayHeight = 200 / aspect;
       return (
-        <div style={{ width: '100%', aspectRatio: `${width} / ${height}`, position: 'relative', background: 'rgba(255,255,255,0.05)', borderRadius: '12px' }}>
-          <img src={url} alt="GIF" style={{ width: '100%', height: '100%', borderRadius: '12px', display: 'block', objectFit: 'cover', position: 'absolute', inset: 0 }} />
+        <div style={{ marginTop: '5px', marginBottom: '5px', borderRadius: '15px', overflow: 'hidden', display: 'inline-block', position: 'relative', width: `${displayWidth}px`, height: `${displayHeight}px`, cursor: 'pointer' }} onClick={() => setLightboxImage(url)}>
+          <Image src={url} alt="GIPHY" fill style={{ objectFit: 'cover' }} unoptimized />
         </div>
       );
     }
 
     // Fallback for older raw Giphy URLs (backwards compatibility)
     if (text.match(/^https?:\/\/(media\d*|i)\.giphy\.com\/media\//i)) {
-      return <img src={text} alt="GIF" style={{ width: '100%', borderRadius: '12px', display: 'block' }} />;
+      return (
+        <div style={{ marginTop: '5px', marginBottom: '5px', borderRadius: '15px', overflow: 'hidden', display: 'inline-block', position: 'relative', width: '200px', height: '200px', cursor: 'pointer' }} onClick={() => setLightboxImage(text)}>
+          <img src={text} alt="GIF" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        </div>
+      );
     }
+
+    // Video Call System Message
+    const videoMatch = text.match(/^\[VIDEO_CALL\|([^\]]+)\]$/);
+    if (videoMatch) {
+      const roomId = videoMatch[1];
+      return (
+        <div style={{ padding: '10px', textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <div style={{ fontSize: '18px', fontWeight: 'bold' }}>📹 Video Call Started</div>
+          <button 
+            onClick={() => useVideoStore.getState().joinRoom(roomId)}
+            style={{
+              padding: '12px 20px',
+              borderRadius: '25px',
+              border: 'none',
+              background: '#00A37A',
+              color: 'white',
+              fontWeight: 'bold',
+              fontSize: '16px',
+              cursor: 'pointer',
+              boxShadow: '0 4px 15px rgba(0, 163, 122, 0.4)'
+            }}
+          >
+            Join Call
+          </button>
+        </div>
+      );
+    }
+
     return text;
   };
 
@@ -434,6 +472,22 @@ export default function MobileChatUI({
             >
               😊
             </button>
+            {mode === 'admin' && (
+              <button 
+                type="button"
+                onClick={() => {
+                  const roomId = `room_${Date.now()}`;
+                  if (onAdminSendMessage) onAdminSendMessage(`[VIDEO_CALL|${roomId}]`);
+                }}
+                style={{
+                  width: '40px', height: '40px', borderRadius: '50%', background: 'transparent',
+                  color: '#03FFC0', border: 'none', cursor: 'pointer', fontSize: '20px'
+                }}
+                title="Start Video Call"
+              >
+                📹
+              </button>
+            )}
           </div>
 
           <input 
@@ -483,6 +537,27 @@ export default function MobileChatUI({
           </button>
         </form>
       </div>
+      {/* Lightbox Overlay */}
+      {lightboxImage && (
+        <div 
+          style={{
+            position: 'fixed', inset: 0, zIndex: 9999, backgroundColor: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(10px)',
+            display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px', cursor: 'pointer'
+          }}
+          onClick={() => setLightboxImage(null)}
+        >
+          <div style={{ position: 'relative', width: '100%', height: '100%', maxHeight: '80vh', maxWidth: '90vw' }}>
+             <Image src={lightboxImage} alt="Expanded Media" fill style={{ objectFit: 'contain' }} unoptimized />
+          </div>
+          <button 
+            onClick={() => setLightboxImage(null)}
+            style={{ position: 'absolute', top: '40px', right: '30px', background: 'rgba(255,255,255,0.2)', color: 'white', border: 'none', borderRadius: '50%', width: '40px', height: '40px', fontSize: '20px', cursor: 'pointer', zIndex: 10000 }}
+          >
+            ×
+          </button>
+        </div>
+      )}
+
     </div>
   );
 }

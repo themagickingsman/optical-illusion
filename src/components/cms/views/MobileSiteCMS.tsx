@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import MobileChatUI from '@/components/telecom/MobileChatUI';
 import DiscordFeedUI from '@/components/telecom/DiscordFeedUI';
 import TwitterFeedUI from '@/components/telecom/TwitterFeedUI';
+import LiveKitVideoEngine from '@/components/network-engine/assets/livekit_video_engine';
 import Image from 'next/image';
 import packageJson from '../../../../package.json';
 
@@ -164,6 +165,8 @@ export default function MobileSiteCMS() {
               BUILD {packageJson.version}
             </div>
           </div>
+          
+          <LiveKitVideoEngine />
         </div>
 
       </div>

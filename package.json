@@ -1,6 +1,6 @@
 {
   "name": "optical_illusions",
-  "version": "0.1.14",
+  "version": "0.1.15",
   "private": true,
   "scripts": {
     "dev": "next dev -p 3009",
@@ -17,6 +17,8 @@
     "@emoji-mart/react": "^1.1.1",
     "@giphy/js-fetch-api": "^5.8.0",
     "@giphy/react-components": "^10.1.2",
+    "@livekit/components-react": "^2.9.21",
+    "@livekit/components-styles": "^1.2.0",
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.6.1",
     "@react-three/postprocessing": "^3.0.4",
@@ -29,6 +31,8 @@
     "framer-motion": "^12.40.0",
     "leaflet": "^1.9.4",
     "leva": "^0.10.1",
+    "livekit-client": "^2.20.0",
+    "livekit-server-sdk": "^2.16.0",
     "lucide-react": "^1.20.0",
     "matter-js": "^0.20.0",
     "meshline": "^3.3.1",
@@ -47,7 +51,8 @@
     "three": "^0.184.0",
     "three-custom-shader-material": "^6.4.0",
     "twitter-api-v2": "^1.29.0",
-    "usehooks-ts": "^3.1.1"
+    "usehooks-ts": "^3.1.1",
+    "zustand": "^5.0.14"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

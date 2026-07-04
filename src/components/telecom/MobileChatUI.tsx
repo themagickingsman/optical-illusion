@@ -217,7 +217,7 @@ export default function MobileChatUI({
       {/* Background Glows Removed for Performance */}
 
       {/* Chat Messages */}
-      <PhysicsScroll className="chat-feed-scroll" padding={padding || '20px 20px 100px 20px'} onRefresh={chatLogic.refreshChats}>
+      <PhysicsScroll className="chat-feed-scroll" padding={padding ? padding.replace('120px', '20px').replace('100px', '20px') : '20px'} onRefresh={chatLogic.refreshChats}>
         {allMessages.map((msg, idx) => {
           const isMe = mode === 'admin' ? msg.sender === 'admin' : (msg.sender === 'user' && msg.profileId === chatLogic.effectiveSessionId);
           
@@ -383,7 +383,7 @@ export default function MobileChatUI({
       </PhysicsScroll>
 
       {/* Input Area */}
-      <div style={{ padding: "20px", zIndex: 20, background: 'transparent', position: 'absolute', bottom: 0, left: 0, right: 0 }}>
+      <div style={{ padding: "10px 20px 20px 20px", zIndex: 20, background: 'transparent', position: 'relative', flexShrink: 0 }}>
         
         {/* Pickers Popover */}
         <div style={{ position: 'absolute', bottom: '80px', right: '20px', zIndex: 30, display: 'flex', flexDirection: 'column', gap: '10px' }}>

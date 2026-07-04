@@ -24,7 +24,7 @@ export default function MobileTelecomCMS() {
   };
   
   const fetchData = () => {
-    fetch('/api/chat')
+    fetch('/api/chat', { cache: 'no-store' })
       .then(res => res.json())
       .then(db => setData(db))
       .catch(err => console.error(err));
@@ -159,14 +159,16 @@ export default function MobileTelecomCMS() {
                     onClick={async (e) => {
                       e.stopPropagation();
                       try {
-                        await fetch('/api/chat', { 
+                        const res = await fetch('/api/chat', { 
                           method: 'POST', 
                           headers: { 'Content-Type': 'application/json' },
                           body: JSON.stringify({ action: 'delete_profile', profileId: p.id }) 
                         });
+                        const data = await res.json();
                         setDeletingProfileId(null);
                         if (activeProfileId === p.id) setActiveProfileId(null);
-                        fetchData();
+                        if (data.db) setData(data.db);
+                        else fetchData();
                       } catch(err) { console.error(err); }
                     }}
                   >
@@ -212,7 +214,7 @@ export default function MobileTelecomCMS() {
                 padding="20px 20px 120px 20px"
                 onAdminSendMessage={async (text) => {
                   try {
-                    await fetch('/api/chat', {
+                    const res = await fetch('/api/chat', {
                       method: 'POST',
                       headers: { 'Content-Type': 'application/json' },
                       body: JSON.stringify({
@@ -221,14 +223,16 @@ export default function MobileTelecomCMS() {
                         text: text
                       })
                     });
-                    fetchData();
+                    const data = await res.json();
+                    if (data.db) setData(data.db);
+                    else fetchData();
                   } catch (err) {
                     console.error(err);
                   }
                 }}
                 onAdminDeleteMessage={async (messageId) => {
                   try {
-                    await fetch('/api/chat', {
+                    const res = await fetch('/api/chat', {
                       method: 'POST',
                       headers: { 'Content-Type': 'application/json' },
                       body: JSON.stringify({
@@ -236,7 +240,9 @@ export default function MobileTelecomCMS() {
                         messageId
                       })
                     });
-                    fetchData();
+                    const data = await res.json();
+                    if (data.db) setData(data.db);
+                    else fetchData();
                   } catch (err) {
                     console.error(err);
                   }

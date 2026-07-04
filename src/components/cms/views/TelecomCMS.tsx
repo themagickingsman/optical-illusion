@@ -91,7 +91,7 @@ export default function TelecomCMS() {
   const handleDeleteProfile = async (e: React.MouseEvent, profileId: string) => {
     e.stopPropagation();
     try {
-      await fetch('/api/chat', {
+      const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -99,8 +99,10 @@ export default function TelecomCMS() {
           profileId
         })
       });
+      const data = await res.json();
       if (activeProfileId === profileId) setActiveProfileId(null);
-      fetchData();
+      if (data.db) setData(data.db);
+      else fetchData();
     } catch (err) {
       console.error(err);
     }
@@ -527,7 +529,7 @@ export default function TelecomCMS() {
                       adminTypingStatus={activeProfile.lastTyping && (Date.now() - new Date(activeProfile.lastTyping).getTime() < 5000)}
                       onAdminSendMessage={async (text) => {
                         try {
-                          await fetch('/api/chat', {
+                          const res = await fetch('/api/chat', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
@@ -536,7 +538,26 @@ export default function TelecomCMS() {
                               text: text
                             })
                           });
-                          fetchData();
+                          const data = await res.json();
+                          if (data.db) setData(data.db);
+                          else fetchData();
+                        } catch (err) {
+                          console.error(err);
+                        }
+                      }}
+                      onAdminDeleteMessage={async (messageId) => {
+                        try {
+                          const res = await fetch('/api/chat', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                              action: 'delete_message',
+                              messageId
+                            })
+                          });
+                          const data = await res.json();
+                          if (data.db) setData(data.db);
+                          else fetchData();
                         } catch (err) {
                           console.error(err);
                         }

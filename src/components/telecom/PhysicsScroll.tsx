@@ -112,8 +112,8 @@ export default function PhysicsScroll({ children, className = '', padding = '20p
         overflowY: 'auto', 
         WebkitOverflowScrolling: 'touch',
         overscrollBehaviorY: 'none',
-        maskImage: 'linear-gradient(to bottom, transparent 0px, black 30px, black calc(100% - 70px), transparent calc(100% - 10px))',
-        WebkitMaskImage: 'linear-gradient(to bottom, transparent 0px, black 30px, black calc(100% - 70px), transparent calc(100% - 10px))'
+        maskImage: 'linear-gradient(to bottom, transparent 0px, black 30px, black calc(100% - 15px), transparent calc(100% - 0px))',
+        WebkitMaskImage: 'linear-gradient(to bottom, transparent 0px, black 30px, black calc(100% - 15px), transparent calc(100% - 0px))'
       }}
     >
       <style>{`
@@ -142,14 +142,25 @@ export default function PhysicsScroll({ children, className = '', padding = '20p
           opacity: pullY / 60
         }}>
           <div style={{ 
-            transform: `translateY(${pullY - 30}px) ${isRefreshing ? '' : `rotate(${pullY * 4}deg)`}`,
+            transform: `translateY(${pullY - 60}px) ${isRefreshing ? '' : `rotate(${pullY * 4}deg)`}`,
             transition: isRefreshing || pullY === 0 ? 'transform 0.3s ease, opacity 0.3s ease' : 'none',
-            pointerEvents: 'none'
+            pointerEvents: 'none',
+            background: 'rgba(255, 255, 255, 0.15)',
+            backdropFilter: 'blur(10px)',
+            WebkitBackdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255, 255, 255, 0.25)',
+            borderRadius: '50%',
+            width: '42px',
+            height: '42px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: '0 4px 15px rgba(0,0,0,0.3)'
           }}>
             {isRefreshing ? (
-               <div className="pull-refresh-spinner" />
+               <div className="pull-refresh-spinner" style={{ width: '20px', height: '20px' }} />
             ) : (
-               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                  <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.92-10.27l5.58 5.7" />
                </svg>
             )}

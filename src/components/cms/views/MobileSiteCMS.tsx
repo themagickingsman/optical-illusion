@@ -6,12 +6,14 @@ import DiscordFeedUI from '@/components/telecom/DiscordFeedUI';
 import TwitterFeedUI from '@/components/telecom/TwitterFeedUI';
 import Image from 'next/image';
 import packageJson from '../../../../package.json';
+import { motion } from 'framer-motion';
 
 export default function MobileSiteCMS() {
   const [mobileTab, setMobileTab] = useState<'chat' | 'discord' | 'discord-cr' | 'x-twitter'>('chat');
   const [touchStartX, setTouchStartX] = useState(0);
   const [chatCount, setChatCount] = useState(0);
   const headerRef = useRef<HTMLDivElement>(null);
+  const carouselRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchChatCount = async () => {
@@ -94,10 +96,19 @@ export default function MobileSiteCMS() {
             </div>
 
             {/* Scrollable Tab Toggles (Social Icons) */}
-            <div className="no-scrollbar" style={{ display: 'flex', gap: '15px', width: '100%', padding: '0 20px', marginTop: '0px', overflowX: 'auto', WebkitOverflowScrolling: 'touch', flexShrink: 0, justifyContent: 'center' }}>
+            <div ref={carouselRef} style={{ width: '100%', overflow: 'hidden', padding: '0 20px', marginTop: '0px', flexShrink: 0 }}>
+              <motion.div 
+                drag="x"
+                dragConstraints={carouselRef}
+                dragElastic={0.2}
+                onPointerDown={(e: any) => e.stopPropagation()}
+                onPointerUp={(e: any) => e.stopPropagation()}
+                style={{ display: 'flex', gap: '15px', width: 'max-content', margin: '0 auto', cursor: 'grab' }}
+                whileTap={{ cursor: 'grabbing' }}
+              >
               <button 
                 onClick={() => setMobileTab('chat')}
-                style={{ flexShrink: 0, width: '50px', height: '50px', borderRadius: '50%', background: mobileTab === 'chat' ? '#fff' : 'rgba(30,30,30,0.8)', color: mobileTab === 'chat' ? '#000' : '#fff', border: '1px solid rgba(255,255,255,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s' }}
+                style={{ flexShrink: 0, width: '50px', height: '50px', borderRadius: '50%', background: mobileTab === 'chat' ? '#fff' : 'rgba(30,30,30,0.8)', color: mobileTab === 'chat' ? '#000' : '#fff', border: '1px solid rgba(255,255,255,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s', touchAction: 'none' }}
               >
                 <img 
                   src="/assets/icon/op_04.png" 
@@ -108,7 +119,7 @@ export default function MobileSiteCMS() {
               
               <button 
                 onClick={() => setMobileTab('discord')}
-                style={{ flexShrink: 0, width: '50px', height: '50px', borderRadius: '50%', background: mobileTab === 'discord' ? '#fff' : 'rgba(30,30,30,0.8)', color: mobileTab === 'discord' ? '#000' : '#fff', border: '1px solid rgba(255,255,255,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s' }}
+                style={{ flexShrink: 0, width: '50px', height: '50px', borderRadius: '50%', background: mobileTab === 'discord' ? '#fff' : 'rgba(30,30,30,0.8)', color: mobileTab === 'discord' ? '#000' : '#fff', border: '1px solid rgba(255,255,255,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s', touchAction: 'none' }}
               >
                 <svg width="26" height="26" viewBox="0 0 127.14 96.36" fill="currentColor">
                   <path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21h0A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1,105.25,105.25,0,0,0,32.19-16.14c0,0,.04-.06.05-.09h0c2.69-28.05-4.28-51.44-19.55-72.06ZM42.63,65.22C38.22,65.22,34.61,61.16,34.61,56.19S38.11,47.16,42.63,47.16c4.54,0,8.12,4.09,8.07,9S47.17,65.22,42.63,65.22Zm41.88,0c-4.41,0-8.02-4.06-8.02-9s3.52-9,8.02-9c4.54,0,8.12,4.09,8.07,9S89.05,65.22,84.51,65.22Z" />
@@ -117,7 +128,7 @@ export default function MobileSiteCMS() {
 
               <button 
                 onClick={() => setMobileTab('discord-cr')}
-                style={{ flexShrink: 0, width: '50px', height: '50px', borderRadius: '50%', background: mobileTab === 'discord-cr' ? '#fff' : 'rgba(30,30,30,0.8)', color: mobileTab === 'discord-cr' ? '#000' : '#fff', border: '1px solid rgba(255,255,255,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s' }}
+                style={{ flexShrink: 0, width: '50px', height: '50px', borderRadius: '50%', background: mobileTab === 'discord-cr' ? '#fff' : 'rgba(30,30,30,0.8)', color: mobileTab === 'discord-cr' ? '#000' : '#fff', border: '1px solid rgba(255,255,255,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s', touchAction: 'none' }}
               >
                 <img 
                   src="/assets/icon/Cosmic_racers_icon.png" 
@@ -128,12 +139,13 @@ export default function MobileSiteCMS() {
 
               <button 
                 onClick={() => setMobileTab('x-twitter')}
-                style={{ flexShrink: 0, width: '50px', height: '50px', borderRadius: '50%', background: mobileTab === 'x-twitter' ? '#fff' : 'rgba(30,30,30,0.8)', color: mobileTab === 'x-twitter' ? '#000' : '#fff', border: '1px solid rgba(255,255,255,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s' }}
+                style={{ flexShrink: 0, width: '50px', height: '50px', borderRadius: '50%', background: mobileTab === 'x-twitter' ? '#fff' : 'rgba(30,30,30,0.8)', color: mobileTab === 'x-twitter' ? '#000' : '#fff', border: '1px solid rgba(255,255,255,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s', touchAction: 'none' }}
               >
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
                 </svg>
               </button>
+              </motion.div>
             </div>
 
           </div>

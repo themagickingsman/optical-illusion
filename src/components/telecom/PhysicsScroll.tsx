@@ -76,51 +76,6 @@ export default function PhysicsScroll({ children, className = '', padding = '20p
         if (Math.abs(phys.y) > 0.1 || Math.abs(deltaScroll) > 0) {
           el.style.transform = `translateY(${phys.y}px)`;
         }
-
-        const visibleTop = phys.offsetTop - currentScrollTop + phys.y;
-        const visibleBottom = visibleTop + phys.offsetHeight;
-
-        const fadeStart = 10; 
-        const textFadeStart = -10; 
-        const fadeEnd = -30;
-
-        const bottomFadeStart = container.clientHeight - 110;
-        const bottomTextFadeStart = container.clientHeight - 80;
-        const bottomFadeEnd = container.clientHeight - 50;
-
-        let bgOpacity = 1;
-        if (visibleTop < fadeStart && visibleTop > textFadeStart) {
-          bgOpacity = (visibleTop - textFadeStart) / (fadeStart - textFadeStart);
-        } else if (visibleTop <= textFadeStart) {
-          bgOpacity = 0;
-        } else if (visibleBottom > bottomFadeStart && visibleBottom < bottomTextFadeStart) {
-          bgOpacity = 1 - ((visibleBottom - bottomFadeStart) / (bottomTextFadeStart - bottomFadeStart));
-        } else if (visibleBottom >= bottomTextFadeStart) {
-          bgOpacity = 0;
-        }
-
-        let textOpacity = 1;
-        if (visibleTop < textFadeStart && visibleTop > fadeEnd) {
-          textOpacity = (visibleTop - fadeEnd) / (textFadeStart - fadeEnd);
-        } else if (visibleTop <= fadeEnd) {
-          textOpacity = 0;
-        } else if (visibleBottom > bottomTextFadeStart && visibleBottom < bottomFadeEnd) {
-          textOpacity = 1 - ((visibleBottom - bottomTextFadeStart) / (bottomFadeEnd - bottomTextFadeStart));
-        } else if (visibleBottom >= bottomFadeEnd) {
-          textOpacity = 0;
-        }
-
-        const currentBg = el.dataset.bgOpacity ? parseFloat(el.dataset.bgOpacity) : 1;
-        const currentText = el.dataset.textOpacity ? parseFloat(el.dataset.textOpacity) : 1;
-
-        if (Math.abs(currentBg - bgOpacity) > 0.01) {
-          el.style.setProperty('--bg-opacity', bgOpacity.toFixed(2));
-          el.dataset.bgOpacity = bgOpacity.toString();
-        }
-        if (Math.abs(currentText - textOpacity) > 0.01) {
-          el.style.setProperty('--text-opacity', textOpacity.toFixed(2));
-          el.dataset.textOpacity = textOpacity.toString();
-        }
       });
 
       animationFrameId = requestAnimationFrame(loop);
@@ -142,7 +97,9 @@ export default function PhysicsScroll({ children, className = '', padding = '20p
         gap: "15px", 
         zIndex: 10, 
         overflowY: 'auto', 
-        WebkitOverflowScrolling: 'touch'
+        WebkitOverflowScrolling: 'touch',
+        maskImage: 'linear-gradient(to bottom, transparent 0px, black 30px, black calc(100% - 110px), transparent calc(100% - 50px))',
+        WebkitMaskImage: 'linear-gradient(to bottom, transparent 0px, black 30px, black calc(100% - 110px), transparent calc(100% - 50px))'
       }}
     >
       <style>{`

@@ -66,7 +66,7 @@ export default function HireMeView() {
   };
 
   return (
-    <div style={{ position: "relative", width: "1380px", height: "700px", display: "flex", gap: "20px", color: "#fff", zoom: 0.75, fontFamily: "var(--font-rubik)", fontWeight: 500, margin: "0 auto", ...getStyle(0.1) }}>
+    <div style={{ position: "relative", width: "1380px", height: "700px", display: "flex", gap: "20px", color: "#fff", transform: "scale(0.75)", transformOrigin: "center", fontFamily: "var(--font-rubik)", fontWeight: 500, margin: "0 auto", ...getStyle(0.1) }}>
       
       {/* Left Pane: Game Mosaic Grid (Replaced NDA Form) */}
       <GameMosaic />
@@ -129,7 +129,7 @@ export default function HireMeView() {
                 if (e.key === "Enter") handleSendMessage();
               }}
               placeholder="Type your message..."
-              style={{ flex: 1, background: "transparent", border: "1px solid transparent", borderRadius: "100px", color: "#fff", fontSize: "28px", padding: "20px 28px", outline: "none", transition: "border 0.2s" }}
+              style={{ flex: 1, background: "transparent", border: "1px solid transparent", borderRadius: "100px", color: "#fff", fontSize: "28px", padding: "20px 28px", outline: "none", transition: "border 0.2s", WebkitTextSizeAdjust: "100%" }}
               onMouseEnter={(e) => { if (document.activeElement !== e.target) e.currentTarget.style.border = '1px solid rgba(255,255,255,0.2)' }}
               onMouseLeave={(e) => { if (document.activeElement !== e.target) e.currentTarget.style.border = '1px solid transparent' }}
               onFocus={(e) => e.target.style.border = '1px solid rgba(3,255,192,0.8)'}

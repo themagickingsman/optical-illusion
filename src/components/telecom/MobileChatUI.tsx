@@ -257,7 +257,8 @@ export default function MobileChatUI({
       backgroundColor: 'transparent',
       color: '#fff',
       position: 'relative',
-      fontFamily: '"Rubik", sans-serif'
+      fontFamily: '"Rubik", sans-serif',
+      minWidth: 0
     }}>
       <style>{`
         @keyframes springIn {
@@ -425,7 +426,7 @@ export default function MobileChatUI({
               </div>
             )}
             <div className="chat-timestamp" style={{ fontSize: '12px', color: 'rgba(0, 0, 0, 0.6)', marginTop: '2px', textAlign: isMe ? 'right' : 'left', fontWeight: 'bold', opacity: 'var(--bg-opacity, 1)' }}>
-              {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              {`${new Intl.DateTimeFormat('en-US', { weekday: 'short' }).format(new Date(msg.timestamp))} ${new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }).format(new Date(msg.timestamp)).toLowerCase().replace(' ', '')}`}
             </div>
             </div>
           </div>

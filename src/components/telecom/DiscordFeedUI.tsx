@@ -171,8 +171,8 @@ export default function DiscordFeedUI({ channelType, padding }: DiscordFeedUIPro
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
                   <span style={{ fontSize: "15px", color: "white", fontWeight: 'bold' }}>{msg.author.username}</span>
-                  <span style={{ fontSize: '11px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                    {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  <span style={{ fontSize: '11px', color: '#a3a6aa', marginLeft: '8px' }}>
+                    {`${new Intl.DateTimeFormat('en-US', { weekday: 'short' }).format(new Date(msg.timestamp))} ${new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }).format(new Date(msg.timestamp)).toLowerCase().replace(' ', '')}`}
                   </span>
                 </div>
                 

@@ -111,7 +111,11 @@ export default function MobileTelecomCMS() {
         flexDirection: 'column',
         backgroundImage: 'url(/assets/bg/mobile_bg.png)',
         backgroundSize: 'cover',
-        backgroundPosition: 'center'
+        backgroundPosition: 'center',
+        paddingTop: 'env(safe-area-inset-top, 0px)',
+        paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+        paddingLeft: 'env(safe-area-inset-left, 0px)',
+        paddingRight: 'env(safe-area-inset-right, 0px)'
       }}>
 
         {/* Full Width Header */}
@@ -263,7 +267,8 @@ export default function MobileTelecomCMS() {
           display: 'flex', 
           flexDirection: 'column', 
           position: 'relative',
-          backgroundColor: 'transparent'
+          backgroundColor: 'transparent',
+          minWidth: 0
         }}>
           {activeProfileId ? (
             <MobileChatUI 

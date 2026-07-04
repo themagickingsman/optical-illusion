@@ -43,7 +43,7 @@ export function useChatLogic(sessionId: string, isGlobalChat: boolean = false) {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [effectiveSessionId, sessionId]);
 
   useEffect(() => {
     fetchChats();

@@ -63,7 +63,7 @@ export default function MobileChatUI({
   }, [externalSessionId, mode]);
   
   // Only execute chat logic side-effects if in user mode
-  const chatLogic = useChatLogic(mode === 'user' ? sessionId : "", true);
+  const chatLogic = useChatLogic(mode === 'user' ? sessionId : "", false);
   
   // Use dynamic welcome messages array from chatLogic
   const [localMessages, setLocalMessages] = useState<any[]>([]);

@@ -61,19 +61,45 @@ async function saveDb(data: any) {
   await fs.writeFile(dbPath, JSON.stringify(data, null, 2), 'utf8');
 }
 
-export async function GET() {
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
+  const sessionId = searchParams.get('sessionId');
+  const asAdmin = searchParams.get('asAdmin');
+
   const db = await getDb();
-  return NextResponse.json({ 
-    profiles: db.profiles || [], 
-    messages: db.messages || [],
-    ndaLinks: db.ndaLinks || [],
-    emailTemplate: db.emailTemplate || "",
-    emailSubject: db.emailSubject || "",
-    welcomeMessage: db.welcomeMessage || "Welcome to the secure channel.",
-    autoReplyMessage: db.autoReplyMessage || "Message Received\nCurrent response time: 1 hour",
-    welcomeMessages: db.welcomeMessages || (db.welcomeMessage ? [db.welcomeMessage] : ["Welcome to the secure channel."]),
-    autoReplyMessages: db.autoReplyMessages || (db.autoReplyMessage ? [db.autoReplyMessage] : ["Message Received\nCurrent response time: 1 hour"])
-  });
+  
+  // Return full DB for Admin views
+  if (asAdmin === 'true') {
+    return NextResponse.json({ 
+      profiles: db.profiles || [], 
+      messages: db.messages || [],
+      ndaLinks: db.ndaLinks || [],
+      emailTemplate: db.emailTemplate || "",
+      emailSubject: db.emailSubject || "",
+      welcomeMessage: db.welcomeMessage || "Welcome to the secure channel.",
+      autoReplyMessage: db.autoReplyMessage || "Message Received\nCurrent response time: 1 hour",
+      welcomeMessages: db.welcomeMessages || (db.welcomeMessage ? [db.welcomeMessage] : ["Welcome to the secure channel."]),
+      autoReplyMessages: db.autoReplyMessages || (db.autoReplyMessage ? [db.autoReplyMessage] : ["Message Received\nCurrent response time: 1 hour"])
+    });
+  }
+
+  // For public users, strictly filter by their active sessionId
+  if (sessionId) {
+    const filteredProfiles = (db.profiles || []).filter((p: any) => p.id === sessionId);
+    const filteredMessages = (db.messages || []).filter((m: any) => m.profileId === sessionId);
+    return NextResponse.json({ 
+      profiles: filteredProfiles, 
+      messages: filteredMessages,
+      ndaLinks: [], // Don't expose NDA links to users
+      welcomeMessage: db.welcomeMessage || "Welcome to the secure channel.",
+      autoReplyMessage: db.autoReplyMessage || "Message Received\nCurrent response time: 1 hour",
+      welcomeMessages: db.welcomeMessages || (db.welcomeMessage ? [db.welcomeMessage] : ["Welcome to the secure channel."]),
+      autoReplyMessages: db.autoReplyMessages || (db.autoReplyMessage ? [db.autoReplyMessage] : ["Message Received\nCurrent response time: 1 hour"])
+    });
+  }
+
+  // If no session ID provided and not admin, return empty
+  return NextResponse.json({ profiles: [], messages: [] });
 }
 
 export async function POST(req: Request) {
@@ -193,7 +219,7 @@ export async function POST(req: Request) {
         const existingProfile = db.profiles.find((p: any) => p.ip === ip);
         if (existingProfile) {
           // A profile already exists for this IP. Ignore the new profile creation.
-          return NextResponse.json({ success: true, activeProfileId: existingProfile.id, db });
+          return NextResponse.json({ success: true, activeProfileId: existingProfile.id });
         }
       }
 
@@ -229,7 +255,7 @@ export async function POST(req: Request) {
     }
     
     await saveDb(db);
-    return NextResponse.json({ success: true, activeProfileId: resolvedProfileId, db });
+    return NextResponse.json({ success: true, activeProfileId: resolvedProfileId });
   } catch (error) {
     console.error('Failed to post chat:', error);
     return NextResponse.json({ success: false }, { status: 500 });

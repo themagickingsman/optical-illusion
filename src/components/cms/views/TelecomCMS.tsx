@@ -32,7 +32,7 @@ export default function TelecomCMS() {
 
   // --- Chat Logic ---
   const fetchData = () => {
-    fetch('/api/chat')
+    fetch('/api/chat?asAdmin=true')
       .then(res => res.json())
       .then(db => {
         setData(db);

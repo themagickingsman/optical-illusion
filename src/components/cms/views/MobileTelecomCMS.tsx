@@ -25,7 +25,7 @@ export default function MobileTelecomCMS() {
   };
   
   const fetchData = () => {
-    fetch('/api/chat', { cache: 'no-store' })
+    fetch('/api/chat?asAdmin=true', { cache: 'no-store' })
       .then(res => res.json())
       .then(db => setData(db))
       .catch(err => console.error(err));

@@ -55,9 +55,10 @@ export default function PhysicsScroll({ children, className = '', padding = '20p
     const diff = currentY - touchStartY.current;
 
     if (diff > 0) {
-      // Apply resistance: 0.4 multiplier, max 100px
-      const rawPull = diff * 0.4;
-      setPullY(Math.min(rawPull, 100));
+      // Apply elastic rubber-band resistance
+      const maxPull = 150;
+      const elasticPull = maxPull * (1 - Math.exp(-diff / 300));
+      setPullY(elasticPull);
     }
   };
 
@@ -143,7 +144,7 @@ export default function PhysicsScroll({ children, className = '', padding = '20p
         }}>
           <div style={{ 
             transform: `translateY(${pullY - 60}px) ${isRefreshing ? '' : `rotate(${pullY * 4}deg)`}`,
-            transition: isRefreshing || pullY === 0 ? 'transform 0.3s ease, opacity 0.3s ease' : 'none',
+            transition: isRefreshing || pullY === 0 ? 'transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease' : 'none',
             pointerEvents: 'none',
             background: 'rgba(255, 255, 255, 0.15)',
             backdropFilter: 'blur(10px)',
@@ -176,7 +177,7 @@ export default function PhysicsScroll({ children, className = '', padding = '20p
           flexDirection: "column", 
           gap: "15px", 
           transform: `translateY(${pullY}px)`,
-          transition: isRefreshing || pullY === 0 ? 'transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)' : 'none',
+          transition: isRefreshing || pullY === 0 ? 'transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)' : 'none',
           minHeight: '100%' 
         }}
       >

@@ -28,7 +28,9 @@ export function useChatLogic(sessionId: string, isGlobalChat: boolean = false) {
 
   const fetchChats = useCallback(async () => {
     try {
-      const res = await fetch('/api/chat', { cache: 'no-store' });
+      const currentId = effectiveSessionId || sessionId;
+      const url = currentId ? `/api/chat?sessionId=${currentId}` : '/api/chat';
+      const res = await fetch(url, { cache: 'no-store' });
       const data = await res.json();
       setProfiles(data.profiles || []);
       setMessages(data.messages || []);

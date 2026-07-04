@@ -17,7 +17,7 @@ export default function MobileSiteCMS() {
   useEffect(() => {
     const fetchChatCount = async () => {
       try {
-        const res = await fetch('/api/chat', { cache: 'no-store' });
+        const res = await fetch('/api/chat?asAdmin=true', { cache: 'no-store' });
         const data = await res.json();
         if (data.profiles) setChatCount(data.profiles.length);
       } catch (e) {}

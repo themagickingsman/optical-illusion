@@ -12,7 +12,7 @@ export default function SquareCMS() {
   const [saveStatus, setSaveStatus] = useState("");
 
   useEffect(() => {
-    fetch('/api/chat')
+    fetch('/api/chat?asAdmin=true')
       .then(res => res.json())
       .then(data => {
         if (data.welcomeMessages && data.welcomeMessages.length > 0) {

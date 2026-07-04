@@ -29,7 +29,7 @@ function DashboardContent() {
   React.useEffect(() => {
     const checkChats = async () => {
       try {
-        const res = await fetch('/api/chat?t=' + Date.now());
+        const res = await fetch('/api/chat?asAdmin=true&t=' + Date.now());
         if (res.ok) {
           const data = await res.json();
           const hasUnread = data.profiles?.some((p: any) => {

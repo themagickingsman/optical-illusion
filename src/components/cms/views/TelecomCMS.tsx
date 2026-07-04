@@ -4,6 +4,7 @@ import TriangleCMS from "./TriangleCMS";
 import SquareCMS from "./SquareCMS";
 import MobileChatUI from '@/components/telecom/MobileChatUI';
 import VirtualNumberControl from '@/components/telecom/VirtualNumberControl';
+import AppleSpinner from '@/components/library/AppleSpinner';
 
 export default function TelecomCMS() {
   // --- Telecom Keys (GSK) State ---
@@ -13,6 +14,37 @@ export default function TelecomCMS() {
   // --- Chat & Communications State ---
   const [data, setData] = useState<any>(null);
   const [activeProfileId, setActiveProfileId] = useState<string | null>(null);
+  const [isGeneratingSms, setIsGeneratingSms] = useState(false);
+  
+  const handleNewSmsChat = async () => {
+    setIsGeneratingSms(true);
+    try {
+      const getRes = await fetch('/api/telecom/virtual-number');
+      const getData = await getRes.json();
+      
+      let numberToActivate = null;
+      if (getData.availableNumbers && getData.availableNumbers.length > 0) {
+        numberToActivate = getData.availableNumbers[Math.floor(Math.random() * getData.availableNumbers.length)];
+      }
+
+      if (numberToActivate) {
+        const postRes = await fetch('/api/telecom/virtual-number', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ number: numberToActivate })
+        });
+        const postData = await postRes.json();
+        
+        if (postData.activeNumber) {
+          const profileId = `virtual-sms-${postData.activeNumber.replace(/\D/g, '')}`;
+          setActiveProfileId(profileId);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to generate new SMS chat", err);
+    }
+    setIsGeneratingSms(false);
+  };
   const [replyText, setReplyText] = useState("");
   const [activeTab, setActiveTab] = useState<'keys' | 'chat' | 'email' | 'architecture' | 'triangle' | 'square'>('chat');
   const [emailTemplate, setEmailTemplate] = useState("");
@@ -177,7 +209,13 @@ export default function TelecomCMS() {
 
   if (!data) return <div style={{ color: 'white', padding: '20px' }}>Loading...</div>;
 
-  const profiles = data.profiles || [];
+  const profiles = [...(data.profiles || [])].sort((a: any, b: any) => {
+    if (a.unread && !b.unread) return -1;
+    if (!a.unread && b.unread) return 1;
+    const timeA = a.lastActive ? new Date(a.lastActive).getTime() : 0;
+    const timeB = b.lastActive ? new Date(b.lastActive).getTime() : 0;
+    return timeB - timeA;
+  });
   const messages = data.messages || [];
   const ndaLinks = data.ndaLinks || [];
   
@@ -339,13 +377,23 @@ export default function TelecomCMS() {
 
         {activeTab === 'chat' && (
           <div style={{ display: 'flex', flexDirection: 'column', width: '100%', height: '100%', overflow: 'hidden' }}>
-            <div style={{ width: '100%', flexShrink: 0 }}>
-              <VirtualNumberControl onNumberActivated={(id) => setActiveProfileId(id)} />
-            </div>
-            <div style={{ display: 'flex', flex: 1, width: '100%', overflow: 'hidden' }}>
+            <div style={{ display: 'flex', flex: 1, width: '100%', overflow: 'hidden', position: 'relative' }}>
+
             {/* Left Column: Profiles Inbox */}
             <div style={{ width: '300px', borderRight: '1px solid #333', overflowY: 'auto', flexShrink: 0 }}>
-              <h2 style={{ padding: '20px', borderBottom: '1px solid #333', margin: 0, fontSize: '18px' }}>Inbox</h2>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px', borderBottom: '1px solid #333' }}>
+                <h2 style={{ margin: 0, fontSize: '18px' }}>Inbox</h2>
+                  <button 
+                  onClick={handleNewSmsChat}
+                  disabled={isGeneratingSms}
+                  style={{ width: '40px', height: '32px', borderRadius: '16px', backgroundColor: 'transparent', color: '#03FFC0', border: '1px solid rgba(3, 255, 192, 0.3)', cursor: isGeneratingSms ? 'wait' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 'bold', transition: 'all 0.2s', opacity: isGeneratingSms ? 0.7 : 1 }}
+                  title="Generate New SMS Chat"
+                  onMouseEnter={e => { if (!isGeneratingSms) { e.currentTarget.style.background = 'rgba(3, 255, 192, 0.1)'; e.currentTarget.style.transform = 'scale(1.05)'; } }}
+                  onMouseLeave={e => { if (!isGeneratingSms) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.transform = 'scale(1)'; } }}
+                >
+                  {isGeneratingSms ? <AppleSpinner size={14} /> : 'SMS'}
+                </button>
+              </div>
               {profiles.map((profile: any) => {
                 const profileMessages = messages.filter((m: any) => m.profileId === profile.id);
                 const lastMessage = profileMessages[profileMessages.length - 1];

@@ -4,10 +4,42 @@ import React, { useState, useEffect, useRef } from 'react';
 import MobileChatUI from '@/components/telecom/MobileChatUI';
 import LiveKitVideoEngine from '@/components/network-engine/assets/livekit_video_engine';
 import VirtualNumberControl from '@/components/telecom/VirtualNumberControl';
+import AppleSpinner from '@/components/library/AppleSpinner';
 
 export default function MobileTelecomCMS() {
   const [data, setData] = useState<any>(null);
   const [activeProfileId, setActiveProfileId] = useState<string | null>(null);
+  const [isGeneratingSms, setIsGeneratingSms] = useState(false);
+  
+  const handleNewSmsChat = async () => {
+    setIsGeneratingSms(true);
+    try {
+      const getRes = await fetch('/api/telecom/virtual-number');
+      const getData = await getRes.json();
+      
+      let numberToActivate = null;
+      if (getData.availableNumbers && getData.availableNumbers.length > 0) {
+        numberToActivate = getData.availableNumbers[Math.floor(Math.random() * getData.availableNumbers.length)];
+      }
+
+      if (numberToActivate) {
+        const postRes = await fetch('/api/telecom/virtual-number', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ number: numberToActivate })
+        });
+        const postData = await postRes.json();
+        
+        if (postData.activeNumber) {
+          const profileId = `virtual-sms-${postData.activeNumber.replace(/\D/g, '')}`;
+          setActiveProfileId(profileId);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to generate new SMS chat", err);
+    }
+    setIsGeneratingSms(false);
+  };
   const [deletingProfileId, setDeletingProfileId] = useState<string | null>(null);
   const holdTimerRef = useRef<NodeJS.Timeout | null>(null);
   
@@ -53,9 +85,15 @@ export default function MobileTelecomCMS() {
   const messages = data?.messages || [];
   
   // Sort profiles by last active time descending
-  const sortedProfiles = [...profiles].sort((a: any, b: any) => 
-    new Date(b.lastActive).getTime() - new Date(a.lastActive).getTime()
-  );
+  const sortedProfiles = [...(data?.profiles || [])].sort((a: any, b: any) => {
+    // Put unread profiles at top
+    if (a.unread && !b.unread) return -1;
+    if (!a.unread && b.unread) return 1;
+    // Then sort by newest activity
+    const timeA = a.lastActive ? new Date(a.lastActive).getTime() : 0;
+    const timeB = b.lastActive ? new Date(b.lastActive).getTime() : 0;
+    return timeB - timeA;
+  });
 
   const activeMessages = activeProfileId ? messages.filter((m: any) => m.profileId === activeProfileId) : [];
   const activeProfile = profiles.find((p: any) => p.id === activeProfileId);
@@ -93,11 +131,6 @@ export default function MobileTelecomCMS() {
           </div>
         </div>
 
-        {/* Virtual Number Control - Hidden on small mobile but accessible in admin view */}
-        <div style={{ width: '100%', flexShrink: 0, zIndex: 90 }}>
-          <VirtualNumberControl onNumberActivated={(id) => setActiveProfileId(id)} />
-        </div>
-
         {/* Main Content Area (Row) */}
         <div style={{ flex: 1, display: 'flex', flexDirection: 'row', overflow: 'hidden' }}>
           
@@ -111,7 +144,7 @@ export default function MobileTelecomCMS() {
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            paddingTop: '40px',
+            paddingTop: '20px',
             paddingBottom: '40px',
             gap: '15px',
             overflowY: 'auto',
@@ -123,6 +156,15 @@ export default function MobileTelecomCMS() {
             .no-scrollbar::-webkit-scrollbar { display: none; }
             .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
           `}</style>
+          
+          <button 
+            onClick={handleNewSmsChat}
+            disabled={isGeneratingSms}
+            style={{ width: '40px', height: '32px', borderRadius: '16px', backgroundColor: 'transparent', color: '#03FFC0', border: '1px solid rgba(3, 255, 192, 0.3)', cursor: isGeneratingSms ? 'wait' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 'bold', flexShrink: 0, transition: 'all 0.2s', opacity: isGeneratingSms ? 0.7 : 1 }}
+            title="Generate New SMS Chat"
+          >
+            {isGeneratingSms ? <AppleSpinner size={14} /> : 'SMS'}
+          </button>
           
           {sortedProfiles.map((p: any) => {
             const isSelected = p.id === activeProfileId;

@@ -104,7 +104,8 @@ export default function MobileChatUI({
   const dbMessages = mode === 'admin' ? adminMessages : chatLogic.messages;
   const isAdminTyping = mode === 'admin' ? adminTypingStatus : chatLogic.isAdminTyping;
 
-  const allMessages = dbMessages.length === 0 ? localMessages : [...localMessages, ...dbMessages];
+  // Cap the messages shown in the view to 25 max
+  const allMessages = (dbMessages.length === 0 ? localMessages : [...localMessages, ...dbMessages]).slice(-25);
 
   // Scroll to bottom when messages array changes length
   useEffect(() => {

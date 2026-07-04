@@ -6,14 +6,12 @@ import DiscordFeedUI from '@/components/telecom/DiscordFeedUI';
 import TwitterFeedUI from '@/components/telecom/TwitterFeedUI';
 import Image from 'next/image';
 import packageJson from '../../../../package.json';
-import { motion } from 'framer-motion';
 
 export default function MobileSiteCMS() {
   const [mobileTab, setMobileTab] = useState<'chat' | 'discord' | 'discord-cr' | 'x-twitter'>('chat');
   const [touchStartX, setTouchStartX] = useState(0);
   const [chatCount, setChatCount] = useState(0);
   const headerRef = useRef<HTMLDivElement>(null);
-  const carouselRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchChatCount = async () => {
@@ -95,16 +93,10 @@ export default function MobileSiteCMS() {
                )}
             </div>
 
-            {/* Scrollable Tab Toggles (Social Icons) */}
-            <div ref={carouselRef} style={{ width: '100%', overflow: 'hidden', padding: '0 20px', marginTop: '0px', flexShrink: 0 }}>
-              <motion.div 
-                drag="x"
-                dragConstraints={carouselRef}
-                dragElastic={0.2}
-                onPointerDown={(e: any) => e.stopPropagation()}
-                onPointerUp={(e: any) => e.stopPropagation()}
-                style={{ display: 'flex', gap: '15px', width: 'max-content', margin: '0 auto', cursor: 'grab' }}
-                whileTap={{ cursor: 'grabbing' }}
+            {/* Tab Toggles (Social Icons) */}
+            <div style={{ width: '100%', padding: '0 20px', marginTop: '0px', flexShrink: 0 }}>
+              <div 
+                style={{ display: 'flex', gap: '15px', justifyContent: 'center', width: '100%', margin: '0 auto' }}
               >
               <button 
                 onClick={() => setMobileTab('chat')}
@@ -145,7 +137,7 @@ export default function MobileSiteCMS() {
                   <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
                 </svg>
               </button>
-              </motion.div>
+              </div>
             </div>
 
           </div>

@@ -189,6 +189,7 @@ export function useChatLogic(sessionId: string, isGlobalChat: boolean = false) {
     autoReplyMessage,
     welcomeMessages,
     autoReplyMessages,
-    effectiveSessionId: activeId
+    effectiveSessionId: activeId,
+    refreshChats: fetchChats
   };
 }

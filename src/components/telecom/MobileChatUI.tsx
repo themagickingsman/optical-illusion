@@ -94,11 +94,27 @@ export default function MobileChatUI({
   const isAdminTyping = mode === 'admin' ? adminTypingStatus : chatLogic.isAdminTyping;
 
   const allMessages = dbMessages.length === 0 ? localMessages : [...localMessages, ...dbMessages];
+
+  // Scroll to bottom when messages array changes length
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
     }
   }, [allMessages.length, isAdminTyping]);
+
+  // Use ResizeObserver to catch dynamically loading images and ensure we stay at the bottom
+  useEffect(() => {
+    if (!messagesEndRef.current) return;
+    const parent = messagesEndRef.current.parentElement;
+    if (!parent) return;
+
+    const observer = new ResizeObserver(() => {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+    });
+    
+    observer.observe(parent);
+    return () => observer.disconnect();
+  }, []);
 
   const handleSendMessage = () => {
     const text = inputText.trim();
@@ -201,7 +217,7 @@ export default function MobileChatUI({
       {/* Background Glows Removed for Performance */}
 
       {/* Chat Messages */}
-      <PhysicsScroll className="chat-feed-scroll" padding={padding || '20px 20px 100px 20px'}>
+      <PhysicsScroll className="chat-feed-scroll" padding={padding || '20px 20px 100px 20px'} onRefresh={chatLogic.refreshChats}>
         {allMessages.map((msg, idx) => {
           const isMe = mode === 'admin' ? msg.sender === 'admin' : (msg.sender === 'user' && msg.profileId === chatLogic.effectiveSessionId);
           
@@ -234,7 +250,9 @@ export default function MobileChatUI({
               {mode === 'admin' && selectedMessageId === msg.id && (
                 <div style={{ display: 'flex', gap: '5px', order: isMe ? -1 : 1, flexShrink: 0, animation: 'springIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)' }}>
                   <button
-                    onClick={async () => {
+                    onClick={async (e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
                       try {
                         const payload = `${msg.text}\n\n— via optical-illusions.com`;
                         const res = await fetch('/api/twitter/post', {
@@ -274,7 +292,9 @@ export default function MobileChatUI({
                     𝕏
                   </button>
                   <button
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
                       if (onAdminDeleteMessage) onAdminDeleteMessage(msg.id);
                       setSelectedMessageId(null); // Deselect after delete
                     }}

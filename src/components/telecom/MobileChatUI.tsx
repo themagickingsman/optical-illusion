@@ -93,6 +93,14 @@ export default function MobileChatUI({
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  useEffect(() => {
+    if (lightboxImage) {
+      document.body.classList.add('media-active');
+    } else {
+      document.body.classList.remove('media-active');
+    }
+  }, [lightboxImage]);
+
   const dbMessages = mode === 'admin' ? adminMessages : chatLogic.messages;
   const isAdminTyping = mode === 'admin' ? adminTypingStatus : chatLogic.isAdminTyping;
 

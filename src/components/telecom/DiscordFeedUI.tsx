@@ -29,6 +29,14 @@ export default function DiscordFeedUI({ channelType, padding }: DiscordFeedUIPro
   const [lightboxMedia, setLightboxMedia] = useState<{url: string, type: string} | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  useEffect(() => {
+    if (lightboxMedia) {
+      document.body.classList.add('media-active');
+    } else {
+      document.body.classList.remove('media-active');
+    }
+  }, [lightboxMedia]);
+
   const fetchMessages = async () => {
     try {
       const res = await fetch(`/api/discord/messages?channel=${channelType}&t=${Date.now()}`, { cache: 'no-store' });

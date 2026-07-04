@@ -8,6 +8,20 @@ export default function OrientationLock() {
 
   useEffect(() => {
     const checkOrientation = () => {
+      if (typeof window === 'undefined') return;
+
+      // Allow horizontal rotation if native fullscreen video is active
+      if (document.fullscreenElement) {
+        setIsLandscapeMobile(false);
+        return;
+      }
+
+      // Allow horizontal rotation if our custom image lightbox is open
+      if (document.body.classList.contains('media-active')) {
+        setIsLandscapeMobile(false);
+        return;
+      }
+
       // Check if the device is a mobile device in landscape
       const isLandscape = window.matchMedia("(orientation: landscape)").matches;
       // We consider it a mobile device if it has touch and a small screen height
@@ -21,9 +35,14 @@ export default function OrientationLock() {
     window.addEventListener("resize", checkOrientation);
     window.addEventListener("orientationchange", checkOrientation);
     
+    // Also re-check when DOM changes (e.g. lightbox opens)
+    const observer = new MutationObserver(checkOrientation);
+    observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+    
     return () => {
       window.removeEventListener("resize", checkOrientation);
       window.removeEventListener("orientationchange", checkOrientation);
+      observer.disconnect();
     };
   }, []);
 
@@ -51,8 +70,7 @@ export default function OrientationLock() {
         width: '120px',
         height: '120px',
         position: 'relative',
-        marginBottom: '30px',
-        filter: 'drop-shadow(0px 0px 20px rgba(255,255,255,0.3))'
+        marginBottom: '30px'
       }}>
         <Image 
           src="/assets/logo/op_logo.png" 

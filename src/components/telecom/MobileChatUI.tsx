@@ -90,8 +90,23 @@ export default function MobileChatUI({
   const [inputText, setInputText] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [showGifPicker, setShowGifPicker] = useState(false);
+  const [gifSearchQuery, setGifSearchQuery] = useState("");
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const pickerContainerRef = useRef<HTMLDivElement>(null);
+  const [pickerWidth, setPickerWidth] = useState(300);
+
+  useEffect(() => {
+    if (pickerContainerRef.current) {
+      const observer = new ResizeObserver((entries) => {
+        for (let entry of entries) {
+          setPickerWidth(Math.max(280, entry.contentRect.width - 40));
+        }
+      });
+      observer.observe(pickerContainerRef.current);
+      return () => observer.disconnect();
+    }
+  }, [showGifPicker, showEmojiPicker]);
 
   useEffect(() => {
     if (lightboxImage) {
@@ -438,21 +453,31 @@ export default function MobileChatUI({
       <div style={{ padding: "10px 20px 20px 20px", zIndex: 20, background: 'transparent', position: 'relative', flexShrink: 0 }}>
         
         {/* Pickers Popover */}
-        <div style={{ position: 'absolute', bottom: '80px', right: '20px', zIndex: 30, display: 'flex', flexDirection: 'column', gap: '10px' }}>
+        <div ref={pickerContainerRef} style={{ position: 'absolute', bottom: '80px', left: '10px', right: '10px', zIndex: 30, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
           {showEmojiPicker && (
-            <div style={{ borderRadius: '12px', overflow: 'hidden', boxShadow: '0 10px 25px rgba(0,0,0,0.5)' }}>
-              <Picker data={data} theme="dark" onEmojiSelect={(emoji: any) => setInputText(prev => prev + emoji.native)} />
+            <div style={{ width: '100%', maxWidth: '600px', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 10px 25px rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', backgroundColor: '#151617' }}>
+              <Picker data={data} theme="dark" onEmojiSelect={(emoji: any) => setInputText(prev => prev + emoji.native)} style={{ width: '100%' }} />
             </div>
           )}
           
           {showGifPicker && (
-            <div style={{ width: '300px', height: '400px', background: '#222', borderRadius: '12px', overflow: 'hidden', padding: '10px', boxShadow: '0 10px 25px rgba(0,0,0,0.5)', display: 'flex', flexDirection: 'column' }}>
-              <div style={{ color: '#fff', fontSize: '14px', fontWeight: 'bold', marginBottom: '10px', textAlign: 'center' }}>GIPHY</div>
+            <div style={{ width: '100%', maxWidth: '600px', height: '400px', background: '#222', borderRadius: '12px', overflow: 'hidden', padding: '10px', boxShadow: '0 10px 25px rgba(0,0,0,0.5)', display: 'flex', flexDirection: 'column' }}>
+              <div style={{ color: '#fff', fontSize: '14px', fontWeight: 'bold', marginBottom: '10px', textAlign: 'center', display: 'flex', gap: '10px', alignItems: 'center' }}>
+                <span style={{ flexShrink: 0 }}>GIPHY</span>
+                <input 
+                  type="text" 
+                  value={gifSearchQuery}
+                  onChange={(e) => setGifSearchQuery(e.target.value)}
+                  placeholder="Search GIFs..."
+                  style={{ flex: 1, padding: '8px 12px', borderRadius: '20px', border: 'none', background: '#111', color: '#fff', outline: 'none' }}
+                />
+              </div>
               <div style={{ flex: 1, overflowY: 'auto' }} className="no-scrollbar">
                 <Grid 
-                  width={280} 
+                  key={gifSearchQuery}
+                  width={pickerWidth > 0 ? pickerWidth : 280} 
                   columns={2} 
-                  fetchGifs={(offset: number) => gf.trending({ offset, limit: 10 })} 
+                  fetchGifs={(offset: number) => gifSearchQuery ? gf.search(gifSearchQuery, { offset, limit: 10 }) : gf.trending({ offset, limit: 10 })} 
                   onGifClick={(gif, e) => {
                     e.preventDefault();
                     handleSendGif(gif);

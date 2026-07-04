@@ -24,16 +24,17 @@ export default function VideoUI({ token, serverUrl, onLeave }: VideoUIProps) {
       flexDirection: 'column'
     }}>
       <LiveKitRoom
-        video={true}
+        video={{
+          facingMode: 'user',
+          resolution: { width: 720, height: 1280, frameRate: 30, aspectRatio: 9/16 }
+        }}
         audio={true}
         token={token}
         serverUrl={serverUrl}
         onDisconnected={onLeave}
         style={{ flex: 1, display: 'flex', flexDirection: 'column' }}
       >
-        {/* Your custom component with basic video conferencing UI. */}
         <VideoConference />
-        {/* The RoomAudioRenderer takes care of room-wide audio for you. */}
         <RoomAudioRenderer />
       </LiveKitRoom>
     </div>

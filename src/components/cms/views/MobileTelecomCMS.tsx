@@ -49,170 +49,150 @@ export default function MobileTelecomCMS() {
   const activeProfile = profiles.find((p: any) => p.id === activeProfileId);
 
   return (
-    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#000', overflow: 'hidden' }}>
-      {/* Mobile Shell Simulation Container */}
-      <div style={{ 
-        width: '100%', 
-        height: '100%',
-        overflow: 'hidden', 
-        position: 'relative', 
-        backgroundColor: 'transparent', 
-        display: 'flex',
-        flexDirection: 'column',
-        backgroundImage: 'url(/assets/bg/mobile_bg.png)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center'
-      }}>
+    <div style={{ display: 'flex', width: '100%', height: '100%', overflow: 'hidden', backgroundColor: '#050505', color: '#fff' }}>
+      
+      {/* Left Column: Profiles Inbox */}
+      <div style={{ width: '300px', borderRight: '1px solid #333', overflowY: 'auto', flexShrink: 0, backgroundColor: '#0a0a0a' }}>
+        <h2 style={{ padding: '20px', borderBottom: '1px solid #333', margin: 0, fontSize: '18px' }}>Inbox</h2>
+        {sortedProfiles.map((profile: any) => {
+          const profileMessages = messages.filter((m: any) => m.profileId === profile.id);
+          const isSelected = activeProfileId === profile.id;
+          const isNew = profile.unread && !isSelected;
 
-        {/* Full Width Header */}
-        <div style={{ 
-          width: '100%',
-          height: '60px', 
-          backgroundColor: 'rgba(0,0,0,0.8)', 
-          display: 'flex', 
-          alignItems: 'center', 
-          justifyContent: 'center',
-          borderBottom: '1px solid rgba(255,255,255,0.1)',
-          zIndex: 100,
-          flexShrink: 0
-        }}>
-          <div style={{ color: '#fff', fontSize: '15px', fontWeight: 'bold', fontFamily: 'var(--font-rubik), sans-serif' }}>
-            {activeProfileId ? (activeProfile?.name || 'Anonymous User') : 'Select User'}
-          </div>
-        </div>
-
-        {/* Main Content Area (Row) */}
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'row', overflow: 'hidden' }}>
-          
-          {/* Left Sidebar (Pips) */}
-          <div 
-            className="no-scrollbar"
-          style={{ 
-            width: '70px', 
-            height: '100%', 
-            backgroundColor: 'transparent', 
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            paddingTop: '40px',
-            paddingBottom: '40px',
-            gap: '15px',
-            overflowY: 'auto',
-            WebkitOverflowScrolling: 'touch',
-            flexShrink: 0
-          }}
-        >
-          <style>{`
-            .no-scrollbar::-webkit-scrollbar { display: none; }
-            .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-          `}</style>
-          
-          {sortedProfiles.map((p: any) => {
-            const isSelected = p.id === activeProfileId;
-            const profileMessages = messages.filter((m: any) => m.profileId === p.id);
-            const hasUnread = p.unread && !isSelected;
-            
-            const firstLetter = (p.name && p.name.trim().length > 0) ? p.name.charAt(0).toUpperCase() : '?';
-
-            return (
-              <div 
-                key={p.id}
-                onPointerDown={() => handlePointerDown(p.id)}
+          return (
+            <div 
+              key={profile.id}
+              onClick={() => {
+                setActiveProfileId(profile.id);
+                if (profile.unread) {
+                  fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'mark_read', profileId: profile.id })
+                  });
+                  profile.unread = false; // Optimistic update
+                }
+              }}
+              style={{ 
+                padding: '15px 40px 15px 20px', 
+                cursor: 'pointer',
+                borderBottom: '1px solid #222',
+                backgroundColor: isSelected ? '#1a1a1a' : 'transparent',
+                transition: 'background 0.2s',
+                position: 'relative'
+              }}
+            >
+              <div style={{ fontWeight: 'bold', display: 'flex', alignItems: 'center' }}>
+                {profile.name || "Visitor"}
+                {isNew && (
+                  <span style={{
+                    backgroundColor: '#ef4444',
+                    width: '10px',
+                    height: '10px',
+                    borderRadius: '50%',
+                    boxShadow: '0 0 10px rgba(239, 68, 68, 0.8)',
+                    marginLeft: '10px',
+                  }}></span>
+                )}
+              </div>
+              <div style={{ fontSize: '12px', color: '#aaa', marginTop: '5px' }}>{profile.email || "No email provided"}</div>
+              
+              <button
+                onPointerDown={() => handlePointerDown(profile.id)}
                 onPointerUp={handlePointerUpOrLeave}
                 onPointerLeave={handlePointerUpOrLeave}
-                onClick={() => {
-                  if (deletingProfileId === p.id) return;
-                  setDeletingProfileId(null);
-                  setActiveProfileId(p.id);
-                  if (p.unread) {
-                    p.unread = false; // Optimistic update
-                    fetch('/api/chat', {
-                      method: 'POST',
+                onClick={async (e) => {
+                  e.stopPropagation();
+                  if (deletingProfileId !== profile.id) return;
+                  try {
+                    const res = await fetch('/api/chat', { 
+                      method: 'POST', 
                       headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ action: 'mark_read', profileId: p.id })
-                    }).catch(console.error);
-                  }
+                      body: JSON.stringify({ action: 'delete_profile', profileId: profile.id }) 
+                    });
+                    const data = await res.json();
+                    setDeletingProfileId(null);
+                    if (activeProfileId === profile.id) setActiveProfileId(null);
+                    if (data.db) setData(data.db);
+                    else fetchData();
+                  } catch(err) { console.error(err); }
                 }}
                 style={{
-                  position: 'relative',
-                  width: '46px',
-                  height: '46px',
+                  position: 'absolute',
+                  right: '20px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  width: '24px',
+                  height: '24px',
                   borderRadius: '50%',
-                  backgroundColor: isSelected && deletingProfileId !== p.id ? '#fff' : '#222',
-                  color: isSelected && deletingProfileId !== p.id ? '#000' : '#fff',
+                  backgroundColor: deletingProfileId === profile.id ? '#FF3B30' : 'rgba(255,59,48,0.2)',
+                  color: deletingProfileId === profile.id ? '#fff' : '#FF3B30',
+                  border: '1px solid rgba(255,59,48,0.5)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  fontSize: '20px',
-                  fontWeight: 'bold',
-                  fontFamily: 'var(--font-rubik), sans-serif',
+                  fontSize: '12px',
                   cursor: 'pointer',
-                  border: isSelected && deletingProfileId !== p.id ? '2px solid #fff' : (deletingProfileId === p.id ? '2px solid #FF3B30' : '1px solid #444'),
                   transition: 'all 0.2s ease',
-                  flexShrink: 0,
-                  userSelect: 'none',
-                  WebkitUserSelect: 'none'
                 }}
+                title="Hold to delete"
               >
-                {deletingProfileId === p.id ? (
-                  <span 
-                    style={{ color: '#FF3B30', fontSize: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' }}
-                    onClick={async (e) => {
-                      e.stopPropagation();
-                      try {
-                        const res = await fetch('/api/chat', { 
-                          method: 'POST', 
-                          headers: { 'Content-Type': 'application/json' },
-                          body: JSON.stringify({ action: 'delete_profile', profileId: p.id }) 
-                        });
-                        const data = await res.json();
-                        setDeletingProfileId(null);
-                        if (activeProfileId === p.id) setActiveProfileId(null);
-                        if (data.db) setData(data.db);
-                        else fetchData();
-                      } catch(err) { console.error(err); }
-                    }}
-                  >
-                    ✕
-                  </span>
-                ) : (
-                  firstLetter
-                )}
-                
-                {/* Unread Notification Dot */}
-                {hasUnread && (
-                  <div style={{
-                    position: 'absolute',
-                    top: '-2px',
-                    right: '-2px',
-                    width: '14px',
-                    height: '14px',
-                    backgroundColor: '#FF3B30',
-                    borderRadius: '50%',
-                    border: '2px solid #111'
-                  }} />
-                )}
-              </div>
-            );
-          })}
-        </div>
+                ✕
+              </button>
+            </div>
+          );
+        })}
+        {profiles.length === 0 && <div style={{ padding: '20px', color: '#666' }}>No messages yet.</div>}
+      </div>
 
-        {/* Right Area (Chat UI) */}
-        <div style={{ 
-          flex: 1, 
-          height: '100%',
-          display: 'flex', 
-          flexDirection: 'column', 
-          position: 'relative',
-          backgroundColor: 'transparent'
-        }}>
-          {activeProfileId ? (
-            <MobileChatUI 
-              theme="op"
+      {/* Middle Column: User Profile Details */}
+      {activeProfileId && activeProfile && (
+        <div style={{ width: '300px', borderRight: '1px solid #333', backgroundColor: '#0a0a0a', padding: '30px 20px', overflowY: 'auto', flexShrink: 0 }}>
+          <h2 style={{ fontSize: '20px', marginBottom: '30px', borderBottom: '1px solid #333', paddingBottom: '15px' }}>User Profile</h2>
+          
+          <div style={{ marginBottom: '25px' }}>
+            <div style={{ fontSize: '11px', color: '#888', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '5px' }}>Name</div>
+            <div style={{ fontSize: '16px', fontWeight: 'bold' }}>{activeProfile.name || "Anonymous"}</div>
+          </div>
+          
+          <div style={{ marginBottom: '25px' }}>
+            <div style={{ fontSize: '11px', color: '#888', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '5px' }}>Email</div>
+            <div style={{ fontSize: '16px' }}>{activeProfile.email || <span style={{ color: '#666' }}>Not provided</span>}</div>
+          </div>
+          
+          <div style={{ marginBottom: '25px' }}>
+            <div style={{ fontSize: '11px', color: '#888', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '5px' }}>Last Active</div>
+            <div style={{ fontSize: '14px', color: '#aaa' }}>{new Date(activeProfile.lastActive).toLocaleString()}</div>
+          </div>
+        </div>
+      )}
+
+      {/* Right Column: Chat Interface */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', position: 'relative', alignItems: 'center', justifyContent: 'center', backgroundColor: '#000' }}>
+        {activeProfileId ? (
+          <div style={{ width: '375px', height: '812px', borderRadius: '40px', overflow: 'hidden', position: 'relative', backgroundColor: 'transparent', display: 'flex', flexDirection: 'column', boxShadow: '0 0 50px rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.05)' }}>
+            <div style={{ 
+              flex: 1, 
+              display: 'flex', 
+              flexDirection: 'column', 
+              backgroundImage: 'url(/assets/bg/mobile_bg.png)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              color: '#fff', 
+              overflow: 'hidden'
+            }}>
+              {/* Build Overlay */}
+              <div style={{ position: 'absolute', bottom: '95px', left: 0, right: 0, display: 'flex', justifyContent: 'center', pointerEvents: 'none', zIndex: 100 }}>
+                <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '10px', fontWeight: 'bold', letterSpacing: '1px' }}>
+                  BUILD OVERLAY
+                </div>
+              </div>
+
+              <MobileChatUI 
+                theme="op"
                 mode="admin"
                 adminMessages={activeMessages}
-                adminTypingStatus={activeProfile?.lastTyping && (Date.now() - new Date(activeProfile.lastTyping).getTime() < 5000)}
-                padding="20px 20px 120px 20px"
+                adminTypingStatus={activeProfile.lastTyping && (Date.now() - new Date(activeProfile.lastTyping).getTime() < 5000)}
                 onAdminSendMessage={async (text) => {
                   try {
                     const res = await fetch('/api/chat', {
@@ -249,16 +229,14 @@ export default function MobileTelecomCMS() {
                   }
                 }}
               />
-          ) : (
-            <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#888', padding: '20px', textAlign: 'center', fontFamily: 'var(--font-rubik), sans-serif' }}>
-              Select a user on the left to start chatting.
+              <LiveKitVideoEngine />
             </div>
-          )}
-        </div>
-      </div>
-      {/* End Main Content Area (Row) */}
-      
-        <LiveKitVideoEngine />
+          </div>
+        ) : (
+          <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#666' }}>
+            Select a user on the left to start chatting.
+          </div>
+        )}
       </div>
     </div>
   );

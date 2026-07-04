@@ -29,6 +29,7 @@ export const viewport: Viewport = {
 
 import { MasterControllerProvider } from "@/core/MasterController";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
+import OrientationLock from "@/components/OrientationLock";
 import { Suspense } from "react";
 
 export default function RootLayout({
@@ -51,6 +52,7 @@ export default function RootLayout({
           <main className="relative z-10 w-full h-full">
             {children}
           </main>
+          <OrientationLock />
         </MasterControllerProvider>
         {process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID && (
           <Suspense fallback={null}>

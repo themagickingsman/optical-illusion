@@ -5,6 +5,7 @@ import MobileChatUI from '@/components/telecom/MobileChatUI';
 import DiscordFeedUI from '@/components/telecom/DiscordFeedUI';
 import TwitterFeedUI from '@/components/telecom/TwitterFeedUI';
 import LiveKitVideoEngine from '@/components/network-engine/assets/livekit_video_engine';
+import IOSNotification from '@/components/telecom/IOSNotification';
 import Image from 'next/image';
 import packageJson from '../../../../package.json';
 
@@ -13,6 +14,46 @@ export default function MobileSiteCMS() {
   const [touchStartX, setTouchStartX] = useState(0);
   const [chatCount, setChatCount] = useState(0);
   const headerRef = useRef<HTMLDivElement>(null);
+  
+  // Notification State
+  const [notification, setNotification] = useState({ title: '', message: '', isVisible: false });
+  const [lastSeenMsgId, setLastSeenMsgId] = useState<string | null>(null);
+
+  // Background message poller for notifications
+  useEffect(() => {
+    // Only show notifications if NOT on the chat tab
+    if (mobileTab === 'chat') {
+      setNotification(n => ({ ...n, isVisible: false }));
+      return;
+    }
+
+    const checkForMessages = async () => {
+      try {
+        const res = await fetch('/api/chat');
+        const data = await res.json();
+        if (data.session && data.session.messages) {
+          const adminMsgs = data.session.messages.filter((m: any) => m.sender === 'admin');
+          if (adminMsgs.length > 0) {
+            const latestMsg = adminMsgs[adminMsgs.length - 1];
+            setLastSeenMsgId(prev => {
+              if (prev && prev !== latestMsg.id) {
+                setNotification({
+                  title: 'System Admin',
+                  message: latestMsg.text,
+                  isVisible: true
+                });
+              }
+              return latestMsg.id;
+            });
+          }
+        }
+      } catch (e) {}
+    };
+
+    checkForMessages();
+    const interval = setInterval(checkForMessages, 3000);
+    return () => clearInterval(interval);
+  }, [mobileTab]);
 
   useEffect(() => {
     const fetchChatCount = async () => {
@@ -167,6 +208,14 @@ export default function MobileSiteCMS() {
           </div>
           
           <LiveKitVideoEngine />
+          
+          <IOSNotification 
+            title={notification.title}
+            message={notification.message}
+            isVisible={notification.isVisible}
+            onClick={() => setMobileTab('chat')}
+            onClose={() => setNotification(n => ({ ...n, isVisible: false }))}
+          />
         </div>
 
       </div>

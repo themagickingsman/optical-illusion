@@ -26,6 +26,7 @@ export default function DiscordFeedUI({ channelType, padding }: DiscordFeedUIPro
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [inputValue, setInputValue] = useState('');
   const [isSending, setIsSending] = useState(false);
+  const [lightboxMedia, setLightboxMedia] = useState<{url: string, type: string} | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const fetchMessages = async () => {
@@ -185,11 +186,15 @@ export default function DiscordFeedUI({ channelType, padding }: DiscordFeedUIPro
 
                 {msg.attachments.length > 0 && (
                   <div style={{ marginTop: '10px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    {msg.attachments.map((att, i) => (
-                      att.content_type?.startsWith('image/') && (
-                        <img key={i} src={att.url} alt="Attachment" style={{ maxWidth: '100%', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.1)' }} />
-                      )
-                    ))}
+                    {msg.attachments.map((att, i) => {
+                      if (att.content_type?.startsWith('image/')) {
+                        return <img key={i} src={att.url} alt="Attachment" onClick={() => setLightboxMedia({url: att.url, type: 'image'})} style={{ maxWidth: '100%', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.1)', cursor: 'pointer' }} />;
+                      }
+                      if (att.content_type?.startsWith('video/')) {
+                        return <video key={i} src={att.url} controls playsInline style={{ maxWidth: '100%', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.1)' }} />;
+                      }
+                      return null;
+                    })}
                   </div>
                 )}
               </div>
@@ -250,6 +255,27 @@ export default function DiscordFeedUI({ channelType, padding }: DiscordFeedUIPro
           </button>
         </form>
       </div>
+
+      {/* Lightbox Overlay */}
+      {lightboxMedia && (
+        <div 
+          onClick={() => setLightboxMedia(null)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 100000,
+            background: 'rgba(0,0,0,0.9)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer'
+          }}
+        >
+          {lightboxMedia.type === 'image' && (
+            <img src={lightboxMedia.url} alt="Fullscreen" style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
+          )}
+        </div>
+      )}
     </div>
   );
 }

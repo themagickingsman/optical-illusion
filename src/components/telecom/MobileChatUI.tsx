@@ -92,6 +92,7 @@ export default function MobileChatUI({
   const [showGifPicker, setShowGifPicker] = useState(false);
   const [gifSearchQuery, setGifSearchQuery] = useState("");
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
+  const [incomingCallRoomId, setIncomingCallRoomId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const pickerContainerRef = useRef<HTMLDivElement>(null);
   const [pickerWidth, setPickerWidth] = useState(300);
@@ -142,6 +143,25 @@ export default function MobileChatUI({
     observer.observe(parent);
     return () => observer.disconnect();
   }, []);
+
+  // Monitor for incoming video calls
+  useEffect(() => {
+    if (mode === 'admin') return;
+    const latestMessage = allMessages[allMessages.length - 1];
+    if (latestMessage && latestMessage.sender === 'admin') {
+      const match = latestMessage.text.match(/^\[VIDEO_CALL\|([^\]]+)\]$/);
+      if (match) {
+        // Only ring if we aren't already in the room
+        if (useVideoStore.getState().activeRoomId !== match[1]) {
+          setIncomingCallRoomId(match[1]);
+        }
+      } else {
+        setIncomingCallRoomId(null);
+      }
+    } else {
+      setIncomingCallRoomId(null);
+    }
+  }, [allMessages, mode]);
 
   const handleSendMessage = () => {
     const text = inputText.trim();
@@ -232,6 +252,15 @@ export default function MobileChatUI({
           >
             Join Call
           </button>
+        </div>
+      );
+    }
+
+    const declineMatch = text.match(/^\[VIDEO_DECLINED\|([^\]]+)\]$/);
+    if (declineMatch) {
+      return (
+        <div style={{ padding: '5px', textAlign: 'center', color: '#ff4444', fontStyle: 'italic', fontSize: '14px' }}>
+          Call Declined
         </div>
       );
     }
@@ -577,6 +606,53 @@ export default function MobileChatUI({
           </button>
         </form>
       </div>
+
+      {incomingCallRoomId && (
+        <div style={{
+          position: 'absolute', inset: 0, zIndex: 10000, 
+          backgroundColor: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(15px)',
+          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+          animation: 'fadeIn 0.3s ease-out'
+        }}>
+          <div style={{ 
+            width: '100px', height: '100px', borderRadius: '50%', background: 'rgba(3, 255, 192, 0.2)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '20px',
+            boxShadow: '0 0 40px rgba(3, 255, 192, 0.4)', border: '2px solid rgba(3, 255, 192, 0.5)'
+          }}>
+            <span style={{ fontSize: '40px' }}>📹</span>
+          </div>
+          <h2 style={{ color: 'white', marginBottom: '10px', fontSize: '24px' }}>Incoming Video Call</h2>
+          <p style={{ color: '#888', marginBottom: '50px' }}>From Admin</p>
+          <div style={{ display: 'flex', gap: '30px' }}>
+            <button onClick={() => {
+              if (mode === 'user') {
+                chatLogic.sendMessage(`[VIDEO_DECLINED|${incomingCallRoomId}]`);
+              } else if (onAdminSendMessage) {
+                onAdminSendMessage(`[VIDEO_DECLINED|${incomingCallRoomId}]`);
+              }
+              setIncomingCallRoomId(null);
+            }} style={{ 
+              background: '#ef4444', color: 'white', padding: '15px 35px', borderRadius: '30px', 
+              border: 'none', fontSize: '16px', cursor: 'pointer', fontWeight: 'bold',
+              boxShadow: '0 10px 25px rgba(239, 68, 68, 0.4)'
+            }}>
+              Decline
+            </button>
+            <button onClick={() => {
+              // @ts-ignore
+              useVideoStore.getState().joinRoom(incomingCallRoomId);
+              setIncomingCallRoomId(null);
+            }} style={{ 
+              background: '#03FFC0', color: 'black', padding: '15px 35px', borderRadius: '30px', 
+              border: 'none', fontSize: '16px', cursor: 'pointer', fontWeight: 'bold',
+              boxShadow: '0 10px 25px rgba(3, 255, 192, 0.4)'
+            }}>
+              Accept
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Lightbox Overlay */}
       {lightboxImage && (
         <div 

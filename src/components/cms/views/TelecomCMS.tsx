@@ -3,7 +3,7 @@ import ArchitectureCMS from "./ArchitectureCMS";
 import TriangleCMS from "./TriangleCMS";
 import SquareCMS from "./SquareCMS";
 import MobileChatUI from '@/components/telecom/MobileChatUI';
-import VirtualNumberControl from '@/components/telecom/VirtualNumberControl';
+import SmsScraperControl from '@/components/telecom/SmsScraperControl';
 import VipInviteControl from '@/components/telecom/VipInviteControl';
 import AppleSpinner from '@/components/library/AppleSpinner';
 
@@ -15,7 +15,6 @@ export default function TelecomCMS() {
   // --- Chat & Communications State ---
   const [data, setData] = useState<any>(null);
   const [activeProfileId, setActiveProfileId] = useState<string | null>(null);
-  const [showSmsModal, setShowSmsModal] = useState(false);
   const [replyText, setReplyText] = useState("");
   const [activeTab, setActiveTab] = useState<'keys' | 'chat' | 'email' | 'architecture' | 'triangle' | 'square'>('chat');
   const [emailTemplate, setEmailTemplate] = useState("");
@@ -355,13 +354,12 @@ export default function TelecomCMS() {
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px', borderBottom: '1px solid #333' }}>
                 <h2 style={{ margin: 0, fontSize: '18px' }}>Inbox</h2>
                   <div style={{ display: 'flex', gap: '10px' }}>
-                    <button 
-                      onClick={() => setShowSmsModal(true)}
-                      style={{ width: '40px', height: '32px', borderRadius: '16px', backgroundColor: showSmsModal ? 'rgba(3, 255, 192, 0.2)' : 'transparent', color: '#03FFC0', border: '1px solid rgba(3, 255, 192, 0.3)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 'bold', transition: 'all 0.2s' }}
-                      title="Open SMS Scraper"
-                    >
-                      SMS
-                    </button>
+                    <SmsScraperControl 
+                      onSmsCreated={(profileId) => {
+                        setActiveProfileId(profileId);
+                        fetchData();
+                      }} 
+                    />
                     <VipInviteControl 
                       onVipCreated={(profileId) => {
                         setActiveProfileId(profileId);
@@ -616,24 +614,7 @@ export default function TelecomCMS() {
         )}
       </div>
       
-      {/* Modals */}
-      {showSmsModal && (
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.8)', zIndex: 999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div style={{ position: 'relative', width: '90%', maxWidth: '600px', maxHeight: '90%', overflowY: 'auto', backgroundColor: '#1a1a1a', borderRadius: '12px', border: '1px solid #333', boxShadow: '0 10px 40px rgba(0,0,0,0.5)' }}>
-            <button 
-              onClick={() => setShowSmsModal(false)}
-              style={{ position: 'absolute', top: '15px', right: '15px', background: 'none', border: 'none', color: '#888', cursor: 'pointer', fontSize: '18px', zIndex: 10 }}
-            >
-              ✕
-            </button>
-            <VirtualNumberControl onNumberActivated={(profileId) => {
-              setActiveProfileId(profileId);
-              setShowSmsModal(false);
-              fetchData();
-            }} />
-          </div>
-        </div>
-      )}
+      {/* End Modals */}
     </div>
   );
 }

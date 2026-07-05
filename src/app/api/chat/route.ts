@@ -204,6 +204,15 @@ export async function POST(req: Request) {
       db.profiles = db.profiles.filter((p: any) => p.id !== body.profileId);
       db.messages = db.messages.filter((m: any) => m.profileId !== body.profileId);
       db.ndaLinks = db.ndaLinks.filter((n: any) => n.sessionId !== body.profileId);
+
+      // If we are deleting an SMS profile, we MUST clear the active virtual number 
+      // so the background scraper stops creating the profile and injecting messages.
+      if (body.profileId.startsWith('virtual-sms-')) {
+        const vnPath = path.join(process.cwd(), 'src/data/virtual_number.json');
+        if (fs.existsSync(vnPath)) {
+          fs.writeFileSync(vnPath, JSON.stringify({ active_number: null }));
+        }
+      }
     }
     else if (body.action === 'mark_read') {
       const p = db.profiles.find((x: any) => x.id === body.profileId);

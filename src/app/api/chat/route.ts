@@ -132,7 +132,8 @@ export async function POST(req: Request) {
         db.profiles.push({
           id: profileId,
           type: 'sms',
-          name: number,
+          name: 'Visitor',
+          phone: number,
           lastActive: new Date().toISOString(),
           unread: false
         });

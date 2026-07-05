@@ -4,86 +4,13 @@ import React, { useState, useEffect, useRef } from 'react';
 import MobileChatUI from '@/components/telecom/MobileChatUI';
 import LiveKitVideoEngine from '@/components/network-engine/assets/livekit_video_engine';
 import VirtualNumberControl from '@/components/telecom/VirtualNumberControl';
+import VipInviteControl from '@/components/telecom/VipInviteControl';
 import AppleSpinner from '@/components/library/AppleSpinner';
 
 export default function MobileTelecomCMS() {
   const [data, setData] = useState<any>(null);
   const [activeProfileId, setActiveProfileId] = useState<string | null>(null);
-  const [isGeneratingSms, setIsGeneratingSms] = useState(false);
-  const [isGeneratingVip, setIsGeneratingVip] = useState(false);
-  const [vipCopied, setVipCopied] = useState(false);
-  
-  const handleNewVipChat = async () => {
-    setIsGeneratingVip(true);
-    try {
-      const token = Math.random().toString(36).substring(2, 6).toUpperCase();
-      const profileId = `VIP-${token}`;
-      
-      await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'create_vip_profile',
-          profileId
-        })
-      });
-
-      const inviteLink = `https://optical-illusion-eight.vercel.app/hire?t=${profileId}`;
-      await navigator.clipboard.writeText(inviteLink);
-      
-      setActiveProfileId(profileId);
-      fetchData();
-      
-      setVipCopied(true);
-      setTimeout(() => setVipCopied(false), 2000);
-    } catch (err) {
-      console.error("Failed to generate VIP chat", err);
-    }
-    setIsGeneratingVip(false);
-  };
-  
-  const handleNewSmsChat = async () => {
-    setIsGeneratingSms(true);
-    try {
-      const getRes = await fetch('/api/telecom/virtual-number');
-      const getData = await getRes.json();
-      
-      let numberToActivate = null;
-      if (getData.availableNumbers && getData.availableNumbers.length > 0) {
-        numberToActivate = getData.availableNumbers[Math.floor(Math.random() * getData.availableNumbers.length)];
-      }
-
-      if (numberToActivate) {
-        const postRes = await fetch('/api/telecom/virtual-number', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ number: numberToActivate })
-        });
-        const postData = await postRes.json();
-        
-        if (postData.activeNumber) {
-          const profileId = `virtual-sms-${postData.activeNumber.replace(/\D/g, '')}`;
-          
-          // Create the profile in the database
-          await fetch('/api/chat', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              action: 'create_sms_profile',
-              profileId,
-              number: postData.activeNumber
-            })
-          });
-
-          setActiveProfileId(profileId);
-          fetchData(); // Refresh the list so it shows up in the sidebar
-        }
-      }
-    } catch (err) {
-      console.error("Failed to generate new SMS chat", err);
-    }
-    setIsGeneratingSms(false);
-  };
+  const [showSmsModal, setShowSmsModal] = useState(false);
   const [deletingProfileId, setDeletingProfileId] = useState<string | null>(null);
   const holdTimerRef = useRef<NodeJS.Timeout | null>(null);
   
@@ -206,22 +133,19 @@ export default function MobileTelecomCMS() {
           `}</style>
           
           <button 
-            onClick={handleNewSmsChat}
-            disabled={isGeneratingSms}
-            style={{ width: '40px', height: '32px', borderRadius: '16px', backgroundColor: 'transparent', color: '#03FFC0', border: '1px solid rgba(3, 255, 192, 0.3)', cursor: isGeneratingSms ? 'wait' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 'bold', flexShrink: 0, transition: 'all 0.2s', opacity: isGeneratingSms ? 0.7 : 1 }}
-            title="Generate New SMS Chat"
+            onClick={() => setShowSmsModal(true)}
+            style={{ width: '40px', height: '32px', borderRadius: '16px', backgroundColor: showSmsModal ? 'rgba(3, 255, 192, 0.2)' : 'transparent', color: '#03FFC0', border: '1px solid rgba(3, 255, 192, 0.3)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 'bold', flexShrink: 0, transition: 'all 0.2s' }}
+            title="Open SMS Scraper"
           >
-            {isGeneratingSms ? <AppleSpinner size={14} /> : 'SMS'}
+            SMS
           </button>
           
-          <button 
-            onClick={handleNewVipChat}
-            disabled={isGeneratingVip}
-            style={{ width: '60px', height: '32px', borderRadius: '16px', backgroundColor: vipCopied ? 'rgba(0,255,0,0.2)' : 'transparent', color: vipCopied ? '#00FF00' : '#FFFFFF', border: `1px solid ${vipCopied ? 'rgba(0,255,0,0.5)' : 'rgba(255, 255, 255, 0.3)'}`, cursor: isGeneratingVip ? 'wait' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 'bold', flexShrink: 0, transition: 'all 0.2s', opacity: isGeneratingVip ? 0.7 : 1, marginTop: '-5px' }}
-            title="Generate VIP Invite Link"
-          >
-            {isGeneratingVip ? <AppleSpinner size={14} /> : (vipCopied ? '✅' : 'Invite')}
-          </button>
+          <VipInviteControl 
+            onVipCreated={(profileId) => {
+              setActiveProfileId(profileId);
+              fetchData();
+            }} 
+          />
           
           {sortedProfiles.map((p: any) => {
             const isSelected = p.id === activeProfileId;
@@ -374,8 +298,27 @@ export default function MobileTelecomCMS() {
           <LiveKitVideoEngine />
         </div>
       </div>
-      {/* End Main Content Area (Row) */}
       </div>
+      {/* End Main Content Area (Row) */}
+      
+      {/* Modals */}
+      {showSmsModal && (
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.8)', zIndex: 999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ position: 'relative', width: '90%', maxWidth: '600px', maxHeight: '90%', overflowY: 'auto', backgroundColor: '#1a1a1a', borderRadius: '12px', border: '1px solid #333', boxShadow: '0 10px 40px rgba(0,0,0,0.5)' }}>
+            <button 
+              onClick={() => setShowSmsModal(false)}
+              style={{ position: 'absolute', top: '15px', right: '15px', background: 'none', border: 'none', color: '#888', cursor: 'pointer', fontSize: '18px', zIndex: 10 }}
+            >
+              ✕
+            </button>
+            <VirtualNumberControl onNumberActivated={(profileId) => {
+              setActiveProfileId(profileId);
+              setShowSmsModal(false);
+              fetchData();
+            }} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

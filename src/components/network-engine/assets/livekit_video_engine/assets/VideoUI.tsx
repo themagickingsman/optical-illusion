@@ -24,10 +24,7 @@ export default function VideoUI({ token, serverUrl, onLeave }: VideoUIProps) {
       flexDirection: 'column'
     }}>
       <LiveKitRoom
-        video={{
-          facingMode: 'user',
-          resolution: { width: 720, height: 1280, frameRate: 30, aspectRatio: 9/16 }
-        }}
+        video={{ facingMode: 'user' }}
         audio={true}
         token={token}
         serverUrl={serverUrl}

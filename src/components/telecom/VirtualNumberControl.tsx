@@ -67,7 +67,7 @@ export default function VirtualNumberControl({ onNumberActivated }: VirtualNumbe
   }, [activeNumber]);
 
   return (
-    <div style={{ padding: '20px', background: '#1a1a1a', borderBottom: '1px solid #333' }}>
+    <div style={{ padding: '20px', background: '#1a1a1a', borderRadius: 'inherit' }}>
       <h2 style={{ margin: '0 0 10px 0', fontSize: '18px', color: '#4ade80' }}>Public Virtual SMS Scraper</h2>
       <p style={{ margin: '0 0 15px 0', fontSize: '13px', color: '#888' }}>
         Select a public phone number to monitor. All incoming confirmation codes for this number will be injected directly into the Chat feed. 

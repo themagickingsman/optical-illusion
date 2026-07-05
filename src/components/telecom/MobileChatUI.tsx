@@ -53,12 +53,20 @@ export default function MobileChatUI({
   useEffect(() => {
     if (mode === 'admin') return; // Admin mode does not need a cookie session
     if (!externalSessionId) {
-      let sid = document.cookie.split('; ').find(row => row.startsWith('chat_session='))?.split('=')[1];
-      if (!sid) {
-        sid = "session_" + Date.now() + "_" + Math.floor(Math.random() * 1000);
-        document.cookie = `chat_session=${sid}; path=/; max-age=31536000`;
+      const urlParams = new URLSearchParams(window.location.search);
+      const vipToken = urlParams.get('t');
+
+      if (vipToken) {
+        document.cookie = `chat_session=${vipToken}; path=/; max-age=31536000`;
+        setSessionId(vipToken);
+      } else {
+        let sid = document.cookie.split('; ').find(row => row.startsWith('chat_session='))?.split('=')[1];
+        if (!sid) {
+          sid = "session_" + Date.now() + "_" + Math.floor(Math.random() * 1000);
+          document.cookie = `chat_session=${sid}; path=/; max-age=31536000`;
+        }
+        setSessionId(sid);
       }
-      setSessionId(sid);
     }
   }, [externalSessionId, mode]);
   

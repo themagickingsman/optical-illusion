@@ -43,7 +43,7 @@ export default function HireMeView() {
 
   const getStyle = (delay: number) => ({
     opacity: mounted ? 1 : 0,
-    transform: mounted ? 'translateY(0)' : 'translateY(40px)',
+    transform: mounted ? 'scale(0.75) translateY(0)' : 'scale(0.75) translateY(40px)',
     transition: `all 1.2s cubic-bezier(0.16, 1, 0.3, 1) ${delay}s`,
   });
 
@@ -75,7 +75,7 @@ export default function HireMeView() {
   };
 
   return (
-    <div style={{ position: "relative", width: "1380px", height: "700px", display: "flex", gap: "20px", color: "#fff", transform: "scale(0.75)", transformOrigin: "center", fontFamily: "var(--font-rubik)", fontWeight: 500, margin: "0 auto", ...getStyle(0.1) }}>
+    <div style={{ position: "relative", width: "1380px", height: "700px", display: "flex", gap: "20px", color: "#fff", transformOrigin: "center", fontFamily: "var(--font-rubik)", fontWeight: 500, margin: "0 auto", ...getStyle(0.1) }}>
       
       {/* Left Pane: Game Mosaic Grid (Replaced NDA Form) */}
       <GameMosaic />

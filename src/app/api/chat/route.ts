@@ -209,8 +209,10 @@ export async function POST(req: Request) {
       // so the background scraper stops creating the profile and injecting messages.
       if (body.profileId.startsWith('virtual-sms-')) {
         const vnPath = path.join(process.cwd(), 'src/data/virtual_number.json');
-        if (fs.existsSync(vnPath)) {
-          fs.writeFileSync(vnPath, JSON.stringify({ active_number: null }));
+        try {
+          await fs.writeFile(vnPath, JSON.stringify({ active_number: null }));
+        } catch (err) {
+          console.error("Failed to clear virtual number on profile deletion", err);
         }
       }
     }

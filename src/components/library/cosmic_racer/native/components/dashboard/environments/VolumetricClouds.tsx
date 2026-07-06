@@ -136,6 +136,7 @@ export default function VolumetricClouds() {
       if (renderer && containerRef.current && containerRef.current.contains(renderer.domElement)) {
         containerRef.current.removeChild(renderer.domElement);
       }
+      renderer?.forceContextLoss();
       renderer?.dispose();
       
       // Cleanup geometries and materials

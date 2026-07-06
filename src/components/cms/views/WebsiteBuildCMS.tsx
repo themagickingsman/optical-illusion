@@ -111,7 +111,7 @@ export default function WebsiteBuildCMS() {
   // Scroll-based Header Fade
   useEffect(() => {
     const handleScroll = (e: any) => {
-      if (!headerRef.current) return;
+      if (!headerRef.current || !e.detail) return;
       const { deltaY, scrollTop } = e.detail;
       if (scrollTop < 50) {
         headerRef.current.style.opacity = '1';
@@ -160,7 +160,7 @@ export default function WebsiteBuildCMS() {
 
   if (isLandscapeMobile) {
     return (
-      <div style={{ width: '100vw', height: '100dvh', background: '#6A0DAD', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#fff', fontFamily: 'var(--font-rubik), sans-serif', padding: '20px', textAlign: 'center', zIndex: 9999 }}>
+      <div style={{ position: 'fixed', inset: 0, background: '#6A0DAD', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#fff', fontFamily: 'var(--font-rubik), sans-serif', padding: '20px', textAlign: 'center', zIndex: 9999 }}>
         <style>{`
           @keyframes tiltPhone {
             0% { transform: rotate(90deg); }
@@ -182,8 +182,8 @@ export default function WebsiteBuildCMS() {
   if (isMobile) {
     return (
       <div style={{ 
-        width: '100vw', 
-        height: '100dvh', 
+        position: 'fixed',
+        inset: 0, 
         display: 'flex',
         flexDirection: 'column',
         backgroundImage: 'url(/assets/bg/mobile_bg.png)',

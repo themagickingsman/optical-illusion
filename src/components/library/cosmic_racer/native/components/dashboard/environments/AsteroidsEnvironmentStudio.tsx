@@ -193,7 +193,8 @@ export default function AsteroidsEnvironmentStudio() {
 
         return () => {
             cancelAnimationFrame(rafId);
-            renderer.dispose();
+            renderer.forceContextLoss();
+      renderer.dispose();
             if (el.contains(renderer.domElement)) el.removeChild(renderer.domElement);
         };
     }, []);

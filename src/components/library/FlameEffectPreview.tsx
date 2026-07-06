@@ -250,6 +250,7 @@ export default function FlameEffectPreview() {
       if (requestRef.current) cancelAnimationFrame(requestRef.current);
       if (rendererRef.current && containerRef.current) {
         containerRef.current.removeChild(rendererRef.current.domElement);
+        rendererRef.current.forceContextLoss();
         rendererRef.current.dispose();
       }
       shipGeo.dispose();

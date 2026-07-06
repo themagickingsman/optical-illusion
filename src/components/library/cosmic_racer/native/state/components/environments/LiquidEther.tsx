@@ -1077,8 +1077,8 @@ export default function LiquidEther({
           if (Common.renderer) {
             const canvas = Common.renderer.domElement;
             if (canvas && canvas.parentNode) canvas.parentNode.removeChild(canvas);
-            Common.renderer.dispose();
             Common.renderer.forceContextLoss();
+        Common.renderer.dispose();
           }
         } catch {
           /* noop */

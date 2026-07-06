@@ -239,8 +239,21 @@ export async function POST(req: Request) {
 
       db.messages.push(body.payload);
       
-      const profile = db.profiles.find((p: any) => p.id === profileId);
-      if (profile) {
+      let profile = db.profiles.find((p: any) => p.id === profileId);
+      
+      // If the profile was deleted by admin but the mobile site still has the session, we must restore it!
+      if (!profile) {
+        profile = {
+          id: profileId,
+          name: 'Restored Visitor',
+          avatar: '/assets/icon/op_04.png',
+          status: 'online',
+          lastActive: new Date().toISOString(),
+          ip: ip,
+          unread: true
+        };
+        db.profiles.push(profile);
+      } else {
         profile.lastActive = new Date().toISOString();
         if (!profile.ip) profile.ip = ip;
         if (body.payload.sender === 'user') {

@@ -12,6 +12,7 @@ export default function NexusMetaballs({
   showFullscreenBtn?: boolean;
   heroOrbOnly?: boolean;
 } = {}) {
+  const [gpuError, setGpuError] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -36,7 +37,6 @@ export default function NexusMetaballs({
     let frameCount = 0;
     let fps = 0;
     let animationFrameId: number;
-    let pane: any = null;
     let fpsBadgeRef: HTMLDivElement | null = null;
     let lastFpsDisplay = -1;
     let heroTargetX = 0;
@@ -164,13 +164,27 @@ export default function NexusMetaballs({
       camera.position.z = 1;
       clock = new THREE.Clock();
 
-      renderer = new THREE.WebGLRenderer({
-        antialias: false,           // disabled — upscale blur masks it anyway
-        alpha: true,
-        powerPreference: "high-performance",
-        preserveDrawingBuffer: false,
-        premultipliedAlpha: false
-      });
+      const originalConsoleError = console.error;
+      
+      try {
+        // Temporarily silence console.error to prevent Next.js from hijacking WebGL failure warnings into a fatal red overlay
+        console.error = () => {};
+        
+        renderer = new THREE.WebGLRenderer({
+          antialias: false,
+          alpha: true,
+          powerPreference: "default",
+          preserveDrawingBuffer: false,
+          premultipliedAlpha: false
+        });
+      } catch (error) {
+        console.error = originalConsoleError;
+        setGpuError(true);
+        console.warn("NexusMetaballs: WebGL is completely disabled or exhausted on this device. Render blocked.");
+        return;
+      } finally {
+        console.error = originalConsoleError;
+      }
 
       // Render at device pixel ratio, strictly capped at 1.5 for performance
       // since the raymarching shader is incredibly heavy on Retina displays (2.0 dpr).
@@ -1306,10 +1320,6 @@ export default function NexusMetaballs({
         }
       ));
 
-      // Hide preferences per user request
-      // uiContainer.appendChild(prefsButton);
-      // uiContainer.appendChild(panel);
-
       // ── Fullscreen button ─────────────────────────────────────────────────
       let fullscreenBtn = document.getElementById('nexus-fullscreen-btn') as HTMLButtonElement;
       if (!fullscreenBtn) {
@@ -1368,7 +1378,6 @@ export default function NexusMetaballs({
 
       material.uniforms.uResolution.value.set(width, height);
       material.uniforms.uActualResolution.value.set(rW, rH);
-      material.uniforms.uPixelRatio.value = devicePixelRatio;
     }
 
     function animate() {
@@ -1603,7 +1612,10 @@ export default function NexusMetaballs({
       const leftoverBadge = document.getElementById("nexus-fps-badge");
       if (leftoverBadge) leftoverBadge.remove();
       
-      if (renderer) renderer.dispose();
+      if (renderer) {
+        renderer.forceContextLoss();
+        renderer.dispose();
+      }
       if (material) material.dispose();
       if (scene) scene.clear();
     };
@@ -1611,9 +1623,27 @@ export default function NexusMetaballs({
 
   return (
     <>
+      {gpuError && (
+        <div className="absolute inset-0 flex items-center justify-center bg-red-950/90 z-[9999] p-8 text-center pointer-events-auto backdrop-blur-md">
+          <div className="max-w-xl border border-red-500/50 bg-black p-8 rounded-2xl shadow-2xl">
+            <h2 className="text-3xl font-extrabold text-red-500 mb-4">GPU Memory Exhausted</h2>
+            <p className="text-white/80 text-lg mb-6 leading-relaxed">
+              Safari's hardware graphics processor has completely locked down due to previous memory leaks. Safari temporarily blacklists this tab from rendering any 3D graphics.
+            </p>
+            <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 inline-block">
+              <strong className="text-red-400 block mb-2 uppercase text-sm tracking-wider">How to Fix This:</strong>
+              <p className="text-white font-mono text-xl">Press <kbd className="bg-white/10 px-2 py-1 rounded">Cmd</kbd> + <kbd className="bg-white/10 px-2 py-1 rounded">Q</kbd> to quit Safari completely.</p>
+            </div>
+            <p className="text-white/40 text-sm mt-6">
+              Refreshing the page or opening a new tab will not work. The browser application must be fully closed to flush the hardware cache.
+            </p>
+          </div>
+        </div>
+      )}
+      
       <div 
         ref={containerRef} 
-        style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 1, overflow: 'hidden' }} 
+        className="w-full h-full absolute inset-0 opacity-80"
       />
     </>
   );

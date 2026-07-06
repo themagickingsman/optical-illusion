@@ -3608,6 +3608,7 @@ export default function TerrainGenerator({ lsKey: lsKeyProp, onClose, onStartExi
       renderer.domElement.removeEventListener('mouseleave', onCanvasMouseLeave);
       controls.dispose();
       composer.dispose();
+      renderer.forceContextLoss();
       renderer.dispose();
       ro.disconnect();
       if (el.contains(renderer.domElement)) el.removeChild(renderer.domElement);

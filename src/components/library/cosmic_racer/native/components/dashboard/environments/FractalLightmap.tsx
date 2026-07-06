@@ -250,7 +250,8 @@ export default function FractalLightmap({ config }: { config: FractalLightmapCon
       if (renderer && containerRef.current && containerRef.current.contains(renderer.domElement)) {
         containerRef.current.removeChild(renderer.domElement);
       }
-      if (renderer) renderer.dispose();
+      if (renderer) renderer.forceContextLoss();
+      renderer.dispose();
       if (geometry) geometry.dispose();
       if (material) material.dispose();
       if (texture) texture.dispose();

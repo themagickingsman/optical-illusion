@@ -309,8 +309,8 @@ const LightPillar: React.FC<LightPillarProps> = ({
         cancelAnimationFrame(rafRef.current);
       }
       if (rendererRef.current) {
-        rendererRef.current.dispose();
         rendererRef.current.forceContextLoss();
+        rendererRef.current.dispose();
         if (container.contains(rendererRef.current.domElement)) {
           container.removeChild(rendererRef.current.domElement);
         }

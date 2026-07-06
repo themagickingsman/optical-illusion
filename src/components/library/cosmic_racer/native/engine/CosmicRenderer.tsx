@@ -5013,6 +5013,7 @@ export default function CosmicRenderer({
       window.removeEventListener('resize',  onResize);
       document.removeEventListener('fullscreenchange', onResize);
       resizeObserver.disconnect();
+      renderer.forceContextLoss();
       renderer.dispose();
       if (el.contains(renderer.domElement)) el.removeChild(renderer.domElement);
 

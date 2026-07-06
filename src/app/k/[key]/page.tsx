@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import GSKLogin from '@/components/telecom/GSKLogin';
 import MobileChatUI from '@/components/telecom/MobileChatUI';
+import LiveKitVideoEngine from '@/components/network-engine/assets/livekit_video_engine';
 import { useParams } from 'next/navigation';
 
 export default function TelecomGatewayPage() {
@@ -22,7 +23,10 @@ export default function TelecomGatewayPage() {
       {!unlocked ? (
         <GSKLogin gsk={gsk} onUnlock={handleUnlock} />
       ) : (
-        <MobileChatUI sessionId={`gsk_${gsk}_${assetKey}`} theme="op" />
+        <>
+          <MobileChatUI sessionId={`gsk_${gsk}_${assetKey}`} theme="op" />
+          <LiveKitVideoEngine />
+        </>
       )}
     </main>
   );

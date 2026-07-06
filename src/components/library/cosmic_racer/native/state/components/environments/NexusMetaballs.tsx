@@ -1538,7 +1538,8 @@ export default function NexusMetaballs({
       if (uiContainer) {
         uiContainer.innerHTML = '';
       }
-      if (renderer) renderer.dispose();
+      if (renderer) renderer.forceContextLoss();
+      renderer.dispose();
       if (material) material.dispose();
       if (scene) scene.clear();
     };

@@ -2,11 +2,14 @@
 
 import React from 'react';
 import Image from "next/image";
+import { useRouter } from 'next/navigation';
 
 export default function NotFound() {
+  const router = useRouter();
+  
   return (
     <div 
-      onClick={() => window.location.href = '/'}
+      onClick={() => router.push('/')}
       style={{
         position: 'fixed',
         top: 0,

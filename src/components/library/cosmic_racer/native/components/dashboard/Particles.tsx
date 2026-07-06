@@ -296,6 +296,7 @@ const Particles: React.FC<ParticlesProps> = ({
       geometry.dispose();
       material.dispose();
       renderer.forceContextLoss(); // MANUALLY FORCE SAFARI VRAM CLEAR TO PREVENT 16-CONTEXT CRASH LOOP
+      renderer.forceContextLoss();
       renderer.dispose();
       if (container && renderer.domElement && container.contains(renderer.domElement)) {
         container.removeChild(renderer.domElement);

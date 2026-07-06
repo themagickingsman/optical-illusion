@@ -327,8 +327,8 @@ export default function PixelSnow({
       if (container.contains(renderer.domElement)) {
         container.removeChild(renderer.domElement);
       }
-      renderer.dispose();
       renderer.forceContextLoss();
+      renderer.dispose();
       geometry.dispose();
       material.dispose();
       rendererRef.current = null;

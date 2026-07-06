@@ -108,6 +108,7 @@ export const NebulaBackground: React.FC<NebulaBackgroundProps> = ({
       ro.disconnect();
       geometry.dispose();
       material.dispose();
+      renderer.forceContextLoss();
       renderer.dispose();
       if (container && renderer.domElement && container.contains(renderer.domElement)) {
         container.removeChild(renderer.domElement);

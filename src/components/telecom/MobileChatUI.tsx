@@ -622,6 +622,7 @@ export default function MobileChatUI({
           display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
           animation: 'fadeIn 0.3s ease-out'
         }}>
+          <audio src="/game_assets/sounds/used/sonar_ping.mp3" autoPlay loop />
           <div style={{ 
             width: '100px', height: '100px', borderRadius: '50%', background: 'rgba(3, 255, 192, 0.2)',
             display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '20px',

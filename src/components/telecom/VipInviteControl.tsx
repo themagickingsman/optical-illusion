@@ -24,7 +24,8 @@ export default function VipInviteControl({ onVipCreated }: VipInviteControlProps
         })
       });
 
-      const inviteLink = `https://optical-illusion-eight.vercel.app/hire?t=${profileId}`;
+      const origin = typeof window !== 'undefined' ? window.location.origin : 'https://optical-illusion-eight.vercel.app';
+      const inviteLink = `${origin}/k/invite?t=${profileId}`;
       
       // Fallback clipboard copying
       try {
@@ -52,32 +53,60 @@ export default function VipInviteControl({ onVipCreated }: VipInviteControlProps
   };
 
   return (
-    <button 
-      onClick={handleNewVipChat}
-      disabled={isGeneratingVip}
-      style={{ 
-        width: '60px', 
-        height: '32px', 
-        borderRadius: '16px', 
-        backgroundColor: vipCopied ? 'rgba(0,255,0,0.2)' : 'transparent', 
-        color: vipCopied ? '#00FF00' : '#FFFFFF', 
-        border: `1px solid ${vipCopied ? 'rgba(0,255,0,0.5)' : 'rgba(255, 255, 255, 0.3)'}`, 
-        cursor: isGeneratingVip ? 'wait' : 'pointer', 
-        display: 'flex', 
-        alignItems: 'center', 
-        justifyContent: 'center', 
-        fontSize: '12px', 
-        fontWeight: 'bold', 
-        flexShrink: 0, 
-        transition: 'all 0.2s', 
-        opacity: isGeneratingVip ? 0.7 : 1, 
-        marginTop: '-5px' 
-      }}
-      title="Generate VIP Invite Link"
-      onMouseEnter={e => { if (!isGeneratingVip && !vipCopied) { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'; e.currentTarget.style.transform = 'scale(1.05)'; } }}
-      onMouseLeave={e => { if (!isGeneratingVip && !vipCopied) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.transform = 'scale(1)'; } }}
-    >
-      {isGeneratingVip ? <AppleSpinner size={14} /> : (vipCopied ? '✅' : 'Invite')}
-    </button>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'center', marginTop: '-5px' }}>
+      <button 
+        onClick={handleNewVipChat}
+        disabled={isGeneratingVip}
+        style={{ 
+          width: '60px', 
+          height: '32px', 
+          borderRadius: '16px', 
+          backgroundColor: vipCopied ? 'rgba(0,255,0,0.2)' : 'transparent', 
+          color: vipCopied ? '#00FF00' : '#FFFFFF', 
+          border: `1px solid ${vipCopied ? 'rgba(0,255,0,0.5)' : 'rgba(255, 255, 255, 0.3)'}`, 
+          cursor: isGeneratingVip ? 'wait' : 'pointer', 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center', 
+          fontSize: '12px', 
+          fontWeight: 'bold', 
+          flexShrink: 0, 
+          transition: 'all 0.2s', 
+          opacity: isGeneratingVip ? 0.7 : 1
+        }}
+        title="Generate VIP Invite Link"
+        onMouseEnter={e => { if (!isGeneratingVip && !vipCopied) { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'; e.currentTarget.style.transform = 'scale(1.05)'; } }}
+        onMouseLeave={e => { if (!isGeneratingVip && !vipCopied) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.transform = 'scale(1)'; } }}
+      >
+        {isGeneratingVip ? <AppleSpinner size={14} /> : (vipCopied ? '✅' : 'Invite')}
+      </button>
+
+      <button 
+        onClick={handleNewVipChat}
+        disabled={isGeneratingVip}
+        style={{ 
+          width: '60px', 
+          height: '24px', 
+          borderRadius: '12px', 
+          backgroundColor: 'transparent', 
+          color: '#03FFC0', 
+          border: '1px dashed rgba(3, 255, 192, 0.5)', 
+          cursor: isGeneratingVip ? 'wait' : 'pointer', 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center', 
+          fontSize: '10px', 
+          fontWeight: 'bold', 
+          flexShrink: 0, 
+          transition: 'all 0.2s', 
+          opacity: isGeneratingVip ? 0.7 : 1
+        }}
+        title="Create New User"
+        onMouseEnter={e => { if (!isGeneratingVip && !vipCopied) { e.currentTarget.style.background = 'rgba(3, 255, 192, 0.1)'; e.currentTarget.style.transform = 'scale(1.05)'; } }}
+        onMouseLeave={e => { if (!isGeneratingVip && !vipCopied) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.transform = 'scale(1)'; } }}
+      >
+        Create
+      </button>
+    </div>
   );
 }

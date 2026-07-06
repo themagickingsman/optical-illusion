@@ -88,9 +88,9 @@ export default function VipInviteControl({ onVipCreated }: VipInviteControlProps
           width: '60px', 
           height: '24px', 
           borderRadius: '12px', 
-          backgroundColor: 'transparent', 
-          color: '#03FFC0', 
-          border: '1px dashed rgba(3, 255, 192, 0.5)', 
+          backgroundColor: vipCopied ? 'rgba(0,255,0,0.1)' : 'transparent', 
+          color: vipCopied ? '#00FF00' : '#03FFC0', 
+          border: `1px dashed ${vipCopied ? 'rgba(0,255,0,0.5)' : 'rgba(3, 255, 192, 0.5)'}`, 
           cursor: isGeneratingVip ? 'wait' : 'pointer', 
           display: 'flex', 
           alignItems: 'center', 
@@ -105,7 +105,7 @@ export default function VipInviteControl({ onVipCreated }: VipInviteControlProps
         onMouseEnter={e => { if (!isGeneratingVip && !vipCopied) { e.currentTarget.style.background = 'rgba(3, 255, 192, 0.1)'; e.currentTarget.style.transform = 'scale(1.05)'; } }}
         onMouseLeave={e => { if (!isGeneratingVip && !vipCopied) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.transform = 'scale(1)'; } }}
       >
-        Create
+        {isGeneratingVip ? '...' : (vipCopied ? 'Copied!' : 'Create')}
       </button>
     </div>
   );

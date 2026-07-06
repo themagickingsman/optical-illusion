@@ -549,22 +549,26 @@ export default function MobileChatUI({
             >
               😊
             </button>
-            {mode === 'admin' && (
-              <button 
-                type="button"
-                onClick={() => {
-                  const roomId = `room_${Date.now()}`;
-                  if (onAdminSendMessage) onAdminSendMessage(`[VIDEO_CALL|${roomId}]`);
-                }}
-                style={{
-                  width: '40px', height: '40px', borderRadius: '50%', background: 'transparent',
-                  color: '#03FFC0', border: 'none', cursor: 'pointer', fontSize: '20px'
-                }}
-                title="Start Video Call"
-              >
-                📹
-              </button>
-            )}
+            <button 
+              type="button"
+              onClick={() => {
+                const roomId = `room_${Date.now()}`;
+                if (mode === 'admin' && onAdminSendMessage) {
+                  onAdminSendMessage(`[VIDEO_CALL|${roomId}]`);
+                } else {
+                  chatLogic.sendMessage(`[VIDEO_CALL|${roomId}]`);
+                  // Automatically join the room they just created
+                  useVideoStore.getState().joinRoom(roomId);
+                }
+              }}
+              style={{
+                width: '40px', height: '40px', borderRadius: '50%', background: 'transparent',
+                color: '#03FFC0', border: 'none', cursor: 'pointer', fontSize: '20px'
+              }}
+              title="Start Video Call"
+            >
+              📹
+            </button>
           </div>
 
           <input 

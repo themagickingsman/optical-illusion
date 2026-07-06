@@ -73,7 +73,11 @@ export default function SmsScraperControl({ onSmsCreated }: SmsScraperControlPro
     if (!activeNumber) return;
     const syncSms = async () => {
       try {
-        await fetch('/api/telecom/sync-sms');
+        const res = await fetch('/api/telecom/sync-sms');
+        const data = await res.json();
+        if (data.message === 'No active number') {
+          setActiveNumber(null);
+        }
       } catch (err) {}
     };
     syncSms(); // run once immediately

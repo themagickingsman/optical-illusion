@@ -94,6 +94,7 @@ export default function MobileTelecomCMS() {
           height: '60px', 
           backgroundColor: 'rgba(0,0,0,0.8)', 
           display: 'flex', 
+          flexDirection: 'column',
           alignItems: 'center', 
           justifyContent: 'center',
           borderBottom: '1px solid rgba(255,255,255,0.1)',
@@ -103,6 +104,11 @@ export default function MobileTelecomCMS() {
           <div style={{ color: '#fff', fontSize: '15px', fontWeight: 'bold', fontFamily: 'var(--font-rubik), sans-serif' }}>
             {activeProfileId ? (activeProfile?.name || 'Anonymous User') : 'Select User'}
           </div>
+          {activeProfileId && (
+            <div style={{ color: '#aaa', fontSize: '12px', marginTop: '2px', fontFamily: 'var(--font-rubik), sans-serif' }}>
+              {activeProfile?.phone || activeProfile?.email || 'No contact info'}
+            </div>
+          )}
         </div>
 
         {/* Main Content Area (Row) */}

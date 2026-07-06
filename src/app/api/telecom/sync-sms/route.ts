@@ -28,6 +28,7 @@ export async function GET() {
         id: profileId,
         name: `Virtual Number (${active_number})`,
         email: 'public-sms',
+        phone: active_number,
         lastActive: new Date().toISOString(),
         unread: false
       };

@@ -21,10 +21,10 @@ export async function GET() {
       activeNumber = data.active_number;
     }
 
-    // Try to scrape receive-smss.com
+    // Try to scrape anonymsms.com
     let availableNumbers = [];
     try {
-      const res = await fetch('https://receive-smss.com/', {
+      const res = await fetch('https://anonymsms.com/', {
         headers: {
           'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
         }
@@ -32,7 +32,7 @@ export async function GET() {
       const html = await res.text();
       
       if (!html.includes('Cloudflare') && !html.includes('Just a moment')) {
-        // Very basic regex to find US/UK numbers formatted with +
+        // Very basic regex to find numbers formatted with +
         const matches = html.match(/\+\d{1,3}[\s-]?\d{3}[\s-]?\d{3}[\s-]?\d{4}/g) || [];
         availableNumbers = [...new Set(matches)];
       }

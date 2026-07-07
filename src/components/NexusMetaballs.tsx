@@ -57,20 +57,24 @@ export default function NexusMetaballs({
     let pos6HomeX = 0.5, pos6HomeY = 0.6;
     let pos7HomeX = 0.4, pos7HomeY = 0.5;
 
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    const isLowPowerDevice = isMobile || navigator.hardwareConcurrency <= 4;
+
+    const maxEntities = isSafari || isLowPowerDevice ? 8 : 32;
+    const maxTravelers = isSafari || isLowPowerDevice ? 8 : 30;
+
     // Entity blob fade system — each slot has a target radius and a current radius.
     // The render loop lerps current toward target so blobs dissolve smoothly instead
     // of popping when a ship leaves the SYNC event (death / off-screen).
-    const ENTITY_SLOTS = 32;
+    const ENTITY_SLOTS = maxEntities;
     const entityTargetR  = new Array(ENTITY_SLOTS).fill(0);
     const entityCurrentR = new Array(ENTITY_SLOTS).fill(0);
     // Lerp factor per frame: 0.88 ≈ 20-frame dissolve at 60fps (~330ms)
     const ENTITY_FADE_K = 0.88;
 
     let lightingMode = (window as any).__nexusLightingMode || 'default';
-
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-    const isLowPowerDevice = isMobile || navigator.hardwareConcurrency <= 4;
+    
     // Force devicePixelRatio to 1 so that renderScale is the sole multiplier.
     // This allows renderScale = 2.0 to be native Retina (2x) instead of a crushed 4x.
     const devicePixelRatio = 1;
@@ -230,7 +234,7 @@ export default function NexusMetaballs({
           uCursorRadius: { value: settings.cursorRadiusMin },
           uSphereCount: { value: settings.sphereCount },
           // Arena entity blobs — populated each frame from SYNC_NEXUS_CURSOR
-          uEntities: { value: Array.from({ length: 32 }, () => new THREE.Vector3(0, 0, 0)) },
+          uEntities: { value: Array.from({ length: maxEntities }, () => new THREE.Vector3(0, 0, 0)) },
           uEntityCount: { value: 0 },
           uFixedTopLeftRadius: { value: settings.fixedTopLeftRadius },
           uFixedBottomRightRadius: { value: settings.fixedBottomRightRadius },
@@ -291,11 +295,11 @@ export default function NexusMetaballs({
           uSatelliteSize:       { value: 0.09 }, // blob radius of each satellite
           uSatelliteSpeed:      { value: 1.0  }, // orbit speed multiplier
           // Per-entity ship colors — RGB matching each ship's team color
-          uEntityColors: { value: Array.from({ length: 32 }, () => new THREE.Vector3(0.0, 0.53, 1.0)) },
+          uEntityColors: { value: Array.from({ length: maxEntities }, () => new THREE.Vector3(0.0, 0.53, 1.0)) },
           // Traversing asteroid metaballs (MID + BACK layers as WebGL travelers)
           uTravelerCount:  { value: 0 },
-          uTravelers:      { value: Array.from({ length: 30 }, () => new THREE.Vector3(0, 9999, 0)) },
-          uTravelerColors: { value: Array.from({ length: 30 }, () => new THREE.Vector3(0.15, 0.55, 1.0)) },
+          uTravelers:      { value: Array.from({ length: maxTravelers }, () => new THREE.Vector3(0, 9999, 0)) },
+          uTravelerColors: { value: Array.from({ length: maxTravelers }, () => new THREE.Vector3(0.15, 0.55, 1.0)) },
         },
         vertexShader: `
           varying vec2 vUv;
@@ -369,14 +373,14 @@ export default function NexusMetaballs({
           uniform float uHeroBacklightSpread;   // radius in px at y-resolution
           uniform float uSatelliteOrbitScale;
           // Arena entities: ships & missiles as live metaball blobs
-          uniform vec3 uEntities[32]; // (shaderX, shaderY, radius)
+          uniform vec3 uEntities[${maxEntities}]; // (shaderX, shaderY, radius)
           uniform int  uEntityCount;
           // Per-entity ship color (RGB, pre-parsed from hex on CPU side)
-          uniform vec3 uEntityColors[32];
+          uniform vec3 uEntityColors[${maxEntities}];
           // Traversing asteroid metaballs
           uniform int  uTravelerCount;
-          uniform vec3 uTravelers[30];       // (worldX, worldY, radius)
-          uniform vec3 uTravelerColors[30];
+          uniform vec3 uTravelers[${maxTravelers}];       // (worldX, worldY, radius)
+          uniform vec3 uTravelerColors[${maxTravelers}];
 
           varying vec2 vUv;
           const float PI    = 3.14159265359;
@@ -525,8 +529,8 @@ export default function NexusMetaballs({
             result = smin(result, heroD, 0.45);
 
             // Traversing asteroid metaballs (MID + BACK)
-            int tCount = min(uTravelerCount, 30);
-            for (int ti = 0; ti < 30; ti++) {
+            int tCount = min(uTravelerCount, ${maxTravelers});
+            for (int ti = 0; ti < ${maxTravelers}; ti++) {
               if (ti >= tCount) break;
               vec3 tv = pos - vec3(uTravelers[ti].xy, 0.0);
               float td = length(tv) - uTravelers[ti].z;
@@ -537,7 +541,7 @@ export default function NexusMetaballs({
             // Each missile blends with the background independently so they do not merge with each other
             float bg = result;
             float finalResult = bg;
-            for (int ei = 1; ei < 32; ei++) {
+            for (int ei = 1; ei < ${maxEntities}; ei++) {
               if (uEntities[ei].z > 0.0) {
                 vec3 ev = pos - uEntities[ei];
                 float ed = length(ev) - uEntities[ei].z;
@@ -630,8 +634,8 @@ export default function NexusMetaballs({
 
             // ── Ship / entity colored emission ────────────────────────────────
             vec3 entityEmit = vec3(0.0);
-            int eGlow = min(uEntityCount, 32);
-            for (int ei = 0; ei < 32; ei++) {
+            int eGlow = min(uEntityCount, ${maxEntities});
+            for (int ei = 0; ei < ${maxEntities}; ei++) {
               if (ei >= eGlow) break;
               float dEnt = length(p.xy - uEntities[ei].xy);
               float entR  = uEntities[ei].z;
@@ -642,8 +646,8 @@ export default function NexusMetaballs({
 
             // Traversing asteroid emission glow
             vec3 travelerEmit = vec3(0.0);
-            int tGlow = min(uTravelerCount, 30);
-            for (int ti = 0; ti < 30; ti++) {
+            int tGlow = min(uTravelerCount, ${maxTravelers});
+            for (int ti = 0; ti < ${maxTravelers}; ti++) {
               if (ti >= tGlow) break;
               float dT  = length(p.xy - uTravelers[ti].xy);
               float tR  = uTravelers[ti].z;
@@ -700,8 +704,8 @@ export default function NexusMetaballs({
             earlyField = min(earlyField, length(ep - uHeroOrb) - uHeroOrbRadius * 3.5);
 
             // Entities (ship & missiles) bounding check
-            int eBound = min(uEntityCount, 32);
-            for (int ei = 0; ei < 32; ei++) {
+            int eBound = min(uEntityCount, ${maxEntities});
+            for (int ei = 0; ei < ${maxEntities}; ei++) {
               if (ei >= eBound) break;
               if (uEntities[ei].z > 0.01) {
                 earlyField = min(earlyField, length(ep.xy - uEntities[ei].xy) - uEntities[ei].z * 3.0);
@@ -709,8 +713,8 @@ export default function NexusMetaballs({
             }
             
             // Travelers bounding check
-            int tBound = min(uTravelerCount, 30);
-            for (int ti = 0; ti < 30; ti++) {
+            int tBound = min(uTravelerCount, ${maxTravelers});
+            for (int ti = 0; ti < ${maxTravelers}; ti++) {
               if (ti >= tBound) break;
               if (uTravelers[ti].z > 0.01) {
                 earlyField = min(earlyField, length(ep.xy - uTravelers[ti].xy) - uTravelers[ti].z * 3.0);
@@ -988,13 +992,13 @@ export default function NexusMetaballs({
         
         // Any slot that didn't receive an update this frame will have its target radius set to 0.
         // The WebGL loop will smoothly shrink it at its EXACT last known position without teleporting.
-        for (let slot = 1; slot <= 31; slot++) {
+        for (let slot = 1; slot < ENTITY_SLOTS; slot++) {
           if (!activeMissileSlots.has(slot)) {
             entityTargetR[slot] = 0;
           }
         }
 
-        material.uniforms.uEntityCount.value = 32;
+        material.uniforms.uEntityCount.value = ENTITY_SLOTS;
       };
       window.addEventListener('SYNC_NEXUS_CURSOR', onSyncCursor, { passive: true });
       (window as any).__nexusSyncCursorHandler = onSyncCursor;

@@ -3,8 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import MobileChatUI from '@/components/telecom/MobileChatUI';
 import LiveKitVideoEngine from '@/components/network-engine/assets/livekit_video_engine';
-import SmsScraperControl from '@/components/telecom/SmsScraperControl';
-import VipInviteControl from '@/components/telecom/VipInviteControl';
+
 import AppleSpinner from '@/components/library/AppleSpinner';
 
 export default function MobileTelecomCMS() {
@@ -137,20 +136,7 @@ export default function MobileTelecomCMS() {
             .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
           `}</style>
           
-          <SmsScraperControl 
-            onSmsCreated={(profileId) => {
-              setActiveProfileId(profileId);
-              fetchData();
-            }} 
-          />
-          
-          <VipInviteControl 
-            onVipCreated={(profileId) => {
-              setActiveProfileId(profileId);
-              fetchData();
-            }} 
-          />
-          
+
           {sortedProfiles.map((p: any) => {
             const isSelected = p.id === activeProfileId;
             const profileMessages = messages.filter((m: any) => m.profileId === p.id);

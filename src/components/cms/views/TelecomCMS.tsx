@@ -3,8 +3,7 @@ import ArchitectureCMS from "./ArchitectureCMS";
 import TriangleCMS from "./TriangleCMS";
 import SquareCMS from "./SquareCMS";
 import MobileChatUI from '@/components/telecom/MobileChatUI';
-import SmsScraperControl from '@/components/telecom/SmsScraperControl';
-import VipInviteControl from '@/components/telecom/VipInviteControl';
+
 import AppleSpinner from '@/components/library/AppleSpinner';
 
 export default function TelecomCMS() {
@@ -354,18 +353,7 @@ export default function TelecomCMS() {
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px', borderBottom: '1px solid #333' }}>
                 <h2 style={{ margin: 0, fontSize: '18px' }}>Inbox</h2>
                   <div style={{ display: 'flex', gap: '10px' }}>
-                    <SmsScraperControl 
-                      onSmsCreated={(profileId) => {
-                        setActiveProfileId(profileId);
-                        fetchData();
-                      }} 
-                    />
-                    <VipInviteControl 
-                      onVipCreated={(profileId) => {
-                        setActiveProfileId(profileId);
-                        fetchData();
-                      }} 
-                    />
+                    {/* Controls Removed */}
                   </div>
               </div>
               {profiles.map((profile: any) => {

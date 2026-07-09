@@ -43,7 +43,7 @@ export default function NexusMetaballs({
     let heroTargetY = 0;
     // Canvas ref for CSS blur (set in init)
     let canvasEl: HTMLCanvasElement | null = null;
-    let canvasBlur = 0; // px — smooths half-res upscale edges
+    let canvasBlur = 1.5; // px — smooths half-res upscale edges
     // Autonomous floating sphere
     let floatSpherePos = new THREE.Vector3(0, 0, 0);
     // Stable home positions for animated blobs — updated only on randomize, never during render loop
@@ -75,11 +75,10 @@ export default function NexusMetaballs({
 
     let lightingMode = (window as any).__nexusLightingMode || 'default';
     
-    // Force devicePixelRatio to 1 so that renderScale is the sole multiplier.
-    // This allows renderScale = 2.0 to be native Retina (2x) instead of a crushed 4x.
-    const devicePixelRatio = 1;
-    // Render scale — user adjustable via preferences (0.25–4.0)
-    let renderScale = 1.0;
+    const devicePixelRatio = Math.min(window.devicePixelRatio || 1, isMobile ? 1.5 : 2);
+    // Render scale — user adjustable via preferences (0.25–1.0)
+    // Half-res rendering is critical for Safari — full-res kills the GPU context
+    let renderScale = isMobile ? 0.5 : 0.55;
 
     const presets = {
       moody: { sphereCount: isMobile ? 4 : 6, ambientIntensity: 0.02, diffuseIntensity: 0.6, specularIntensity: 1.8, specularPower: 8, fresnelPower: 1.2, backgroundColor: new THREE.Color(0x050505), sphereColor: new THREE.Color(0x000000), lightColor: new THREE.Color(0xffffff), lightPosition: new THREE.Vector3(1, 1, 1), smoothness: 0.3, contrast: 2.0, fogDensity: 0.12, cursorGlowIntensity: 0.4, cursorGlowRadius: 1.2, cursorGlowColor: new THREE.Color(0xffffff) },
@@ -177,7 +176,7 @@ export default function NexusMetaballs({
         renderer = new THREE.WebGLRenderer({
           antialias: false,
           alpha: true,
-          powerPreference: "default",
+          powerPreference: "high-performance",
           preserveDrawingBuffer: false,
           premultipliedAlpha: false
         });
@@ -190,9 +189,8 @@ export default function NexusMetaballs({
         console.error = originalConsoleError;
       }
 
-      // Render at device pixel ratio, strictly capped at 1.5 for performance
-      // since the raymarching shader is incredibly heavy on Retina displays (2.0 dpr).
-      renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
+      // Always render at pixel ratio 1 — half-res renderScale handles perceived quality
+      renderer.setPixelRatio(1);
 
       // Use container's actual bounding rect so the orb is always round
       // regardless of whether the container fills the full window or not.

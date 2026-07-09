@@ -49,7 +49,9 @@ function GlobalBackgroundInner() {
   }
 
   return (
-    <div className="fixed inset-0 z-[-1] pointer-events-auto">
+    <div className="fixed inset-0 z-[-1] pointer-events-auto" style={{
+      background: 'radial-gradient(ellipse at 50% 50%, #2d1b4e 0%, #1a0e2e 40%, #0d0618 100%)',
+    }}>
       <NexusMetaballs showFullscreenBtn={isBuildTab} />
     </div>
   );

@@ -313,20 +313,15 @@ export default function HomeCMS() {
         position: 'relative',
         zIndex: 10,
       }}>
-        <div style={{ textAlign: 'center', marginBottom: '80px', transform: 'translateY(-25px)' }}>
-          <h2 style={{ fontWeight: 700, fontSize: '72px', margin: '0 0 16px 0', letterSpacing: '-0.03em', lineHeight: 1, color: '#fff' }}>Co-Development</h2>
-          <p style={{ fontWeight: 500, fontSize: '24px', margin: 0, color: 'rgba(255, 255, 255, 0.8)', letterSpacing: '-0.01em' }}>Generative UI + MCP = Autonomous Game Integration</p>
-        </div>
-        
         <FocusParagraph isFocusedMode={isFocusedMode} style={{ marginBottom: '40px' }}>
-          <p style={{ fontSize: '30px', fontWeight: 500, color: '#fff', margin: 0, lineHeight: 1.5, letterSpacing: '-0.015em' }}>We architect front-end UI/UX for seamless Unity and Unreal integration via AI and secure MCP protocols.</p>
+          <p style={{ fontSize: '30px', fontWeight: 500, color: '#fff', margin: 0, lineHeight: 1.5, letterSpacing: '-0.015em' }}>Game development is a team sport played in two completely different languages.</p>
         </FocusParagraph>
         <FocusParagraph isFocusedMode={isFocusedMode} style={{ marginBottom: '40px' }}>
-          <p style={{ fontSize: '30px', fontWeight: 500, color: '#fff', margin: 0, lineHeight: 1.5, letterSpacing: '-0.015em' }}>Connected via MCP to any AI dev tool, our designs compile 1:1 in your native engine environment.</p>
+          <p style={{ fontSize: '30px', fontWeight: 500, color: '#fff', margin: 0, lineHeight: 1.5, letterSpacing: '-0.015em' }}>Designers speak in motion, feel, and visual hierarchy. Engineers speak in C++, memory layouts, and frame budgets.</p>
         </FocusParagraph>
         <FocusParagraph isFocusedMode={isFocusedMode} style={{ marginBottom: '40px' }}>
           <p style={{ fontSize: '30px', fontWeight: 500, color: '#fff', margin: 0, lineHeight: 1.5, letterSpacing: '-0.015em' }}>
-            We build high-density WebGL features and deploy them directly into Unreal or Unity via an automated, air-gapped JSON pipeline. Zero vendor lock-in. Zero VPN friction.
+            And Technical Directors? TDs are stuck sitting right in the crossfire—trying to build a bridge between creative vision and engine reality without the whole build breaking down.
           </p>
         </FocusParagraph>
 
@@ -372,36 +367,21 @@ export default function HomeCMS() {
         </div>
 
         <FocusParagraph isFocusedMode={isFocusedMode} style={{ marginBottom: '40px' }}>
-          <h3 style={{ fontSize: '40px', fontWeight: 600, color: '#fff', margin: '0 0 16px 0', letterSpacing: '-0.02em' }}>
-            How Our Pipeline Works
-          </h3>
           <p style={{ fontSize: '28px', fontWeight: 400, color: 'rgba(255, 255, 255, 0.85)', margin: 0, lineHeight: 1.6 }}>
-            Our Universal Component Protocol (UGCS) decouples creative logic from engine-specific C++. How features move from sandbox to game:
+            We don’t think TDs should have to choose between a beautiful game and a stable engine.
           </p>
         </FocusParagraph>
         
         <FocusParagraph isFocusedMode={isFocusedMode} style={{ marginBottom: '40px' }}>
-          <h3 style={{ fontSize: '40px', fontWeight: 600, color: '#fff', margin: '0 0 16px 0', letterSpacing: '-0.02em' }}>1. The R&D Forge <span style={{ opacity: 0.5, fontWeight: 400 }}>(WebGL & React)</span></h3>
-          <p style={{ fontSize: '28px', fontWeight: 400, color: 'rgba(255, 255, 255, 0.85)', margin: 0, lineHeight: 1.6 }}>We prototype complex UI/UX systems right here on this platform, in a standalone WebGL environment. You review it running in real-time.</p>
-        </FocusParagraph>
-        
-        <FocusParagraph isFocusedMode={isFocusedMode} style={{ marginBottom: '40px' }}>
-          <h3 style={{ fontSize: '40px', fontWeight: 600, color: '#fff', margin: '0 0 16px 0', letterSpacing: '-0.02em' }}>2. The Universal Manifest <span style={{ opacity: 0.5, fontWeight: 400 }}>(JSON)</span></h3>
-          <p style={{ fontSize: '28px', fontWeight: 400, color: 'rgba(255, 255, 255, 0.85)', margin: 0, lineHeight: 1.6 }}>Upon approval, our framework compiles the feature into a strict <strong style={{ color: '#fff', fontWeight: 600 }}>Asset Key<sup style={{ position: 'relative', top: '-0.5em', transform: 'translateY(-5px)', display: 'inline-block', fontSize: '0.4em', marginLeft: '4px', color: '#03FFC0' }}>●</sup></strong> payload containing topology, animation curves, and state-binding logic.</p>
-        </FocusParagraph>
-        
-        <FocusParagraph isFocusedMode={isFocusedMode} style={{ marginBottom: '40px' }}>
-          <h3 style={{ fontSize: '40px', fontWeight: 600, color: '#fff', margin: '0 0 16px 0', letterSpacing: '-0.02em' }}>3. The Air-Gapped Handoff <span style={{ opacity: 0.5, fontWeight: 400 }}>(MCP)</span></h3>
-          <p style={{ fontSize: '28px', fontWeight: 400, color: 'rgba(255, 255, 255, 0.85)', margin: 0, lineHeight: 1.6 }}>No VPN required. We use MCP as a secure courier, dropping the JSON payload at a DMZ endpoint. Your internal client ingests the data—neutralizing Arbitrary Code Execution (ACE) risks.</p>
-        </FocusParagraph>
-        
-        <FocusParagraph isFocusedMode={isFocusedMode} style={{ marginBottom: '40px' }}>
-          <h3 style={{ fontSize: '40px', fontWeight: 600, color: '#fff', margin: '0 0 16px 0', letterSpacing: '-0.02em' }}>4. Native Engine Assembly <span style={{ opacity: 0.5, fontWeight: 400 }}>(Python)</span></h3>
-          <p style={{ fontSize: '28px', fontWeight: 400, color: 'rgba(255, 255, 255, 0.85)', margin: 0, lineHeight: 1.6 }}>Our custom Python scripts read the JSON payload to automatically spawn native UMG widgets, attach materials, and bind logic directly in your editor.</p>
+          <p style={{ fontSize: '28px', fontWeight: 400, color: 'rgba(255, 255, 255, 0.85)', margin: 0, lineHeight: 1.6 }}>
+            We build UI/UX tools and pipelines specifically designed for Technical Directors. Tools that give artists and UI designers a web-native sandbox where they can design, tweak, and test in real time—while automatically outputting clean, zero-bloat, native code that plugs directly into Unreal and Unity.
+          </p>
         </FocusParagraph>
         
         <FocusParagraph isFocusedMode={isFocusedMode} style={{ marginBottom: '60px' }}>
-          <p style={{ fontSize: '32px', fontWeight: 600, color: '#fff', margin: 0, letterSpacing: '-0.015em' }}>We build the pipeline. Your team owns the output.</p>
+          <p style={{ fontSize: '28px', fontWeight: 400, color: 'rgba(255, 255, 255, 0.85)', margin: 0, lineHeight: 1.6 }}>
+            No embedded browser headaches. No mysterious black-box SDKs. Just human tools built for the people who actually run the studio.
+          </p>
         </FocusParagraph>
 
         <p style={{ fontStyle: 'italic', marginTop: '100px', fontSize: '28px', opacity: 0.6, textAlign: 'center', letterSpacing: '0.02em' }}>"May our bond resonate the sacred geometry that binds us all"<br/><span style={{ display: 'inline-block', marginTop: '10px', fontStyle: 'normal', fontWeight: 500 }}>OpticalIllusions</span></p>

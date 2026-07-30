@@ -43,7 +43,7 @@ export default function NexusMetaballs({
     let heroTargetY = 0;
     // Canvas ref for CSS blur (set in init)
     let canvasEl: HTMLCanvasElement | null = null;
-    let canvasBlur = 1.5; // px — smooths half-res upscale edges
+    let canvasBlur = 0.0; // px — smooths half-res upscale edges
     // Autonomous floating sphere
     let floatSpherePos = new THREE.Vector3(0, 0, 0);
     // Stable home positions for animated blobs — updated only on randomize, never during render loop
@@ -77,8 +77,7 @@ export default function NexusMetaballs({
     
     const devicePixelRatio = Math.min(window.devicePixelRatio || 1, isMobile ? 1.5 : 2);
     // Render scale — user adjustable via preferences (0.25–1.0)
-    // Half-res rendering is critical for Safari — full-res kills the GPU context
-    let renderScale = isMobile ? 0.5 : 0.55;
+    let renderScale = 1.0;
 
     const presets = {
       moody: { sphereCount: isMobile ? 4 : 6, ambientIntensity: 0.02, diffuseIntensity: 0.6, specularIntensity: 1.8, specularPower: 8, fresnelPower: 1.2, backgroundColor: new THREE.Color(0x050505), sphereColor: new THREE.Color(0x000000), lightColor: new THREE.Color(0xffffff), lightPosition: new THREE.Vector3(1, 1, 1), smoothness: 0.3, contrast: 2.0, fogDensity: 0.12, cursorGlowIntensity: 0.4, cursorGlowRadius: 1.2, cursorGlowColor: new THREE.Color(0xffffff) },
@@ -189,8 +188,8 @@ export default function NexusMetaballs({
         console.error = originalConsoleError;
       }
 
-      // Always render at pixel ratio 1 — half-res renderScale handles perceived quality
-      renderer.setPixelRatio(1);
+      // Set pixel ratio to devicePixelRatio consistently
+      renderer.setPixelRatio(devicePixelRatio);
 
       // Use container's actual bounding rect so the orb is always round
       // regardless of whether the container fills the full window or not.
@@ -1471,16 +1470,18 @@ export default function NexusMetaballs({
 
           // ── Hero orb — driven by the ship's coordinates ──────
           // Smoothly lerp to pilot's target, but snap instantly if the physics wrapped across the screen!
-          if (Math.abs(heroTargetX - material.uniforms.uHeroOrb.value.x) > 1.0) {
-             material.uniforms.uHeroOrb.value.x = heroTargetX;
+          const targetX = heroOrbOnly ? 0.0 : heroTargetX;
+          const targetY = heroOrbOnly ? 0.0 : heroTargetY;
+          if (Math.abs(targetX - material.uniforms.uHeroOrb.value.x) > 1.0) {
+             material.uniforms.uHeroOrb.value.x = targetX;
           } else {
-             material.uniforms.uHeroOrb.value.x += (heroTargetX - material.uniforms.uHeroOrb.value.x) * 0.04;
+             material.uniforms.uHeroOrb.value.x += (targetX - material.uniforms.uHeroOrb.value.x) * 0.04;
           }
           
-          if (Math.abs(heroTargetY - material.uniforms.uHeroOrb.value.y) > 1.0) {
-             material.uniforms.uHeroOrb.value.y = heroTargetY;
+          if (Math.abs(targetY - material.uniforms.uHeroOrb.value.y) > 1.0) {
+             material.uniforms.uHeroOrb.value.y = targetY;
           } else {
-             material.uniforms.uHeroOrb.value.y += (heroTargetY - material.uniforms.uHeroOrb.value.y) * 0.04;
+             material.uniforms.uHeroOrb.value.y += (targetY - material.uniforms.uHeroOrb.value.y) * 0.04;
           }
           material.uniforms.uHeroOrb.value.z += (0 - material.uniforms.uHeroOrb.value.z) * 0.04;
 

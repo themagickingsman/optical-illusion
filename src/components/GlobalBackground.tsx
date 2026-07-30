@@ -41,7 +41,7 @@ function GlobalBackgroundInner() {
   // The user explicitly requested to REMOVE metaballs from the following backend CMS pages:
   // Variables, Telecom, Mobile Site, Master Control.
   // The public pages (Build, About Me, Games, etc.) SHOULD have the metaballs.
-  const noMetaballTabs = ['variables', 'telecom', 'mobile-site', 'master-control'];
+  const noMetaballTabs = ['variables', 'telecom', 'mobile-site', 'master-control', 'metaballs'];
   const tab = currentTab || 'build'; // Default to build
 
   if (noMetaballTabs.includes(tab)) {

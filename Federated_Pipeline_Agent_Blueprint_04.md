@@ -14,9 +14,7 @@
 - **How it stays safe:** Every submission is a separate component checked against a strict schema. Invalid work is rejected with a specific error before it can reach the build.
 - **How AI fits:** AI agents submit through the same door, under the same rules as people. Because component rules are strict, agents reach correctly formatted output in far fewer attempts. In our own builds: roughly **1–2 prompts instead of ~20** (informal measurement from production use).
 - **Who it's for:** Small and mid-size studios, remote and outsourced teams, and any team adopting AI agents in production. Start with one discipline and one node. Add more as you grow.
-- **Live examples:** Three completely different games, all built from the same CMS and the same component library, with the components used differently in each:
-  - [Optical Illusions](https://optical-illusion-eight.vercel.app/)
-  - [Cosmic Racers](https://cosmic-racers-website.vercel.app/)
+- **Live example:** [Optical Illusions](https://optical-illusion-eight.vercel.app/), built from the same CMS and component library described in this document.
 - **Runtime targets built end-to-end:** Web, Unity, Unreal, and Godot. Artists and designers never open the editor, and one Python script written once serves the whole team ([§1.1](#11-engine-side-setup-once)).
 - **The component library is a platform:** Every component, from a widget to a full feature to a full-screen flow, has an asset key. Give the key to an AI agent and it finds the component and implements it.
 
@@ -26,7 +24,7 @@
 
 Most studios build inside the engine. UI designers wait on engineers to import and wire things up, engineers wait on builds, and every change passes through a tool that wasn't made for either of them.
 
-AI is moving into the game toolchain. Unity ships an in-editor assistant, an MCP server, and an AI gateway; Epic has announced AI model integration for Unreal Engine 6 (Early Access targeted for late 2027). That makes the engine the place where more work happens, and where AI-generated work can land unchecked.
+AI is moving into the game toolchain. Unity ships an in-editor AI assistant and an AI gateway, and supports external AI agents driving the editor over MCP; Epic has announced AI model integration for Unreal Engine 6, including MCP support (Early Access targeted for late 2027). That makes the engine the place where more work happens, and where AI-generated work can land unchecked.
 
 This pipeline takes the opposite position: **work happens in the tools people already use, and the engine is where validated, formatted output gets compiled.**
 
@@ -89,7 +87,7 @@ Every asset in the pipeline is a separate, self-contained component with a stric
 - **A component library per discipline:** Artists and agents assemble from it instead of starting from scratch.
 - **Strict rules, enforced by schema:** There is exactly one valid shape for each component type.
 - **Why this works with AI:** When the valid output is narrow and checked, an agent can tell from the rejection message exactly what to fix. In our builds, agents that took ~20 prompts to produce correctly formatted output now take roughly 1–2.
-- **Reuse across games:** The same library produces completely different games by using the same components differently. Three live games are built this way. Asking an agent for *"a solar system"* or *"a ship"* returns library components that already conform.
+- **Reuse across games:** The same library produces different games by using the same components differently. Asking an agent for *"a solar system"* or *"a ship"* returns library components that already conform.
 - **Components at any scale:** A component can be a widget, a full feature, or a full-screen flow, including its animation (Three.js or any other).
 - **The library is a platform:** Each component has an asset key. Hand the key to an AI agent and it finds the component, reads its schema, and implements it. Anyone with access to the library can grab a component the same way. Every component you build is reusable across games and teams.
 
@@ -195,7 +193,7 @@ Federation is the growth path, not the entry point.
 - **Is there a starter component library?**  
   Not yet. You build your first components from scratch. Each component is reusable by asset key across games and teams, so the library compounds as you build.
 - **Is it in use?**  
-  Yes. Three live games are built from one CMS and one component library (see Evidence).
+  Yes. See the live example in Key Facts and the Evidence section.
 - **What's established practice and what's novel?**  
   The underlying mechanisms (schema validation, optimistic concurrency, atomic writes, circuit breakers, pull request review gates) are standard software engineering patterns. The product is their assembly into a coherent workflow where creative disciplines remain decoupled from game engines.
 - **What are the limits?**  
@@ -205,9 +203,7 @@ Federation is the growth path, not the entry point.
 
 ## 8. Evidence
 
-- **Three live games** built from one CMS and one universal component library, each using the components differently:
-  - Web & Canvas/WebGL: [Optical Illusions](https://optical-illusion-eight.vercel.app/)
-  - Complex Flight & Orbital Mechanics: [Cosmic Racers](https://cosmic-racers-website.vercel.app/)
+- **Live example:** [Optical Illusions](https://optical-illusion-eight.vercel.app/), built from one CMS and one universal component library.
 - **Observed in production use:** An AI agent asked for *"the solar system"* or *"a ship"* returns library components whose core schema is consistent across games.
 - **Observed in production use:** ~20 prompts required to reach a correctly formatted output without strict component rules; reduced to **~1–2 prompts** with strict schema enforcement.
 

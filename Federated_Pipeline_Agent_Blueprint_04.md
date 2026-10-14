@@ -1,4 +1,5 @@
 # Federated Creative Pipeline — Workflow & Architecture
+
 **Artists and developers work anywhere, in their own tools, and submit to the build without opening Unreal or Unity.**
 
 *Blueprint 05 · Part 1: The Workflow · Part 2: The Architecture*  
@@ -33,6 +34,7 @@ This pipeline takes the opposite position: **work happens in the tools people al
 ### Where this is heading (our prediction)
 
 Dedicated hardware won't carry the next billion players. Xbox is extending cloud gaming to more TVs while console prices rise, Epic is merging its engine and Fortnite editors into one platform, and Roblox already serves over 120 million people a day on whatever device they own. As delivery moves toward browsers, TVs and phones, studios will ship to more targets, more often. A pipeline that keeps authoring out of any single engine is built for that.
+
 ---
 
 # Part 1 — The Workflow

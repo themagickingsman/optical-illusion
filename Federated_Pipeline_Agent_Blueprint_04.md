@@ -15,7 +15,6 @@
 - **Who it's for:** Small and mid-size studios, remote and outsourced teams, and any team adopting AI agents in production. Start with one discipline and one node. Add more as you grow.
 - **Live examples:** Three completely different games, all built from the same CMS and the same component library, with the components used differently in each:
   - [Optical Illusions](https://optical-illusion-eight.vercel.app/)
-  - [Cosmic Racers](https://cosmic-racers-website.vercel.app/)
 - **Runtime targets built end-to-end:** Web, Unity, Unreal, and Godot. Artists and designers never open the editor, and one Python script written once serves the whole team ([§1.1](#11-engine-side-setup-once)).
 - **The component library is a platform:** Every component, from a widget to a full feature to a full-screen flow, has an asset key. Give the key to an AI agent and it finds the component and implements it.
 

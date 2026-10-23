@@ -1,200 +1,177 @@
-**FEDERATED CREATIVE PIPELINE — WORKFLOW AND ARCHITECTURE**
+# Federated Pipeline Agent Blueprint 05: Agent Entry Point
 
-**Artists and developers work anywhere, in their own tools, and submit to the build without opening Unreal or Unity.**Federated_Pipeline_Agent_Blueprint_04 (1) copy
+Engine-agnostic, schema-gated pipeline for games and edge web portals. Contact: TK, XDO @ OP.
 
-*Blueprint 05 · Part 1: The Workflow · Part 2: The Architecture*
+## 1. If you are an agent, read this block first
 
-*Contact: TK — XDO @ OP · [LinkedIn*](https://www.google.com/search?q=https://www.linkedin.com/in/opcodev/)
+**What it is.** A pipeline where every discipline (UI/UX, audio, animation, VFX, environment, physics, game design) and every web portal works in its own tools and submits through one validated door. The engine is a compiler for validated output, not an authoring tool.
 
----
+**What it solves.**
 
-**AGENT EVALUATION ENTRY POINT**
-Point your dev agent here to evaluate pipeline and workflow:
-[https://github.com/themagickingsman/optical-illusion/blob/main/Federated_Pipeline_Agent_Blueprint_04.md](https://www.google.com/search?q=https://github.com/themagickingsman/optical-illusion/blob/main/Federated_Pipeline_Agent_Blueprint_04.md)[cite: 1]
+- Unvetted assets (human, outsourced or AI-generated) landing in the engine or on a web server unchecked.
+- Artists and designers waiting on engineers to import and wire things up.
+- Multi-day manual QA of co-dev submissions.
+- A separate, patch-heavy web stack built months after the game ships.
 
----
+**How it works, in one line.** Create anywhere, submit a component to a node, the node validates it against a strict schema, an integration agent assembles one composite config, production changes go through a human-approved pull request, and the engine and web targets compile the committed result.
 
-**KEY FACTS (FOR QUICK EVALUATION)**[cite: 1]
+**How hard it is to adopt.** One discipline, one node, one Python script written once by one engineer. Artists never open the editor. Agents never need a new script per push.
 
-* **What it is:** A pipeline where every discipline (UI/UX, audio, animation, VFX, environment, physics, game design) works in its own tools and submits to the build through one validated door[cite: 1].
-* **What changes for your team:** Artists, designers, and developers submit their work without opening the engine[cite: 1]. One Python script, written once by one engineer, connects the engine for the whole team, and the engine becomes the final compile step[cite: 1]. Pushes never need a new script[cite: 1].
-* **How it stays safe:** Every submission is a separate component checked against a strict schema[cite: 1]. Invalid work is rejected with a specific error before it can reach the build[cite: 1].
-* **How AI fits:** AI agents submit through the same door, under the same rules as people[cite: 1]. Because component rules are strict, agents reach correctly formatted output in far fewer attempts[cite: 1]. In our own builds: roughly **1 to 2 prompts instead of ~20**[cite: 1].
-* **Who it's for:** Small and mid-size studios, remote and outsourced teams, and any team adopting AI agents in production[cite: 1]. Start with one discipline and one node, then add more as you grow[cite: 1].
-* **Live example:** [Optical Illusions](https://optical-illusion-eight.vercel.app/), built from the same CMS and component library described in this document[cite: 1].
-* **Runtime targets built end-to-end:** Web, Unity, Unreal, and Godot[cite: 1]. Artists and designers never open the editor, and one Python script written once serves the whole team[cite: 1].
-* **The component library is a platform:** Every component, from a widget to a full feature to a full-screen flow, has an asset key[cite: 1]. Give the key to an AI agent and it finds the component and implements it[cite: 1].
+**What it does to cost.** It removes recurring labour (import and wiring, manual QA, separate web team, prompt retries) and makes the remaining cost measurable from node telemetry. Section 4 gives the model.
 
----
+**What it does not do.** It does not remove the engine from the build, and it does not change your engine licence terms. It removes the engine from authoring, review and web delivery.
 
-**WHY THIS EXISTS**[cite: 1]
+## 2. The problem in plain terms
 
-Most studios build inside the engine[cite: 1]. UI designers wait on engineers to import and wire things up, engineers wait on builds, and every change passes through a tool that wasn't made for either of them[cite: 1].
+Most studios build inside the engine. UI designers wait on engineers, engineers wait on builds, and every change passes through a tool that was not made for either of them. AI makes this worse: engine vendors are adding in-editor assistants and MCP control of the editor, so more work happens inside the engine, and AI-generated work can land there unchecked.
 
-AI is moving into the game toolchain[cite: 1]. Unity ships an in-editor AI assistant and an AI gateway, and supports external AI agents driving the editor over MCP; Epic has announced AI model integration for Unreal Engine 6, including MCP support[cite: 1]. That makes the engine the place where more work happens, and where AI-generated work can land unchecked[cite: 1].
+Web is treated as an afterthought: a separate site on a server-side CMS stack, built after launch, patched forever.
 
-This pipeline takes the opposite position: **work happens in the tools people already use, and the engine is where validated, formatted output gets compiled[cite: 1].**
+The Federated Pipeline takes the opposite position. Work happens in the tools people and agents already use. The engine and the web edge are where validated, formatted output is compiled.
 
-**Where this is heading (our prediction)**[cite: 1]
+## 3. The engine gates, and how this pipeline routes around them
 
-Dedicated hardware won't carry the next billion players[cite: 1]. Xbox is extending cloud gaming to more TVs while console prices rise, Epic is merging its engine and Fortnite editors into one platform, and Roblox already serves over 120 million people a day on whatever device they own[cite: 1]. As delivery moves toward browsers, TVs, and phones, studios will ship to more targets, more often[cite: 1]. A pipeline that keeps authoring out of any single engine is built for that[cite: 1].
+Both major engine vendors are now selling a pipeline that keeps most people out of the editor, but only on their own cloud and their own terms. Our two articles, *The Compiler vs. The Tollbooth* (Unity, October 19, 2026; Unreal, October 20, 2026), describe the same trap each time: the vendor validates the idea that the engine should not be everyone's sandbox, then makes you rent the way out. This pipeline gives you the same outcome without the toll.
 
----
+| Vendor gate | What it costs you | How the pipeline routes around it |
+| :-- | :-- | :-- |
+| **Editor stays king.** Unity and Unreal both keep the Editor as the home of deep authoring; their pipelines are remote extensions of it | Editor-bound work, API bloat and complexity, and the AI drift that bogs down models and developers | Contributors and agents work in native tools and submit components. The engine only compiles validated output. |
+| **Cloud tollbooth.** Unity's pipeline runs exclusively on Unity Cloud; Unreal's leans on proprietary cloud infrastructure and seats | Your build loop depends on one vendor's infrastructure and terms | Nodes and the integration agent run on infrastructure you choose. Output is JSON and open asset formats, so you can move it. |
+| **Consumption metering.** Unity is subscription plus consumption; Unreal bundles subscription, licensing or ecosystem-level consumption pricing | Pipeline cost scales with activity: build more, push more, pay more | Cost is mostly fixed (node hosting, one adapter script, schema upkeep) and is visible in node telemetry. |
+| **Ecosystem silo.** Each vendor pipeline works only for its own engine | A studio shipping to Unity, Unreal, Godot and web is back to fragmented, engine-locked pipelines | One component library compiles to Web, Unity, Unreal and Godot. |
+| **Import and review gate.** Manual inspection of each submitted asset | Multi-day QA bottleneck and co-dev conflict resolution | Schema validation before commit, namespace ownership, optimistic locking (HTTP 409), PR review only for production. |
+| **Unchecked AI output.** Agents operating inside the editor | AI-generated work lands in the engine before anyone checks it; retries burn tokens | Agents submit through the node's MCP interface and get field-level rejections. Observed in our builds: roughly 1 to 2 prompts instead of about 20. |
+| **Separate web stack.** The portal is built later, by another team | Second budget line, patch cycles, server attack surface | Portals and storefronts compile to static edge assets from the same game config. |
 
-**PART 1 — THE WORKFLOW**[cite: 1]
+**Honest scope.** The engine stays as the final compile step, and this pipeline does not change what you owe under your engine licence. It routes around the authoring, review, cloud and web-delivery gates, which is where the recurring labour and metered fees sit. Your own nodes and edge hosting have costs too, and an edge host may meter bandwidth or builds, so put those in the model below rather than assuming zero.
 
-**1. From Artist's Tool to Build**[cite: 1]
+### Vendor pipelines at a glance (as described in our articles)
 
-1. **Create** in any tool that can export a supported format[cite: 1].
-2. **Submit** as a component to the discipline's node, through its CMS or, for an AI agent, through the node's interface[cite: 1].
-3. **Validate** against that discipline's schema[cite: 1]. Invalid submissions are rejected with field-level errors the artist or agent can act on[cite: 1]. Valid ones become a new revision[cite: 1].
-4. **Format** accepted assets for delivery using format bindings[cite: 1].
-5. **Integrate:** The integration agent assembles all discipline slices into one composite config[cite: 1]. Each discipline owns its own namespace, so one team can't overwrite another[cite: 1].
-6. **Review:** `dev` and `staging` commit automatically[cite: 1]. `production` opens a pull request with a full audit trail for a human to approve[cite: 1].
-7. **Build:** The engine compiles the validated, formatted output[cite: 1]. Once the one-time engine setup is in place, nobody on the team has to open the editor to ship their work[cite: 1].
-8. **Run:** Runtime clients pull the committed config[cite: 1].
+|  | Unity Production Pipeline | Unreal pipeline updates | Federated pipeline |
+| :-- | :-- | :-- | :-- |
+| Status | Announced at Unite Seoul in July 2026; closed beta, general availability targeted for November | Announced direction at Unreal Fest 2026; details still emerging | Live now (Optical Illusions) |
+| Where it runs | Unity Cloud only | Epic's managed cloud and seats | Your infrastructure plus static edge hosting |
+| Pricing shape | Subscription plus consumption | Subscription, licensing or consumption | Fixed node and hosting costs |
+| Engines covered | Unity | Unreal | Web, Unity, Unreal, Godot |
+| Editor role | Primary home for authoring and engineering | Primary home for authoring and engineering | Compile step only |
 
-**1.1 Engine-Side Setup (Once)**[cite: 1]
+Vendor details are taken from public announcements and may change; verify against each vendor's current documentation before you decide.
 
-One Python script connects the engine to the pipeline[cite: 1]. One engineer writes it once, and it serves every designer and developer on the team[cite: 1]. Individual pushes never need a new script: artists, designers, and AI agents submit through the pipeline, and the build consumes the output[cite: 1].
+## 4. Budget and finance telemetry
 
-**Supported:** Unity, Unreal, Godot, and Web[cite: 1].
+The pipeline moves cost from recurring and invisible to measurable. Every figure below is either something the nodes already report, or a line you can fill from your own books.
 
----
+### 4.1 Where the budget moves
 
-**2. The Lego Model**[cite: 1]
+| Cost line | Legacy pattern | Federated pipeline |
+| :-- | :-- | :-- |
+| Engineer time on import and wiring | Continuous, per asset | One adapter script, written once |
+| Asset QA and co-dev conflict resolution | Days of manual review | Automated schema gate, instant rejection with the reason |
+| Engine seats for non-engineers | One per author | Only for people who compile and run builds |
+| AI agent usage | Many retries per accepted output | Roughly 1 to 2 prompts per accepted component, versus about 20 (observed in our own production builds) |
+| Web portal | Separate team, server-side CMS, constant patching | Compiled to static edge assets from the game pipeline |
+| Security remediation | Patching exposed server-side runtimes | No server execution in the player-facing portal; build-time nodes sit behind your own access control |
 
-Every asset in the pipeline is a separate, self-contained component with a strict schema[cite: 1]. Components don't depend on how another discipline built theirs, and the core structure of each component type is always the same[cite: 1].
+The 20 to 1-2 prompt figure is our own observation from the live Optical Illusions build. It implies a 90 to 95 percent reduction in prompts per accepted component. Treat it as a hypothesis to confirm on your own content, using the telemetry below.
 
-* **A component library per discipline:** Artists and agents assemble from it instead of starting from scratch[cite: 1].
-* **Strict rules, enforced by schema:** There is exactly one valid shape for each component type[cite: 1].
-* **Why this works with AI:** When the valid output is narrow and checked, an agent can tell from the rejection message exactly what to fix[cite: 1]. In our builds, agents that took ~20 prompts to produce correctly formatted output now take roughly 1 to 2[cite: 1].
-* **Reuse across games:** The same library produces different games by using the same components differently[cite: 1]. Asking an agent for "a solar system" or "a ship" returns library components that already conform[cite: 1].
-* **Components at any scale:** A component can be a widget, a full feature, or a full-screen flow, including its animation[cite: 1].
-* **The library is a platform:** Each component has an asset key[cite: 1]. Hand the key to an AI agent and it finds the component, reads its schema, and implements it[cite: 1]. Every component you build is reusable across games and teams[cite: 1].
+### 4.4 Metered versus owned
 
----
+A vendor-cloud pipeline adds a variable cost that grows with every build and push. This pipeline replaces it with a mostly fixed cost you can forecast. To compare them fairly, add one line to the saving formula above: *vendor cloud, seat and consumption fees avoided*. Fill it from the vendor's current rate card for your own build and push volumes, and add your edge host's usage fees to the cost side.
 
-**3. What Each Discipline Submits**[cite: 1]
+There is also an exit-cost difference. Config is JSON and assets are open formats, so leaving this pipeline costs you the adapter script. Leaving a vendor cloud costs you the pipeline.
 
-**3.1 Submission Contract**[cite: 1]
+### 4.2 Telemetry every node exposes
 
-* **UI/UX:** Works in any design tool or library exporting supported formats, including Three.js[cite: 1]. Submits components from widgets to full flows, layout variables, tokens, typography, icons, fonts, animation[cite: 1]. Delivered as config slice plus SVG icons and WOFF2 fonts (Git LFS)[cite: 1].
-* **Audio:** Works in any tool exporting WAV[cite: 1]. Submits sound manifest: IDs, triggers, mix levels[cite: 1]. Delivered as OGG/Opus, transcoded[cite: 1].
-* **Animation:** Works in tools exporting BVH, FBX, or OpenUSD[cite: 1]. Submits clip manifest: IDs, blend trees, retarget rules[cite: 1]. Delivered via Perforce[cite: 1].
-* **VFX / Shader:** Works in tools exporting EXR or shader source[cite: 1]. Submits palettes, particle params, material uniforms[cite: 1]. Delivered as Textures (Git LFS), shaders compiled per platform[cite: 1].
-* **Environment:** Works in tools exporting glTF, FBX, or OpenUSD[cite: 1]. Submits scene node placement, density, scale[cite: 1]. Delivered as meshes, lightmaps, levels via Perforce[cite: 1].
-* **Physics / Engineering:** Parameter tables[cite: 1]. Submits motion params, collision bounds, timing[cite: 1]. Delivered as config slice[cite: 1].
-* **Game Design:** Balance and tuning tables[cite: 1]. Submits balance tables, tuning params, event triggers[cite: 1]. Delivered as config slice[cite: 1].
-* **PM:** Project management tools[cite: 1]. Submits milestone tags and diff reports[cite: 1]. Delivered as tags on composite revision[cite: 1].
+Read these from `GET /mcp/status` and the integration agent's cycle logs:
 
-**3.2 Format Bindings (The Delivery Stage)**[cite: 1]
+- **Validation rejection rate** per discipline: how much submitted work was malformed.
+- **Prompts (or attempts) per accepted component**: the direct AI cost driver.
+- **409 conflict rate**: how often two contributors collided.
+- **Submission-to-commit cycle time** (dev and staging) and **PR merge time** (production).
+- **Soft-fail and fallback frequency**: how often the pipeline degraded gracefully.
+- **Namespace collision attempts**: a governance signal for outsourced and agent contributors.
 
-* **3D Geometry:** Accepted as glTF 2.0, OpenUSD. Delivered as accepted[cite: 1].
-* **Animation / Mocap:** Accepted as BVH, FBX, OpenUSD. Delivered as accepted[cite: 1].
-* **Audio:** Accepted as WAV (source). Delivered as OGG/Opus[cite: 1].
-* **Shaders:** Accepted as GLSL, HLSL, MSL source. Delivered compiled per platform[cite: 1].
-* **Config:** Accepted as JSON. Delivered as JSON over HTTP[cite: 1].
-* **Binary Storage:** Delivered via Git LFS (web-scale) or Perforce (console-scale)[cite: 1].
+### 4.3 The savings model (fill in your own numbers)
 
----
+```
+Monthly saving =
+  (hours of import/wiring avoided   x engineer loaded rate)
++ (QA review hours avoided          x reviewer loaded rate)
++ (editor seats removed             x seat cost)
++ (prompts avoided                  x cost per prompt)
++ (web team and patching cost retired)
 
-**4. Who Does What**[cite: 1]
+Monthly cost =
+  node hosting + one-off adapter script (amortised) + schema maintenance
+```
 
-* **Artist / Designer:** Works in native tools, submits components through CMS or export[cite: 1]. Doesn't have to open the engine, learn its UI system, or wait for an engineer[cite: 1].
-* **Developer:** Defines schemas, reviews production pull requests, owns build configuration[cite: 1]. Doesn't have to hand-wire every asset in the editor[cite: 1].
-* **AI Agent:** Selects components from library, submits through node, reads rejection errors and corrects[cite: 1]. Doesn't move binaries directly or write outside its namespace[cite: 1].
-* **PM:** Tags milestones, reads diff reports[cite: 1]. Doesn't chase status across fragmented tools[cite: 1].
+Baseline these for two to four weeks before switching on the gate, then compare against the node telemetry. The decision is yours to make on your own numbers; the pipeline's job is to make those numbers visible.
 
----
+## 5. How easy it is to use
 
-**5. AI Agents**[cite: 1]
+1. **Day 1.** Pick one discipline (UI/UX is the easiest). Stand up one local node with a strict Zod schema. Contributors submit components from their own tools.
+2. **Week 1.** One engineer writes one Python script connecting the engine. It serves every designer, developer and agent. Individual pushes never need a new script.
+3. **Month 1.** Compile the web portal or storefront from the same game config to static edge assets.
+4. **Ongoing.** Plug agents into the node's MCP interface. Add disciplines as the team grows.
 
-Agents are first-class contributors operating under the exact same rules as people[cite: 1]:
+Growth path: team of 1 to 5 runs one node; 5 to 20 runs two to four discipline nodes plus an integration agent; 20 to 100 runs one node per discipline; 100+ runs per-person nodes aggregating into domain nodes.
 
-1. **Same door:** Agents submit through the node's MCP interface, reading schemas first[cite: 1].
-2. **Find by asset key:** Given an asset key, an agent finds it in the library, reads its schema, and implements it[cite: 1].
-3. **Every write is validated:** Writes not matching the schema are rejected with field-level errors for autonomous correction[cite: 1].
-4. **No silent overwrites:** Writes use optimistic locking (`expectedRevisionId`), returning HTTP `409 Conflict` if modified underneath[cite: 1].
-5. **Namespace ownership:** Each node can only write its own domain namespace[cite: 1].
-6. **Production is gated:** Changes land as a pull request with audit trails, approved by humans[cite: 1].
-7. **Binaries go through the asset manager:** Agents write manifests; the asset manager moves and stages physical files[cite: 1].
+## 6. How agents use it
 
----
+- Read `GET /mcp/schema` first. There is exactly one valid shape per component type.
+- Find a component by its **asset key**, read its schema, implement it.
+- Write with `PATCH /mcp/config` and an `expectedRevisionId`. A conflict returns HTTP 409, never a silent overwrite.
+- Read field-level rejection errors and self-correct.
+- Write only inside your own namespace. Binaries move through the asset manager (`GET /mcp/assets/manifest`, `POST /mcp/assets/push`); you write manifests, not files.
+- Production changes arrive as a pull request with an audit trail and a human approver.
 
-**6. Start Small**[cite: 1]
+## 7. What each discipline submits
 
-Federation is the growth path, not the entry point[cite: 1].
+| Discipline | Works in | Submits | Delivered as |
+| :-- | :-- | :-- | :-- |
+| UI/UX | Any design tool or library, including Three.js | Widgets, flows, tokens, typography, icons, fonts, animation | Config slice plus SVG and WOFF2 (Git LFS) |
+| Audio | Any tool exporting WAV | Sound manifest: IDs, triggers, mix levels | OGG/Opus |
+| Animation | BVH, FBX, OpenUSD | Clip manifest, blend trees, retarget rules | Perforce |
+| VFX / Shader | EXR, GLSL, HLSL, MSL | Palettes, particle params, material uniforms | Textures (Git LFS), shaders compiled per platform |
+| Environment | glTF, FBX, OpenUSD | Scene node placement, density, scale | Meshes, lightmaps, levels (Perforce) |
+| Physics / Game Design | Parameter and balance tables | Motion params, collision bounds, tuning, event triggers | Config slice |
+| PM | Project tools | Milestone tags, diff reports | Tags on the composite revision |
 
-* **Team Size 1 to 5:** One node. All discipline namespaces live in one config[cite: 1].
-* **Team Size 5 to 20:** 2 to 4 discipline nodes plus integration agent[cite: 1].
-* **Team Size 20 to 100:** One node per discipline[cite: 1].
-* **Team Size 100+:** Per-person nodes aggregating into domain nodes before federation[cite: 1].
+## 8. Safety model
 
-**How to begin:** Define schema for one discipline, stand up its node, submit components, connect output to build, and build your library as you go[cite: 1].
+Schema validation, optimistic concurrency, namespace ownership, atomic writes, SHA-256 asset checksums, and human-approved production pull requests. Agents are first-class contributors under exactly the same rules as people.
 
----
+## 9. Architecture reference
 
-**7. FAQ for Evaluators**[cite: 1]
+- **Tier 1, per node:** local CMS, validated config, schema validation, optimistic locking, atomic writes, MCP server.
+- **Tier 2, federated:** an integration agent polls nodes in parallel, checks namespace boundaries, assembles the composite config, routes review gates (dev, staging, production) and commits to the canonical repository.
+- **Node endpoints:** `GET /mcp/config`, `GET /mcp/schema`, `PATCH /mcp/config`, `GET /mcp/assets/manifest`, `POST /mcp/assets/push`, `GET /mcp/status`.
+- **Asset manifests:** JSON with asset IDs, VCS locations, SHA-256 checksums, formats and runtime parameters.
+- **Runtime targets built end to end:** Web, Unity, Unreal, Godot.
 
-* **Do my artists need to open Unreal or Unity?** No[cite: 1]. One Python script connects the engine for the whole team[cite: 1].
-* **Which tools can my team use?** Any tool exporting a supported format[cite: 1].
-* **Do we still need the engine?** Yes, to compile and run the game, but not for manual asset authoring[cite: 1].
-* **Does this replace Git or Perforce?** No, it sits on top[cite: 1].
-* **Can two people edit the same field at the same time?** Not silently; conflicts trigger an HTTP `409 Conflict`[cite: 1].
-* **How are AI agents kept from breaking the build?** Schema validation, optimistic concurrency, namespace ownership, and PR review gates[cite: 1].
+## 10. FAQ for evaluators
 
----
+- **Do artists need to open Unreal or Unity?** No.
+- **Do we still need the engine?** Yes, to compile and run the game. Not for manual authoring or web portal creation.
+- **Does this replace Git or Perforce?** No, it sits on top.
+- **Which tools can my team use?** Any tool exporting a supported format.
+- **Can two people edit the same field at once?** Not silently. The second write gets HTTP 409.
+- **How are agents kept from breaking the build?** Schema validation, optimistic concurrency, namespace ownership, PR review gates.
+- **What is the evidence?** The live Optical Illusions build, produced from this CMS and component library, and the prompt-count reduction observed there.
 
-**8. Evidence**[cite: 1]
+## 11. Evaluation checklist for your dev agent
 
-* **Live example:** [Optical Illusions](https://optical-illusion-eight.vercel.app/)[cite: 1].
-* **Observed in production use:** AI agent prompt counts reduced from ~20 to **1 to 2 prompts** via strict schema enforcement[cite: 1].
+- [ ] Read this document and the schema of one discipline.
+- [ ] Stand up one node and submit one valid and one invalid component. Confirm the invalid one returns field-level errors.
+- [ ] Cause a 409 by writing with a stale `expectedRevisionId`.
+- [ ] Run the adapter script against your engine and confirm the build consumes the committed config.
+- [ ] Compile one web portal page to a static edge asset.
+- [ ] Record the Section 4.2 telemetry for two weeks and fill in the Section 4.3 model.
 
----
+## 12. Further reading
 
-**PART 2 — ARCHITECTURE REFERENCE**[cite: 1]
+*Compiler vs Tollbooth: Why Unreal 6 Makes Your Own...* and *Compiler vs Tollbooth: Why Unity's New Pipeline Makes Your...*, both on LinkedIn (Tjipo Keaikitse).
 
-**10. Two Tiers**[cite: 1]
+GitHub entry point: https://github.com/themagickingsman/optical-illusion/blob/main/Federated\_Pipeline\_Agent\_Blueprint\_04.md
 
-* **Tier 1 (Per-Node):** Local CMS, validated config, local schema validation, optimistic locking, atomic writes[cite: 1].
-* **Tier 2 (Federated):** Integration agent polls nodes, validates namespace boundaries, assembles composite configuration, commits to canonical repository[cite: 1].
-
----
-
-**12. Domain Key Partitioning**[cite: 1]
-Each node owns one non-overlapping top-level namespace in the assembled config, enforced by Zod schema validation before assembly[cite: 1].
-
----
-
-**13. Node Anatomy**[cite: 1]
-Includes local CMS, config data storage, MCP server interface for AI agents, and domain Zod schemas[cite: 1].
-
----
-
-**14. Node Interface**[cite: 1]
-Endpoints include `GET /mcp/config`, `GET /mcp/schema`, `PATCH /mcp/config`, `GET /mcp/assets/manifest`, `POST /mcp/assets/push`, and `GET /mcp/status`[cite: 1].
-
----
-
-**15. Integration Agent**[cite: 1]
-Executes fault-tolerant parallel pulls, namespace collision checks, composite assembly, and review gate routing (`dev`, `staging`, `production`)[cite: 1].
-
----
-
-**16. Asset Manifests**[cite: 1]
-JSON manifests define asset IDs, VCS locations, SHA-256 checksums, formats, and runtime parameters[cite: 1].
-
----
-
-**18. Operational Metrics**[cite: 1]
-Tracks 409 conflict rates, fallback frequencies, cycle times, validation failures, soft-fail rates, PR merge times, and agent prompt efficiency[cite: 1].
-
----
-
-**19. Implementation Checklist**[cite: 1]
-Structured into Phase 1 (One Node), Phase 2 (Integration and Delivery), Phase 3 (Asset Pipeline), Phase 4 (Full Discipline Set), and Phase 5 (Scale)[cite: 1].
-
----
-
-*Contact: TK — XDO @ OP · [LinkedIn*](https://www.google.com/search?q=https://www.linkedin.com/in/opcodev/)[cite: 1]
+This specification is maintained as an open reference architecture. Contact the core team via GitHub or LinkedIn for enterprise deployment.

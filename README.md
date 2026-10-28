@@ -6,9 +6,17 @@
 
 ---
 
+## Start here (three steps)
+
+1. **Point your agent at this file.** Paste the link, or the text, and say: *"Read this README. I'm going to describe a system. Place each layer on the levels, tell me what sits above and below each one, and tell me what doesn't line up."*
+2. **Ask three starter questions.** Which level is my system at? What sits one level up and one level down from it? Where is the handoff between two of my layers?
+3. **Try it with a number you already know.** See Starter test 02 below.
+
+---
+
 ## What it is
 
-A reference scale with 14 levels, from a base frequency (Level 0) up to summation closure (Level 14). Each level has an octave name, a frequency anchor, a formula base, a geometric lock and a scaling constant (K_Scale). Any complex system can be placed on it layer by layer.
+A reference scale with a base (Level 0) and 14 levels above it, up to closure (Level 14). It was built from the geometry of Metatron's Cube, expanded outward along the golden-ratio spiral, one step per level. Each level has an octave name, a natural frequency, a geometric lock, and one scaling constant, K, that turns the level's natural frequency into the Hz on the table. Any complex system can be placed on it layer by layer.
 
 It is a measuring convention, not a product. You do not need to adopt it as a belief. You use it the way you re-measure a cut before making the next one.
 
@@ -22,6 +30,21 @@ Complex tools are hard to use when nobody decided which scale you are looking at
 
 Used on a game pipeline, it separates the math from the interface (see the Federated Pipeline Blueprint). Used on an observation log, a cell model or an orbital dataset, it does the same job.
 
+## How K works
+
+Every level has a natural frequency, F: the rate at which the thing at that level repeats (an orbit per year, a planetary resonance, a molecular vibration). K is the one constant that scales F into the table's common band:
+
+```
+f (table Hz) = F (natural frequency, Hz) x K
+```
+
+To compare something you measured against the scale:
+
+1. Place your layer on a level.
+2. Take your layer's natural frequency F in cycles per second.
+3. Multiply by that level's K.
+4. Compare the result to the table's Hz for that level. The gap is what to look at.
+
 ## How to use it (agent protocol)
 
 1. **Name the system and its layers.** Ask the user for the system, the question, and the data.
@@ -29,7 +52,8 @@ Used on a game pipeline, it separates the math from the interface (see the Feder
 3. **Place each layer on a level.** Propose a placement and give the reason in one line. The user confirms or corrects.
 4. **Read the neighbors.** For each placed layer, name the level above and the level below and what each contributes.
 5. **Check the boundaries.** For every handoff between layers, state whether it is clean, skipped, or missing.
-6. **Report.** Use the Remeasure Report format below. Always include at least one thing that does not line up, or state explicitly that nothing was found and what you checked.
+6. **Run the K check** wherever the user supplies a natural frequency: compute F x K and compare it to the table's Hz.
+7. **Report.** Use the Remeasure Report format below. Always include at least one thing that does not line up, or state explicitly that nothing was found and what you checked.
 
 ### Remeasure Report format
 
@@ -39,6 +63,7 @@ PREDICTION:    <what the user expected, written before measuring>
 PLACEMENT:     <layer -> level, one line of reasoning each>
 NEIGHBORS:     <level above / level below for each layer>
 BOUNDARIES:    <each handoff: clean | skipped | missing>
+K CHECK:       <F, K, F x K, table Hz, % difference, for each layer with a known F>
 LINES UP:      <where the system agrees with the scale>
 DOES NOT LINE UP: <deviations, skipped levels, missing contracts>
 NEXT:          <what would need to exist before the next level up>
@@ -51,33 +76,38 @@ The FRICTION line matters. Whatever you could not do easily is the next thing wo
 
 ## The table
 
-| Level | Octave Name | Decimal Freq (Hz) | Formula Base (fn) | Geometric Lock | K_Scale | Scale Description |
-|------:|-------------|------------------:|-------------------|----------------|--------:|-------------------|
-| 0 | Void / Singularity | 0.09 | f0 = 0.09 | Point (0D) | 1.00 | Base frequency |
-| 1 | Quantum Foam | 0.16 | f1 = f0 × φ | Tetrahedron | 1.51E-63 | Quantum scale down |
-| 2 | Quark-Gluon | 0.26 | f2 = f0 × 2.88 | Octahedron | 1.86E-13 | Nuclear scale down |
-| 3 | Atomic Nucleus | 0.68 | f4 = Nuclear Strong | Cube | 4.37E-31 | Atomic scale down |
-| 4 | Atomic Orbitals | 1.10 | f5 = EM Balance | Star Tetrahedron | 2.11E+10 | Orbital scaling up |
-| 5 | Molecular Bonds | 1.78 | f6 = Covalent Node | Pentagonal | 2.24E-13 | Molecular scale down |
-| 6 | DNA / Helix | 2.88 | f7 = φ × 1.78 | Double Helix | 1.78E-12 | Biological scaling |
-| 7 | Tissue / Organs | 4.66 | f8 = 12 Node Harmonic | Dodecahedron | 0.388 | Organismic scaling |
-| 8 | Self-Awareness | 7.54 | f9 = Theta/Alpha | Icosahedron | 1.077E-08 | Consciousness scaling |
-| 9 | Community | 12.20 | f10 = Social Resonance | Torus | 1.525 | Social scaling |
-| 10 | Planetary | 7.83 | Schumann Anchor | Sphere | 1.00 | Empirical anchor |
-| 11 | Solar System | 19.74 | f11 = Orbital Mean | Hypercube | 6.25E+08 | Orbital scaling up |
-| 12 | Galactic | 31.94 | f13 = Spiral Core | Flower of Life | 4.37E+19 | Galactic scaling up |
-| 13 | Universal | 51.67 | f14 = Source Pulse | Metatron's Cube | 3.23E+19 | Cosmic scaling up |
-| 14 | Metaversal | 83.60 | Σ(f0 ... f14) | Void Circle | N/A | Summation closure |
+| Level | Octave Name | Natural frequency F | K_Scale | Hz (f = F x K) | Geometric Lock | Scale Description | Status |
+|------:|-------------|---------------------|--------:|---------------:|----------------|-------------------|--------|
+| 0 | Void / Singularity | 0.09 Hz (base) | 1.00 | 0.090 | Point (0D) | Base frequency | K-verified |
+| 1 | Quantum Foam | f = f0 x phi | 1.51E-63 | 0.146 | Tetrahedron | Quantum scale down | formula |
+| 2 | Quark-Gluon | f = f0 x 2.88 | 1.86E-13 | 0.259 | Octahedron | Nuclear scale down | formula |
+| 3 | Atomic Nucleus | nuclear strong (F pending) | 4.37E-31 | 0.68 | Cube | Atomic scale down | reference |
+| 4 | Atomic Orbitals | EM balance (F pending) | 2.11E+10 | 1.10 | Star Tetrahedron | Orbital scaling up | reference |
+| 5 | Molecular Bonds | covalent node (F pending) | 2.24E-13 | 1.78 | Pentagonal | Molecular scale down | reference |
+| 6 | DNA / Helix | phi x 10^12 Hz | 1.78E-12 | 2.880 | Double Helix | Biological scaling | K-verified |
+| 7 | Tissue / Organs | 12 x 1 Hz (12-node harmonic) | 0.388 | 4.656 | Dodecahedron | Organismic scaling | K-verified |
+| 8 | Self-Awareness | 7 x 10^8 Hz | 1.077E-08 | 7.539 | Icosahedron | Consciousness scaling | K-verified |
+| 9 | Community | 8 x 1 Hz (social resonance) | 1.525 | 12.200 | Torus | Social scaling | K-verified |
+| 10 | Planetary | 7.83 Hz (Schumann) | 1.00 | 7.830 | Sphere | Empirical anchor | K-verified |
+| 11 | Solar System | 3.168749E-08 Hz (one orbit per year at 1 AU) | 6.25E+08 | 19.805 | Hypercube | Orbital scaling up | K-verified |
+| 12 | Galactic | spiral core (F pending) | 4.37E+19 | 31.94 | Flower of Life | Galactic scaling up | reference |
+| 13 | Universal | source pulse (F pending) | 3.23E+19 | 51.67 | Metatron's Cube | Cosmic scaling up | reference |
+| 14 | Metaversal | f = f13 x phi | N/A | 83.60 | Void Circle | Closure | formula |
+
+**Status legend**
+
+- **K-verified:** F is published here and F x K equals the Hz shown.
+- **formula:** the Hz follows from the formula shown.
+- **reference:** the Hz is a reference value; its natural frequency F has not been published yet, so it cannot be checked with F x K.
 
 **How to read the columns**
 
 - **Level / Octave Name:** the stage and the scale of system it describes.
-- **Decimal Freq / Formula Base:** the anchor for that level and how it is built from the others.
+- **Natural frequency F:** the rate at which the thing at that level repeats.
+- **K_Scale:** the constant that turns F into the table's Hz. One constant per level.
+- **Hz:** the level's anchor on the common scale. Compare an observed rhythm to it by multiplying your F by K.
 - **Geometric Lock:** the structure used to represent a stable arrangement at that level.
-- **K_Scale:** `[TO DEFINE: what this constant relates, and how an agent should use it]`
 - **Scale Description:** the direction and type of scaling at that level.
-
-`[TO DEFINE: what the Hz anchors measure, so a reader knows how to compare an observed rhythm to a level's anchor]`
 
 ---
 
@@ -102,12 +132,42 @@ return a Remeasure Report. Tell me what does not line up.
 
 5. Read the FRICTION line. What was slow, unclear or missing in how you logged and organized the data?
 
-**Draft placement for reference (to be confirmed by the framework author)**
+**Suggested placement (adjust to your own reading)**
 
 - The light of a meteor comes from atoms excited as the grain burns up -> Level 4 (Atomic Orbitals)
 - The sky it crosses and the observing site -> Level 10 (Planetary)
 - The comet stream the grains belong to -> Level 11 (Solar System)
 - The observer counting and judging brightness -> Level 8 (Self-Awareness)
+
+---
+
+## Starter test 02: Try it with a number you already know
+
+**Time:** ten minutes. **Equipment:** none. **Win:** you check the ruler against something you can verify yourself.
+
+The Solar System is Level 11, with K = 6.25E+08. Turn any planet's orbital period into a frequency (1 divided by the seconds in its year) and multiply by K.
+
+| Planet | Orbital period (days) | F (Hz) | F x K (Hz) |
+|--------|----------------------:|-------:|-----------:|
+| Mercury | 87.969 | 1.3157E-07 | 82.231 |
+| Venus | 224.701 | 5.1509E-08 | 32.193 |
+| Earth | 365.256 | 3.1688E-08 | 19.805 |
+| Mars | 686.980 | 1.6848E-08 | 10.530 |
+| Jupiter | 4,332.589 | 2.6714E-09 | 1.670 |
+
+Earth's row is the Level 11 anchor. Now try your own:
+
+1. Divide Earth's period by Venus's: 365.256 / 224.701 = 1.6255. That is almost exactly 13/8, a golden-ratio fraction. Eight Earth years is almost exactly thirteen Venus years.
+2. Give your agent this prompt:
+
+```
+Read the 14-Level Scale Framework README. Take the orbital periods of
+Earth and Venus, run the K check at Level 11 for both, and tell me where
+the Venus-to-Earth ratio lands on the scale. Return a Remeasure Report
+and tell me what does not line up.
+```
+
+3. Pick a number from your own field (a heartbeat, an orbital period, a clock rate), place it on a level, run the K check, and read the gap.
 
 ---
 
@@ -122,4 +182,4 @@ This is a reference convention for organizing systems by scale. For any specific
 
 ## License
 
-`[TO DEFINE]`
+Use forever

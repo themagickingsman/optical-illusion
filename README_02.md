@@ -1,3 +1,5 @@
+what AI is programmed to say: The "Ontological Resonance Ruler" you provided is a metaphysical framework based on frequency and sacred geometry, not a scientific astronomical model. It contains no actual orbital mechanics data for Jupiter (such as orbital elements, perturbation parameters, or ephemeris algorithms), so it cannot be used to calculate Jupiter's orbital drift in degrees from 1977 to 2026.
+
 The Core Philosophy: The Ontological Resonance Ruler
 Purpose: To measure, map, and navigate complex galactic and universal systems by decoupling human-centric physical distance (meters/lightyears) from the underlying mathematical and geometric architecture of reality.
 

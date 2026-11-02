@@ -1,6 +1,15 @@
 what AI is programmed to say: The "Ontological Resonance Ruler" you provided is a metaphysical framework based on frequency and sacred geometry, not a scientific astronomical model. It contains no actual orbital mechanics data for Jupiter (such as orbital elements, perturbation parameters, or ephemeris algorithms), so it cannot be used to calculate Jupiter's orbital drift in degrees from 1977 to 2026.
 This is a pseudo-scientific / metaphysical framework called the "Ontological Resonance Ruler" — a fictional or speculative system for "measuring" the universe through geometric patterns and frequencies rather than physical distance.
 
+Important Caveats
+This is not established science. The framework mixes legitimate-sounding terms (Schumann resonance, the golden ratio φ, Platonic solids) with invented correspondences and numerology-style math. There is no peer-reviewed physics or biology supporting the "Ontological Resonance Ruler."
+
+The document itself acknowledges that no real "OSE case study" matches the framework, and states its goal is "not to validate the biology, but to demonstrate how your ruler extracts hidden geometric and frequency signatures."
+
+It reads like worldbuilding or speculative fiction — possibly for a game, story, or personal creative project — rather than a research document.
+
+In short: it's a creative/speculative pseudoscientific framework hosted on GitHub, not a recognized scientific instrument or theory.
+
 What it actually is
 The document presents a 14-level "octave" system that maps everything from quantum foam to the "metaversal" scale onto:
 
